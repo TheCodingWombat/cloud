@@ -1,0 +1,3 @@
+# VM Machine-Specific Files
+vm/.vagrant
+vm/*.log
