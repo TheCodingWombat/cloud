@@ -1,10 +1,10 @@
-package WebServer;
+package web_server;
 
 import java.net.InetSocketAddress;
 
 import com.sun.net.httpserver.HttpServer;
 
-import LoadBalancer.LoadBalancer;
+import load_balancer.LoadBalancer;
 
 public class WebServer {
 	public static void main(String[] args) throws Exception {

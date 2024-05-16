@@ -1,4 +1,4 @@
-package LoadBalancer;
+package load_balancer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -11,10 +11,13 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 public class LoadBalancer implements HttpHandler {
+	
+	String endPoint = "http://localhost:8001";
 
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
 
+		//analyze incoming request
 		URI requestedUri = exchange.getRequestURI();
 		System.out.println("Requested resource:" + requestedUri.getPath());
 

@@ -1,4 +1,4 @@
-package WebServer;
+package web_server;
 import java.io.IOException;
 import java.net.URI;
 
