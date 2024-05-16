@@ -46,9 +46,9 @@ public class ICount extends CodeDumper {
         super.transform(behavior);
         behavior.insertAfter(String.format("%s.incBehavior(\"%s\");", ICount.class.getName(), behavior.getLongName()));
 
-        if (behavior.getName().equals("main")) {
+        // if (behavior.getName().equals("main")) {
             behavior.insertAfter(String.format("%s.printStatistics();", ICount.class.getName()));
-        }
+        // }
     }
 
     @Override
