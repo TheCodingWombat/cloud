@@ -18,7 +18,8 @@ public class MetricStorageSystem {
 		
 	}
 
-	public RequestRecommendation calculateRecommendation(AbstractRequestType requestType) {
+	public static RequestRecommendation calculateRecommendation(AbstractRequestType requestType) {
+		
 		return null;
 		
 	}

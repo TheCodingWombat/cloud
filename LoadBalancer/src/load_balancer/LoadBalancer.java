@@ -10,6 +10,8 @@ import java.net.URL;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import metric_storage_system.MetricStorageSystem;
+import metric_storage_system.RequestRecommendation;
 import request_types.AbstractRequestType;
 
 public class LoadBalancer implements HttpHandler {
@@ -18,15 +20,16 @@ public class LoadBalancer implements HttpHandler {
 
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
+		
+		System.out.println("Requested resource:" + exchange.getRequestURI().getPath());
+		
+		AbstractRequestType requestType = AbstractRequestType.ofResouce(exchange.getRequestURI().getPath());
+		RequestRecommendation recommendation = MetricStorageSystem.calculateRecommendation(requestType);
+		forwardRequest(exchange, recommendation);
+	}
 
-		//analyze incoming request
+	private void forwardRequest(HttpExchange exchange, RequestRecommendation recommendation) throws IOException {
 		URI requestedUri = exchange.getRequestURI();
-		System.out.println("Requested resource:" + requestedUri.getPath());
-
-		
-		AbstractRequestType requestType = AbstractRequestType.ofResouce(requestedUri.toString());
-		
-		
 		String query = requestedUri.getRawQuery();
 		System.out.println(query);
 
@@ -36,8 +39,7 @@ public class LoadBalancer implements HttpHandler {
 		OutputStream os = exchange.getResponseBody();
 		os.write(response.getBytes());
 		os.close();
-
-		requestWorker();
+		
 	}
 
 	private void requestWorker() throws MalformedURLException, IOException {
