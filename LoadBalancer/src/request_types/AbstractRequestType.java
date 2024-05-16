@@ -1,15 +1,13 @@
 package request_types;
 
-import java.net.URI;
-
 public abstract class AbstractRequestType {
 
-	public static AbstractRequestType ofResouce(URI requestedUri) {
-		if (requestedUri.equals("/blurimage")) {
+	public static AbstractRequestType ofResouce(String resourceName) {
+		if (resourceName.equals("/blurimage")) {
 			return new BlurImageRequest();
-		} else if (requestedUri.equals("/enhanceimage")) {
+		} else if (resourceName.equals("/enhanceimage")) {
 			return new EnhanceImageRequest();
-		} else if (requestedUri.equals("/raytracer")) {
+		} else if (resourceName.equals("/raytracer")) {
 			return new RayTracerRequest();
 		} else {
 			//maybe add error handling here

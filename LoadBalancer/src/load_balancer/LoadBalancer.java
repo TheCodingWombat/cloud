@@ -10,6 +10,8 @@ import java.net.URL;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import request_types.AbstractRequestType;
+
 public class LoadBalancer implements HttpHandler {
 	
 	String endPoint = "http://localhost:8001";
@@ -21,6 +23,10 @@ public class LoadBalancer implements HttpHandler {
 		URI requestedUri = exchange.getRequestURI();
 		System.out.println("Requested resource:" + requestedUri.getPath());
 
+		
+		AbstractRequestType requestType = AbstractRequestType.ofResouce(requestedUri.toString());
+		
+		
 		String query = requestedUri.getRawQuery();
 		System.out.println(query);
 
