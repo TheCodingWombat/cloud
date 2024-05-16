@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="cnv24-g22-master/imageproc/src/main/java"/>
+	<classpathentry kind="src" path="cnv24-g22-master/raytracer/src/main/java"/>
+	<classpathentry kind="src" path="cnv24-g22-master/webserver/src/main/java"/>
+	<classpathentry kind="src" path="cnv24-master/labs/lab-aws/res"/>
+	<classpathentry kind="src" path="cnv24-master/labs/lab-faas/res"/>
+	<classpathentry kind="src" path="cnv24-master/labs/lab-faas/src/main/java"/>
+	<classpathentry kind="src" path="cnv24-master/labs/lab-javassist/apps"/>
+	<classpathentry kind="src" path="cnv24-master/labs/lab-javassist/src/main/java"/>
+	<classpathentry kind="src" path="cnv24-master/labs/lab-javassist/target/classes"/>
+	<classpathentry kind="output" path="cnv24-g22-master/imageproc/target/classes"/>
+</classpath>
