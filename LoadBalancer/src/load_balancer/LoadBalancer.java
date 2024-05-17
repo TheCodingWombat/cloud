@@ -11,7 +11,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import metric_storage_system.MetricStorageSystem;
-import metric_storage_system.RequestRecommendation;
+import metric_storage_system.RequestEstimation;
 import request_types.AbstractRequestType;
 
 public class LoadBalancer implements HttpHandler {
@@ -23,12 +23,12 @@ public class LoadBalancer implements HttpHandler {
 		
 		System.out.println("Requested resource:" + exchange.getRequestURI().getPath());
 		
-		AbstractRequestType requestType = AbstractRequestType.ofResouce(exchange.getRequestURI().getPath());
-		RequestRecommendation recommendation = MetricStorageSystem.calculateRecommendation(requestType);
+		AbstractRequestType requestType = AbstractRequestType.ofRequest(exchange);
+		RequestEstimation recommendation = MetricStorageSystem.calculateRecommendation(requestType);
 		forwardRequest(exchange, recommendation);
 	}
 
-	private void forwardRequest(HttpExchange exchange, RequestRecommendation recommendation) throws IOException {
+	private void forwardRequest(HttpExchange exchange, RequestEstimation recommendation) throws IOException {
 		URI requestedUri = exchange.getRequestURI();
 		String query = requestedUri.getRawQuery();
 		System.out.println(query);
