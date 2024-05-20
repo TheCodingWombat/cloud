@@ -8,12 +8,15 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URI;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import metric_storage_system.MetricStorageSystem;
 import metric_storage_system.RequestEstimation;
+import metric_storage_system.RequestMetrics;
 import request_types.AbstractRequestType;
 import utils.HttpRequestUtils;
 
@@ -24,14 +27,24 @@ public class LoadBalancer implements HttpHandler {
 		String requestBody = HttpRequestUtils.getRequestBodyString(exchange);
 		AbstractRequestType requestType = AbstractRequestType.ofRequest(exchange, requestBody);
 		RequestEstimation estimation = MetricStorageSystem.calculateEstimation(requestType);
-		forwardRequest(exchange, requestBody, estimation);
+		forwardRequest(exchange, requestBody, estimation, requestType);
 	}
 
-	private void forwardRequest(HttpExchange exchange, String requestBody, RequestEstimation estimation) throws IOException {
+	private void forwardRequest(HttpExchange exchange, String requestBody, RequestEstimation estimation, AbstractRequestType requestType) throws IOException {
 		//use estimation later to do forward logic
 		//Url of local workerWebServer
 		URL url = new URL("http", "localhost", 8000, exchange.getRequestURI().getPath());	
 		HttpURLConnection connection = HttpRequestUtils.forwardRequest(url, exchange, requestBody);
 		int statusCode = HttpRequestUtils.sendResponseToClient(exchange, connection);
+
+		// Insert metrics into metrics storage system. TODO: I cannot run this, so I don't know if we should to it here
+		RequestMetrics metrics = extractMetrics(connection);
+		MetricStorageSystem.storeMetric(requestType, metrics);
+	}
+
+	private RequestMetrics extractMetrics(HttpURLConnection connection) {
+		Map<String, List<String>> headers = connection.getHeaderFields();
+		long cpuTime = Long.parseLong(headers.get("Methodcpuexecutiontimens").get(0)); // TODO: check capitalization of header fields
+		return new RequestMetrics(cpuTime);
 	}
 }

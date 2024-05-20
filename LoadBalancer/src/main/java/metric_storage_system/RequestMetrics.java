@@ -5,4 +5,10 @@ package metric_storage_system;
  */
 public class RequestMetrics {
 
+    long cpuTime;
+
+    public RequestMetrics(long cpuTime) {
+        this.cpuTime = cpuTime;
+    }
+
 }
