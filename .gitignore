@@ -17,3 +17,6 @@ target/
 
 # Gradle specific files
 build/
+
+# Output AWS
+outputs/
