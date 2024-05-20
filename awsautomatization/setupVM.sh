@@ -19,7 +19,7 @@ mvn clean package;
 EOF
 )
 
-#cmd=$(cat "nohup java -cp webserver/target/webserver-1.0.0-SNAPSHOT-jar-with-dependencies.jar pt.ulisboa.tecnico.cnv.webserver.WebServer > outputs/webserver.log 2>&1;")
+cmd=$(cat "nohup java -cp webserver/target/webserver-1.0.0-SNAPSHOT-jar-with-dependencies.jar pt.ulisboa.tecnico.cnv.webserver.WebServer > outputs/webserver.log 2>&1;")
 ssh -o StrictHostKeyChecking=no -i "~/.aws/ssh.pem" ec2-user@$(cat outputs/instance.dns) $cmd > outputs/ssh_output.log 2>&1
 
 
