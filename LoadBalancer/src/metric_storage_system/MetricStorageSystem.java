@@ -18,7 +18,7 @@ public class MetricStorageSystem {
 		
 	}
 
-	public static RequestEstimation calculateRecommendation(AbstractRequestType requestType) {
+	public static RequestEstimation calculateEstimation(AbstractRequestType requestType) {
 		
 		return null;
 		
