@@ -18,13 +18,17 @@ public class MethodExecutionTimer extends CodeDumper {
     @Override
     protected void transform(CtBehavior behavior) throws Exception {
         super.transform(behavior);
+
         behavior.addLocalVariable("startTime", CtClass.longType);
+        behavior.addLocalVariable("startCpuTime", CtClass.longType);
         behavior.insertBefore("startTime = System.nanoTime();");
+        behavior.insertBefore("startCpuTime = java.lang.management.ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();");
         StringBuilder builder = new StringBuilder();
         behavior.addLocalVariable("endTime", CtClass.longType);
-        behavior.addLocalVariable("endTime2", CtClass.longType);
-        behavior.addLocalVariable("opTime", CtClass.longType);
-        behavior.addLocalVariable("opTime2", CtClass.longType); // this does not include the time for sending the http stuff
+        behavior.addLocalVariable("opTime", CtClass.longType); // this does not include the time for sending the http stuff
+
+        behavior.addLocalVariable("endCpuTime", CtClass.longType);
+        behavior.addLocalVariable("cpuTime", CtClass.longType); // Does not include http stuff
 
 
         // Return metrics through http:
@@ -34,9 +38,12 @@ public class MethodExecutionTimer extends CodeDumper {
                     if (m.getMethodName().equals("sendResponseHeaders")) {
                         m.replace("{"
                             + " System.out.println(\"yes here\");\n"
-                            + " endTime2 = System.nanoTime();\n"
-                            + " opTime2 = endTime2-startTime;\n"
-                            + "    $0.getResponseHeaders().add(\"methodExecutionTimeNs\", \"\" + opTime2);\n"
+                            + " endTime = System.nanoTime();\n"
+                            + " opTime = endTime-startTime;\n"
+                            + " endCpuTime = java.lang.management.ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();\n"
+                            + " cpuTime = endCpuTime - startCpuTime;\n"
+                            + "    $0.getResponseHeaders().add(\"methodCpuExecutionTimeNs\", \"\" + cpuTime);\n"
+                            + "    $0.getResponseHeaders().add(\"methodExecutionTimeNs\", \"\" + opTime);\n"
                             + "    $proceed($$);"
                             + "}");
                     }
@@ -44,10 +51,10 @@ public class MethodExecutionTimer extends CodeDumper {
             });
         }
 
-        builder.append("endTime = System.nanoTime();");
-        builder.append("opTime = endTime-startTime;");
-        builder.append(String.format("System.out.println(\"[%s] %s method call completed in: \" + opTime + \" ns!\");",
-                this.getClass().getSimpleName(), behavior.getLongName()));
-        behavior.insertAfter(builder.toString());
+        // builder.append(String.format("System.out.println(\"[%s] %s method call completed in: \" + opTime + \" ns!\");",
+        //         this.getClass().getSimpleName(), behavior.getLongName()));
+        // builder.append(String.format("System.out.println(\"[%s] %s method call completed in: \" + cpuTime + \" ns!\");",
+        //         this.getClass().getSimpleName(), behavior.getLongName()));
+        // behavior.insertAfter(builder.toString());
     }
 }
