@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <output url="file://$MODULE_DIR$/cnv24-g22-master/imageproc/target/classes" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/cnv24-g22-master/imageproc/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/cnv24-g22-master/raytracer/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/cnv24-g22-master/webserver/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/cnv24-master/labs/lab-aws/res" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/cnv24-master/labs/lab-faas/res" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/cnv24-master/labs/lab-faas/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/cnv24-master/labs/lab-javassist/apps" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/cnv24-master/labs/lab-javassist/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/cnv24-master/labs/lab-javassist/target/classes" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
