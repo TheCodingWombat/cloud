@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./config/config.sh
+source ~/.aws/config.sh
 
 cmd=$(cat <<EOF
 sudo yum install java-17-amazon-corretto -y;

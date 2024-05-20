@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./config/config.sh
+source ~/.aws/config.sh
 
 # Run new instance.
 aws ec2 run-instances \
