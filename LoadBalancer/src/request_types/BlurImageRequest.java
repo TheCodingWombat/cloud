@@ -30,13 +30,12 @@ public class BlurImageRequest extends AbstractRequestType {
 
 	private final PictureFormat pictureFormat;
 
-	public BlurImageRequest(HttpExchange exchange) {
-		this.pictureFormat = setPictureFormat(exchange);
+	public BlurImageRequest(HttpExchange exchange, String requestBody) {
+		this.pictureFormat = setPictureFormat(requestBody);
 
 	}
 
-	private PictureFormat setPictureFormat(HttpExchange exchange) {
-		String requestBody = HttpRequestUtils.getRequestBody(exchange);
+	private PictureFormat setPictureFormat(String requestBody) {
 		String dataTypeString = extractDataTypeString(requestBody);
 		return PictureFormat.ofString(dataTypeString);
 	}
