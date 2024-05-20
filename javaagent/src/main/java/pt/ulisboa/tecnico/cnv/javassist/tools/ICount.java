@@ -4,6 +4,10 @@ import java.util.List;
 
 import javassist.CannotCompileException;
 import javassist.CtBehavior;
+import javassist.CtClass;
+import javassist.CtMethod;
+import javassist.expr.ExprEditor;
+import javassist.expr.MethodCall;
 
 public class ICount extends CodeDumper {
 
@@ -49,6 +53,22 @@ public class ICount extends CodeDumper {
         // if (behavior.getName().equals("main")) {
             behavior.insertAfter(String.format("%s.printStatistics();", ICount.class.getName()));
         // }
+
+
+        // Return metrics through http:
+        if (behavior instanceof CtMethod && behavior.getName().equals("handle")) {
+            behavior.instrument(new ExprEditor() {
+                public void edit(MethodCall m) throws CannotCompileException {
+                    if (m.getMethodName().equals("sendResponseHeaders")) {
+                        m.replace("{"
+                            + " System.out.println(\"yes here\");\n"
+                            + "    $0.getResponseHeaders().add(\"ninsts\", \"" + ninsts + "\");\n"
+                            + "    $proceed($$);"
+                            + "}");
+                    }
+                }
+            });
+        }
     }
 
     @Override
