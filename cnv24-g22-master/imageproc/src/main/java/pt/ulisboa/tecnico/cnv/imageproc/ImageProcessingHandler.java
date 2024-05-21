@@ -39,6 +39,8 @@ public abstract class ImageProcessingHandler implements HttpHandler, RequestHand
 
     @Override
     public void handle(HttpExchange t) throws IOException {
+        // print what we are doing
+        System.out.println("Handling request: " + t.getRequestURI().toString());
         // Handling CORS
         t.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
 
@@ -46,6 +48,7 @@ public abstract class ImageProcessingHandler implements HttpHandler, RequestHand
             t.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, OPTIONS");
             t.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type,Authorization");
             t.sendResponseHeaders(204, -1);
+
             return;
         }
 

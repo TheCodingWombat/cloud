@@ -63,6 +63,9 @@ public class HttpRequestUtils {
 	
 	public static int sendResponseToClient(HttpExchange exchange, HttpURLConnection connection) throws IOException {
 		int responseCode = connection.getResponseCode();
+
+		exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+
 		exchange.sendResponseHeaders(responseCode, connection.getContentLength());
 		appendResponseBody(exchange, connection);
         return responseCode;
