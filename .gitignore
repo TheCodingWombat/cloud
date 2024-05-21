@@ -19,4 +19,4 @@ target/
 build/
 
 # Output AWS
-outputs/
+awsautomatization/outputs/
