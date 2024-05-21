@@ -12,7 +12,7 @@ INSTANCE_SERVICE=$(aws ec2 run-instances \
 echo "New Amazon Linux instance with id $INSTANCE_SERVICE."
 
 INSTANCE_LB=$(aws ec2 run-instances \
-    --image-id ami-0cc5962e2aee0bc60  \
+    --image-id ami-0b6346a5625b62c22 \
     --instance-type t2.micro \
     --key-name $AWS_KEYPAIR_NAME \
     --security-group-ids $AWS_SECURITY_GROUP \
@@ -53,6 +53,9 @@ OTHER_INSTANCE_DNS=\$(cat /home/ec2-user/other_instance_dns.dns)
 
 # Replace "localhost" with the DNS value in the specified Java file directly
 sed -i "s/localhost/\$OTHER_INSTANCE_DNS/" /home/ec2-user/cloud/LoadBalancer/src/main/java/load_balancer/LoadBalancer.java
+cd /home/ec2-user/cloud/LoadBalancer;
+mvn clean package;
+nohup java -jar target/LoadBalancer-1.0-SNAPSHOT.jar > /tmp/loadbalancer.log 2>&1
 EOF
 )
 

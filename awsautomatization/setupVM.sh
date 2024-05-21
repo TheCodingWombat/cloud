@@ -22,5 +22,3 @@ mvn clean package;
 EOF
 )
 ssh -o StrictHostKeyChecking=no -i "~/.aws/newkey.pem" ec2-user@$(cat outputs/instance.dns) $cmd > outputs/ssh_output.log 2>&1
-
-
