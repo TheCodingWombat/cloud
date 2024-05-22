@@ -20,3 +20,6 @@ build/
 
 # Output AWS
 awsautomatization/outputs/
+
+# Output logs
+.out

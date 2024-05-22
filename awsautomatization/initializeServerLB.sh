@@ -2,7 +2,7 @@
 source ~/.aws/config.sh
 
 INSTANCE_SERVICE=$(aws ec2 run-instances \
-    --image-id ami-01ca7a31897ed5a69 \
+    --image-id ami-0b6346a5625b62c22\
     --instance-type t2.micro \
     --key-name $AWS_KEYPAIR_NAME \
     --security-group-ids $AWS_SECURITY_GROUP \
@@ -43,16 +43,31 @@ echo "Copy files"
 
 echo "Now Replacing localhost to DNS" 
 
+cmd1=$(cat <<EOF
 #!/bin/bash
+rm -rf cloud;
+git clone https://github.com/TheCodingWombat/cloud.git;
+cd cloud;
+mvn -f javaagent/pom.xml clean package;
+mvn -f cnv24-g22-master/pom.xml clean package;
+nohup java -cp cnv24-g22-master/webserver/target/webserver-1.0.0-SNAPSHOT-jar-with-dependencies.jar -javaagent:javaagent/target/JavassistWrapper-1.0-jar-with-dependencies.jar=MethodExecutionTimer:pt.ulisboa.tecnico.cnv:output pt.ulisboa.tecnico.cnv.webserver.WebServer > /tmp/webserver.log 2>&1 &
+EOF
+)
+# Execute the command on the remote machine
+nohup ssh -o StrictHostKeyChecking=no -i "~/.aws/newkey.pem" ec2-user@$INSTANCE_SERVICE_DNS "$cmd1" /tmp/ssh_service_dns.log 2>&1 &
+
+
 
 # Command to read DNS value from service.dns and replace "localhost" with this value in the Java file
-cmd=$(cat <<EOF
+cmd2=$(cat <<EOF
 #!/bin/bash
-# Read the DNS value from the other_instance_dns.dns file
-OTHER_INSTANCE_DNS=\$(cat /home/ec2-user/other_instance_dns.dns)
+rm -rf cloud;
+git clone https://github.com/TheCodingWombat/cloud.git;
+
+OTHER_INSTANCE_DNS=\$(cat /home/ec2-user/other_instance_dns.dns);
 
 # Replace "localhost" with the DNS value in the specified Java file directly
-sed -i "s/localhost/\$OTHER_INSTANCE_DNS/" /home/ec2-user/cloud/LoadBalancer/src/main/java/load_balancer/LoadBalancer.java
+sed -i "s/localhost/\$OTHER_INSTANCE_DNS/" /home/ec2-user/cloud/LoadBalancer/src/main/java/load_balancer/LoadBalancer.java;
 cd /home/ec2-user/cloud/LoadBalancer;
 mvn clean package;
 nohup java -jar target/LoadBalancer-1.0-SNAPSHOT.jar > /tmp/loadbalancer.log 2>&1
@@ -60,4 +75,7 @@ EOF
 )
 
 # Execute the command on the remote machine
-ssh -o StrictHostKeyChecking=no -i "~/.aws/newkey.pem" ec2-user@$INSTANCE_LB_DNS "$cmd"
+ssh -o StrictHostKeyChecking=no -i "~/.aws/newkey.pem" ec2-user@$INSTANCE_LB_DNS "$cmd2" &
+
+
+
