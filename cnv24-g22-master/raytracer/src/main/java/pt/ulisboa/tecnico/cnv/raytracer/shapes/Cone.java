@@ -3,9 +3,9 @@ package pt.ulisboa.tecnico.cnv.raytracer.shapes;
 import pt.ulisboa.tecnico.cnv.raytracer.*;
 
 public class Cone extends Shape {
-    private Point apex;
-    private Vector axis;
-    private double radius;
+    private final Point apex;
+    private final Vector axis;
+    private final double radius;
 
     public Cone(Point apex, Vector axis, double radius) {
         this.apex = apex;

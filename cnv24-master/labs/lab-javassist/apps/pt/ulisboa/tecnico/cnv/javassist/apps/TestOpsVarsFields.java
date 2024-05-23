@@ -10,7 +10,7 @@ public class TestOpsVarsFields
 	private Object _o1;
 	private Object _o2;
 
-	public static void main(String args[])
+	public static void main(String[] args)
 	{
 		TestOpsVarsFields tovf = new TestOpsVarsFields();
 

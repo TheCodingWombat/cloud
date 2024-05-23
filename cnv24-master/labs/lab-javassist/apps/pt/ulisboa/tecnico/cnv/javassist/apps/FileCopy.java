@@ -94,8 +94,10 @@ public class FileCopy {
     }
     // Always close the streams, even if exceptions were thrown
     finally {
-      if (from != null) try { from.close(); } catch (IOException e) { ; }
-      if (to != null) try { to.close(); } catch (IOException e) { ; }
+      if (from != null) try { from.close(); } catch (IOException e) {
+      }
+      if (to != null) try { to.close(); } catch (IOException e) {
+      }
     }
   }
 

@@ -1,9 +1,9 @@
 package pt.ulisboa.tecnico.cnv.raytracer;
 
 public class Matrix {
-    private double m[][];
+    private final double[][] m;
 
-    public Matrix(double m[][]) {
+    public Matrix(double[][] m) {
         if(m.length < 4 || m[0].length < 4) throw new IllegalArgumentException("Matrix must be a 4x4 array");
         this.m = m;
     }
@@ -17,7 +17,7 @@ public class Matrix {
 */
 
     public Matrix transpose() {
-        double t[][] = new double[4][4];
+        double[][] t = new double[4][4];
         t[0][0] = m[0][0];
         t[1][0] = m[0][1];
         t[2][0] = m[0][2];
@@ -39,8 +39,8 @@ public class Matrix {
     }
 
     public Matrix times(Matrix matrix) {
-        double m2[][] = matrix.m;
-        double r[][] = new double[4][4];
+        double[][] m2 = matrix.m;
+        double[][] r = new double[4][4];
 
         for(int row=0;row<4;row++) {
             for(int col=0;col<4;col++) {
@@ -54,12 +54,12 @@ public class Matrix {
     public Vector times(Vector v) {
         double x, y, z;
 
-        x = m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z + m[0][3] * 1.0;
-        y = m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z + m[1][3] * 1.0;
-        z = m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z + m[2][3] * 1.0;
+        x = m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z + m[0][3];
+        y = m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z + m[1][3];
+        z = m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z + m[2][3];
 
         // fourth coordinate
-        double mag = m[3][0] * v.x + m[3][1] * v.y + m[3][2] * v.z + m[3][3] * 1.0;
+        double mag = m[3][0] * v.x + m[3][1] * v.y + m[3][2] * v.z + m[3][3];
 
         x /= mag;
         y /= mag;

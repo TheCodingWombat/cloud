@@ -3,9 +3,9 @@ package pt.ulisboa.tecnico.cnv.raytracer.shapes;
 import pt.ulisboa.tecnico.cnv.raytracer.*;
 
 public class Cylinder extends Shape {
-    private Point base;
-    private Vector axis;
-    private double radius;
+    private final Point base;
+    private final Vector axis;
+    private final double radius;
 
     public Cylinder(Point base, Vector axis, double radius) {
         this.base = base;

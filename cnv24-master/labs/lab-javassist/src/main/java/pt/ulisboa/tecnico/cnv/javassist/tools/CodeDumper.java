@@ -26,8 +26,8 @@ public class CodeDumper extends AbstractJavassistTool {
 
     @Override
     protected void transform(BasicBlock block) throws CannotCompileException {
-        System.out.println(String.format("[%s] Intercepting basicblock position=%s, length=%s, line=%s",
-                CodeDumper.class.getSimpleName(), block.getPosition(), block.getLength(), block.getLine()));
+        System.out.printf("[%s] Intercepting basicblock position=%s, length=%s, line=%s%n",
+                CodeDumper.class.getSimpleName(), block.getPosition(), block.getLength(), block.getLine());
         super.transform(block);
     }
 }

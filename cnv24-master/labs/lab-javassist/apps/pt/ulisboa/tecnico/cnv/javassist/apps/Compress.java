@@ -67,7 +67,7 @@ public class Compress {
      * Compress a specified file or directory.  If no destination name is
      * specified, append .gz to a file name or .zip to a directory name
      **/
-    public static void main(String args[]) throws IOException {
+    public static void main(String[] args) throws IOException {
       if ((args.length != 1) && (args.length != 2)) {  // check arguments
         System.err.println("Usage: java Compress$Test <from> [<to>]");
         System.exit(0);

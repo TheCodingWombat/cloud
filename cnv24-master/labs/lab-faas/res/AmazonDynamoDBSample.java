@@ -34,7 +34,7 @@ import com.amazonaws.services.dynamodbv2.util.TableUtils;
 public class AmazonDynamoDBSample {
 
     // TODO - fill fields with correct values.
-    private static String AWS_REGION = "us-east-2";
+    private static final String AWS_REGION = "us-east-2";
 
     private static AmazonDynamoDB dynamoDB;
 

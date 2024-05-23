@@ -13,7 +13,7 @@ public class ClassAnalyser extends AbstractJavassistTool {
     }
 
     private void log(String msg) {
-        System.out.println(String.format("[%s] %s", this.getClass().getSimpleName(), msg));
+        System.out.printf("[%s] %s%n", this.getClass().getSimpleName(), msg);
     }
 
     @Override

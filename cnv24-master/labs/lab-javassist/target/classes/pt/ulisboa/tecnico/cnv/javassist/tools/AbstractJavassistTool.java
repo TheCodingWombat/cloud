@@ -71,9 +71,9 @@ public abstract class AbstractJavassistTool implements ClassFileTransformer {
         }
     }
 
-    private List<String> packageNameList;
+    private final List<String> packageNameList;
 
-    private String writeDestination;
+    private final String writeDestination;
 
     public AbstractJavassistTool(List<String> packageNameList, String writeDestination) {
         this.packageNameList = packageNameList;

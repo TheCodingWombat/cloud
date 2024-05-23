@@ -6,5 +6,5 @@ import java.awt.Color;
 
 
 public interface Pigment {
-    public Color getColor(Point p);
+    Color getColor(Point p);
 }

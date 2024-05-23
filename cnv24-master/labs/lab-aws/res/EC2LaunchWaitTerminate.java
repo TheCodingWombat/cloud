@@ -11,13 +11,13 @@ import com.amazonaws.services.ec2.model.DescribeAvailabilityZonesResult;
 public class EC2LaunchWaitTerminate {
 
     // TODO - fill fields with correct values.
-    private static String AWS_REGION = "us-east-2";
-    private static String AMI_ID = "ami-045df467fe4d245ab";
-    private static String KEY_NAME = "ec2-ssh-keypar";
-    private static String SEC_GROUP_ID = "sg-bacf59c2";
+    private static final String AWS_REGION = "us-east-2";
+    private static final String AMI_ID = "ami-045df467fe4d245ab";
+    private static final String KEY_NAME = "ec2-ssh-keypar";
+    private static final String SEC_GROUP_ID = "sg-bacf59c2";
 
     // Time to wait until the instance is terminated (in milliseconds).
-    private static long WAIT_TIME = 1000 * 60 * 10;
+    private static final long WAIT_TIME = 1000 * 60 * 10;
 
     public static void main(String[] args) throws Exception {
 
