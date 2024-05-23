@@ -6,9 +6,11 @@ package metric_storage_system;
 public class RequestMetrics {
 
     long cpuTime;
+    long memory;
 
-    public RequestMetrics(long cpuTime) {
+    public RequestMetrics(long cpuTime, long memory) {
         this.cpuTime = cpuTime;
+        this.memory = memory;
     }
 
 }

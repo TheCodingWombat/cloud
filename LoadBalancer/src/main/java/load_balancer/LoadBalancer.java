@@ -50,28 +50,40 @@ public class LoadBalancer implements HttpHandler {
 
 		System.out.println("Forwarding request to instance: " + instanceIP);
 
-		HttpURLConnection connection = forwardRequest(exchange, requestBody, estimation, requestType, instanceIP);
-		RequestMetrics metrics = extractMetrics(connection);
-		MetricStorageSystem.storeMetric(requestType, metrics);
+		forwardRequest(exchange, requestBody, estimation, requestType, instanceIP);
+
 
 	}
 
-	private static HttpURLConnection forwardRequest(HttpExchange exchange, String requestBody, RequestEstimation estimation, AbstractRequestType requestType, String instanceIP) throws IOException {
+	private void forwardRequest(HttpExchange exchange, String requestBody, RequestEstimation estimation, AbstractRequestType requestType, String instanceIP) throws IOException {
 		// Use estimation later to do forward logic
 		// URL of local workerWebServer
+        String uri = exchange.getRequestURI().getPath();
+		String query = exchange.getRequestURI().getQuery();
+		if (query != null) {
+			uri += "?" + query;
+		}
+		// print first 50 characters of query string
 
-		URL url = new URL("http", instanceIP, 8000, exchange.getRequestURI().getPath());
-		System.out.println("Handling request: " + exchange.getRequestURI().getPath());
+
+		URL url = new URL("http", instanceIP, 8000, uri);
+		System.out.println("Handling request: " + uri);
 		HttpURLConnection connection = HttpRequestUtils.forwardRequest(url, exchange, requestBody);
 		int statusCode = HttpRequestUtils.sendResponseToClient(exchange, connection);
 
-		return connection;
+		RequestMetrics metrics = extractMetrics(connection);
+		MetricStorageSystem.storeMetric(requestType, metrics);
 	}
 
 	private RequestMetrics extractMetrics(HttpURLConnection connection) {
 		Map<String, List<String>> headers = connection.getHeaderFields();
+
+		long memory = Long.parseLong(headers.get("Methodmemoryallocatedbytes").get(0));
+		System.out.println("Request memory: " + memory);
+
 		long cpuTime = Long.parseLong(headers.get("Methodcpuexecutiontimens").get(0));
-		System.out.println("Request cpuTime: " + cpuTime);
-		return new RequestMetrics(cpuTime);
+		System.out.println("Requestt cpuTime: " + cpuTime);
+
+		return new RequestMetrics(cpuTime, memory);
 	}
 }

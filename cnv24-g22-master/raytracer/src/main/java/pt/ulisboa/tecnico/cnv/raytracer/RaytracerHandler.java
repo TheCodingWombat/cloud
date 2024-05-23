@@ -22,9 +22,13 @@ import java.util.Map;
 public class RaytracerHandler implements HttpHandler, RequestHandler<Map<String, String>, String> {
 
     private final static ObjectMapper mapper = new ObjectMapper();
+    
+    public static int test = 1;
 
     @Override
     public void handle(HttpExchange he) throws IOException {
+        System.out.println("Handling requestt: " + he.getRequestURI().toString());
+
         // Handling CORS
         he.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
 
@@ -40,6 +44,12 @@ public class RaytracerHandler implements HttpHandler, RequestHandler<Map<String,
         String query = requestedUri.getRawQuery();
         Map<String, String> parameters = queryToMap(query);
 
+        if (parameters == null) {
+            System.out.println("Parameter problem");
+            he.sendResponseHeaders(400, 0);
+            return;
+        }
+
         int scols = Integer.parseInt(parameters.get("scols"));
         int srows = Integer.parseInt(parameters.get("srows"));
         int wcols = Integer.parseInt(parameters.get("wcols"));
@@ -47,9 +57,11 @@ public class RaytracerHandler implements HttpHandler, RequestHandler<Map<String,
         int coff = Integer.parseInt(parameters.get("coff"));
         int roff = Integer.parseInt(parameters.get("roff"));
         Main.ANTI_ALIAS = Boolean.parseBoolean(parameters.getOrDefault("aa", "false"));
-        Main.MULTI_THREAD = Boolean.parseBoolean(parameters.getOrDefault("multi", "false"));
+        // Main.MULTI_THREAD = Boolean.parseBoolean(parameters.getOrDefault("multi", "false"));
+        Main.MULTI_THREAD = true; 
 
         InputStream stream = he.getRequestBody();
+
         Map<String, Object> body = mapper.readValue(stream, new TypeReference<>() {});
 
         byte[] input = ((String) body.get("scene")).getBytes();
