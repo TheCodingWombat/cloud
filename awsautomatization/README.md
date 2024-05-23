@@ -1,4 +1,5 @@
-### Using the AWS Command Line Interface
+# Setting up AWS Infrastructure
+## Set up the enviroment - USE LINUX VM
 
 While the AWS Web Console is intuitive and gives instant visual feedback upon interaction, it is not the best for repetitive interactions. E.g., imagine that you need to re-execute the previous walkthrough everytime you need to work on your course project! To automate the deployment process, we can use [AWS CLI](https://aws.amazon.com/cli/). 
 
@@ -28,7 +29,7 @@ In addition, we will also need an additional tool, [jq](https://stedolan.github.
  
 After installing the `aws` and `jq` tools, the next step is to insert your AWS details into the [config.sh](scripts/config.sh) file:
 
-- add the `aws` installation path (`~/aws-cli-bin` if you used the default path) to the `PATH` environment variable;
+In the `/home/user` there should be .aws folder, in not create one. Inside create `config.sh` file with the following variables:
 
 - `AWS_ACCOUNT_ID` is available on your **AWS Web Console > IAM Dashboard**
 
@@ -44,12 +45,6 @@ After installing the `aws` and `jq` tools, the next step is to insert your AWS d
 
 After setting up the configuration, there are two main scripts that will help you (automatically) reproduce the previous walkthough:
 
-- [create-image.sh](scripts/create-image.sh), launches a VM, installs the WebServer, and creates an AMI;
+- [initializeServerLB.sh](reate-image.sh), launches 2 VMs, one with the Webserver and another with the LoadBalancer running on ports 8000 and 8001 respectivly;
 
-- [launch-deployment.sh](scripts/launch-deployment.sh), prepares the entire environment: setting up the load balancer, launch configuration, and auto-scaling group;
-
-- [terminate-deployment.sh](scripts/terminate-deployment.sh), terminates all resources by deleting everything that was created in the previous script.
-
-You should read these scripts and try to understand them before running them. The goal is for you to adapt them later in your project to make your development easier. There is also an extensive [online manual](https://docs.aws.amazon.com/cli/latest/reference/ec2/).
-
-**Challenge (do it at home):** These scripts do not create auto scaling policies nor CloudWatch alarms. Extend them to automate such logic. Tip: look at the [AWS CLI documentation](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html#policy-creating-aws-cli).
+- [terminateVM.sh](terminateVM.sh), terminates all deployed EC2 machines;
