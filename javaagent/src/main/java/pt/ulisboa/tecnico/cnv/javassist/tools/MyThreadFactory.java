@@ -4,7 +4,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
 import java.lang.Runnable;
 
-class MyThreadFactory implements ThreadFactory {
+public class MyThreadFactory implements ThreadFactory {
     public AtomicLong totalCpuTime;
 
     public MyThreadFactory(AtomicLong totalCpuTime) {

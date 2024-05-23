@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.lang.Runnable;
 import java.lang.Thread;
 
-class MyThread extends Thread {
+public class MyThread extends Thread {
     public AtomicLong totalCpuTime;
 
     public MyThread(Runnable r, AtomicLong totalCpuTime) {

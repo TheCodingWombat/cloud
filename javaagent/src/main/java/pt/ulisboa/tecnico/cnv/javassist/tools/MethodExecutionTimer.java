@@ -14,8 +14,12 @@ import javassist.CtField;
 import javassist.Modifier;
 import javassist.NotFoundException;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 
 public class MethodExecutionTimer extends CodeDumper {
+
+    public static AtomicLong totalCpuTime = new AtomicLong(0L);
 
     public MethodExecutionTimer(List<String> packageNameList, String writeDestination) {
         super(packageNameList, writeDestination);
@@ -38,19 +42,6 @@ public class MethodExecutionTimer extends CodeDumper {
 
 
             CtClass declaringClass = behavior.getDeclaringClass(); // TODO: probably need to remove this as field, only local variable in the future
-
-            
-            try {
-                declaringClass.getField("totalCpuTime");
-            } catch (NotFoundException e) {
-                CtClass atomicLongClass = ClassPool.getDefault().get("java.util.concurrent.atomic.AtomicLong");
-                CtField totalCpuTimeField = new CtField(atomicLongClass, "totalCpuTime", declaringClass);
-                totalCpuTimeField.setModifiers(Modifier.PUBLIC | Modifier.STATIC);
-                declaringClass.addField(totalCpuTimeField, CtField.Initializer.byNew(atomicLongClass));
-            }
-
-            // start atomic cpu timer
-            behavior.insertBefore("totalCpuTime = new java.util.concurrent.atomic.AtomicLong(0L);");
 
             behavior.addLocalVariable("startCpuTime", CtClass.longType);
 
@@ -75,11 +66,11 @@ public class MethodExecutionTimer extends CodeDumper {
                             //cpu
                             + " endCpuTime = java.lang.management.ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();\n"
                             + " cpuTime = endCpuTime - startCpuTime;\n"
-                            + " totalCpuTime.addAndGet(cpuTime);\n"
-                            + " System.out.println(\"Total time all threads : \" + totalCpuTime);\n"
+                            + MethodExecutionTimer.class.getName() + ".totalCpuTime.addAndGet(cpuTime);\n"
+                            + " System.out.println(\"Total time all threads : \" + " + MethodExecutionTimer.class.getName() + ".totalCpuTime);\n"
                             + " System.out.println(\"Total time main thread : \" + cpuTime);\n"
 
-                            + "    $0.getResponseHeaders().add(\"methodCpuExecutionTimeNs\", \"\" + totalCpuTime);\n"
+                            // + "    $0.getResponseHeaders().add(\"methodCpuExecutionTimeNs\", \"\" + totalCpuTime);\n"
                             + "    $0.getResponseHeaders().add(\"methodMemoryAllocatedBytes\", \"\" + allocatedMemory);\n"
                             + "    $proceed($$);"
                             + "}");
@@ -100,14 +91,12 @@ public class MethodExecutionTimer extends CodeDumper {
                         
                         ex.printStackTrace();
                     }
-                    // behavior.insertBefore("System.out.println(\"hoooi\");");
+                    
+
                     e.replace("{"
                     + "$_ = $proceed($$);\n"
-                    + "System.out.println(\"Adding stuff to threadpoolexecutor\");\n"
-                    // + "System.out.println(pt.ulisboa.tecnico.cnv.raytracer.RaytracerHandler.test);\n"
-                    // // + "System.out.println(pt.ulisboa.tecnico.cnv.raytracer.RaytracerHandler.totalCpuTime);\n"
-                    // // + "pt.ulisboa.tecnico.cnv.javassist.tools.MyThreadFactory myThreadFactory = new pt.ulisboa.tecnico.cnv.javassist.tools.MyThreadFactory(" + declaringClass.getName() + ".totalCpuTime);\n" // TODO REMOVE HARDCODED RAYTRACERHANDLER AND executor
-                    // // + "executor.setThreadFactory(myThreadFactory);\n"
+                    + MyThreadFactory.class.getName() + " myThreadFactory = new " + MyThreadFactory.class.getName() + "(" + MethodExecutionTimer.class.getName() + ".totalCpuTime);\n" // TODO REMOVE HARDCODED RAYTRACERHANDLER AND executor
+                    + "$_.setThreadFactory(myThreadFactory);\n"
                     + "}");
                     
                 }
