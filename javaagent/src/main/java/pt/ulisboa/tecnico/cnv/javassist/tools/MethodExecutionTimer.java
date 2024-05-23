@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class MethodExecutionTimer extends CodeDumper {
 
-    public static AtomicLong totalCpuTime = new AtomicLong(0L);
+    public static final AtomicMetrics metrics = new AtomicMetrics();
 
     public MethodExecutionTimer(List<String> packageNameList, String writeDestination) {
         super(packageNameList, writeDestination);
@@ -29,10 +29,10 @@ public class MethodExecutionTimer extends CodeDumper {
     protected void transform(CtBehavior behavior) throws Exception {
         super.transform(behavior);
 
+        
+
         // Return metrics through http:
         if (behavior instanceof CtMethod && behavior.getName().equals("handle")) {
-            //TODO: Do this only for raytracer, which we can check through http exchange object, which contains the handle used, in our case /raytracer
-
 
             //startAllocatedMemory
             behavior.addLocalVariable("startAllocatedMemory", CtClass.longType);
@@ -40,8 +40,6 @@ public class MethodExecutionTimer extends CodeDumper {
             behavior.addLocalVariable("endAllocatedMemory", CtClass.longType);
             behavior.addLocalVariable("allocatedMemory", CtClass.longType);
 
-
-            CtClass declaringClass = behavior.getDeclaringClass(); // TODO: probably need to remove this as field, only local variable in the future
 
             behavior.addLocalVariable("startCpuTime", CtClass.longType);
 
@@ -58,20 +56,23 @@ public class MethodExecutionTimer extends CodeDumper {
                         m.replace("{"
                             // allocated memory
                             // TODO: think about: If we keep the service on, the second time we run the raytracer for example, it allocates a lot less memory, since it was still allocated, what do we think of this?
-                            // TODO: multithreaded
                             + " endAllocatedMemory = ((com.sun.management.ThreadMXBean) java.lang.management.ManagementFactory.getThreadMXBean()).getCurrentThreadAllocatedBytes();\n"
                             + " allocatedMemory = endAllocatedMemory - startAllocatedMemory;\n"
-                            + " System.out.println(\"Allocated memory: \" + allocatedMemory);\n"
 
                             //cpu
                             + " endCpuTime = java.lang.management.ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();\n"
                             + " cpuTime = endCpuTime - startCpuTime;\n"
-                            + MethodExecutionTimer.class.getName() + ".totalCpuTime.addAndGet(cpuTime);\n"
-                            + " System.out.println(\"Total time all threads : \" + " + MethodExecutionTimer.class.getName() + ".totalCpuTime);\n"
+
+                            + MethodExecutionTimer.class.getName() + ".metrics.allocatedMemory.addAndGet(allocatedMemory);\n"
+                            + " System.out.println(\"Allocated memory all threads: \" + " + MethodExecutionTimer.class.getName() + ".metrics.allocatedMemory);\n"
+                            + " System.out.println(\"Allocated memory main thread: \" + allocatedMemory);\n"
+
+                            + MethodExecutionTimer.class.getName() + ".metrics.totalCpuTime.addAndGet(cpuTime);\n"
+                            + " System.out.println(\"Total time all threads : \" + " + MethodExecutionTimer.class.getName() + ".metrics.totalCpuTime);\n"
                             + " System.out.println(\"Total time main thread : \" + cpuTime);\n"
 
-                            // + "    $0.getResponseHeaders().add(\"methodCpuExecutionTimeNs\", \"\" + totalCpuTime);\n"
-                            + "    $0.getResponseHeaders().add(\"methodMemoryAllocatedBytes\", \"\" + allocatedMemory);\n"
+                            + "    $0.getResponseHeaders().add(\"methodCpuExecutionTimeNs\", \"\" + " + MethodExecutionTimer.class.getName() + ".metrics.totalCpuTime);\n"
+                            + "    $0.getResponseHeaders().add(\"methodMemoryAllocatedBytes\", \"\" + " + MethodExecutionTimer.class.getName() + ".metrics.allocatedMemory);\n"
                             + "    $proceed($$);"
                             + "}");
                     }
@@ -80,22 +81,21 @@ public class MethodExecutionTimer extends CodeDumper {
         }
 
         // Assumes that totalCpuTime is a static field in the class, and that the class has a handle method
-        // Supply custom thread factory to threadpoolexecutor
+        // Supply custom thread factory to threadpoolexecutor, no need to check if we are in raytracer, since others dont have this threadpoolexecutor thing
         behavior.instrument(new ExprEditor() {
             public void edit(NewExpr e) throws CannotCompileException {
                 if (e.getClassName().equals("java.util.concurrent.ThreadPoolExecutor")) {
 
                     try {
-                    behavior.addLocalVariable("myThreadFactory", ClassPool.getDefault().get("pt.ulisboa.tecnico.cnv.javassist.tools.MyThreadFactory"));
+                        behavior.addLocalVariable("myThreadFactory", ClassPool.getDefault().get("pt.ulisboa.tecnico.cnv.javassist.tools.MyThreadFactory"));
                     } catch (NotFoundException ex) {
                         
                         ex.printStackTrace();
                     }
-                    
 
                     e.replace("{"
                     + "$_ = $proceed($$);\n"
-                    + MyThreadFactory.class.getName() + " myThreadFactory = new " + MyThreadFactory.class.getName() + "(" + MethodExecutionTimer.class.getName() + ".totalCpuTime);\n" // TODO REMOVE HARDCODED RAYTRACERHANDLER AND executor
+                    + MyThreadFactory.class.getName() + " myThreadFactory = new " + MyThreadFactory.class.getName() + "(" + MethodExecutionTimer.class.getName() + ".metrics);\n"
                     + "$_.setThreadFactory(myThreadFactory);\n"
                     + "}");
                     

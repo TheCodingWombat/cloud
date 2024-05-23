@@ -5,18 +5,18 @@ import java.lang.Runnable;
 import java.lang.Thread;
 
 public class MyThread extends Thread {
-    public AtomicLong totalCpuTime;
+    public AtomicMetrics metrics;
 
-    public MyThread(Runnable r, AtomicLong totalCpuTime) {
+    public MyThread(Runnable r, AtomicMetrics metrics) {
         super(r);
-        this.totalCpuTime = totalCpuTime;
+        this.metrics = metrics;
     }
 
     @Override
     public void run() {
-
         super.run();
         
-        totalCpuTime.addAndGet(java.lang.management.ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime());
+        metrics.totalCpuTime.addAndGet(java.lang.management.ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime());
+        metrics.allocatedMemory.addAndGet(((com.sun.management.ThreadMXBean) java.lang.management.ManagementFactory.getThreadMXBean()).getCurrentThreadAllocatedBytes());
     }
 }

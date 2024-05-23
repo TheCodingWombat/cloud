@@ -10,7 +10,6 @@ public class RootHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange he) throws IOException {
-        System.out.println("UHMMM");
         // Handling CORS
         he.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
         if (he.getRequestMethod().equalsIgnoreCase("OPTIONS")) {

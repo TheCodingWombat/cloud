@@ -5,15 +5,14 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.lang.Runnable;
 
 public class MyThreadFactory implements ThreadFactory {
-    public AtomicLong totalCpuTime;
+    public AtomicMetrics metrics;
 
-    public MyThreadFactory(AtomicLong totalCpuTime) {
-        this.totalCpuTime = totalCpuTime;
+    public MyThreadFactory(AtomicMetrics metrics) {
+        this.metrics = metrics;
     }
 
     @Override
     public Thread newThread(Runnable r) {
-        System.out.println("Creating a raytracer thread yaay");
-        return new MyThread(r, totalCpuTime);
+        return new MyThread(r, metrics);
     }
 }
