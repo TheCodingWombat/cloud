@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class RayTracer {
     public static final int MAX_RECURSION_LEVEL = 5;
@@ -129,12 +130,14 @@ public class RayTracer {
 
 
     public BufferedImage draw() {
+
         final BufferedImage image = new BufferedImage(wcols, wrows, BufferedImage.TYPE_INT_RGB);
 
         long start = System.currentTimeMillis();
 
         if(Main.MULTI_THREAD) {
-            final ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+            final ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 100, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+            
             final AtomicInteger remaining = new AtomicInteger(wrows * wcols);
             for(int r = 0;r < wrows; r++) {
                 for(int c = 0;c < wcols; c++) {

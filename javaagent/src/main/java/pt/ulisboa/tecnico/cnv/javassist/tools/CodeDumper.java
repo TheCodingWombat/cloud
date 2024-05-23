@@ -14,20 +14,20 @@ public class CodeDumper extends AbstractJavassistTool {
 
     @Override
     protected void transform(CtClass clazz) throws Exception {
-        System.out.println(String.format("[%s] Intercepting class %s", CodeDumper.class.getSimpleName(), clazz.getName()));
+        // System.out.println(String.format("[%s] Intercepting class %s", CodeDumper.class.getSimpleName(), clazz.getName()));
         super.transform(clazz);
     }
 
     @Override
     protected void transform(CtBehavior behavior) throws Exception {
-        System.out.println(String.format("[%s] Intercepting method %s", CodeDumper.class.getSimpleName(), behavior.getName()));
+        // System.out.println(String.format("[%s] Intercepting method %s", CodeDumper.class.getSimpleName(), behavior.getName()));
         super.transform(behavior);
     }
 
     @Override
     protected void transform(BasicBlock block) throws CannotCompileException {
-        System.out.println(String.format("[%s] Intercepting basicblock position=%s, length=%s, line=%s",
-                CodeDumper.class.getSimpleName(), block.getPosition(), block.getLength(), block.getLine()));
+        // System.out.println(String.format("[%s] Intercepting basicblock position=%s, length=%s, line=%s",
+        //         CodeDumper.class.getSimpleName(), block.getPosition(), block.getLength(), block.getLine()));
         super.transform(block);
     }
 }
