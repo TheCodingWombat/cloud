@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -19,27 +20,57 @@ import metric_storage_system.RequestEstimation;
 import metric_storage_system.RequestMetrics;
 import request_types.AbstractRequestType;
 import utils.HttpRequestUtils;
+import deployment_manager.AwsEc2Manager;
+import software.amazon.awssdk.services.ec2.model.Instance;
 
 public class LoadBalancer implements HttpHandler {
 
+	private static final double CPU_THRESHOLD = 75.0; // CPU usage threshold in percentage
+	private static final int MAX_INSTANCES = 5; // Maximum number of instances to deploy
+	private static final int MIN_INSTANCES = 1; // Minimum number of instances to keep running
+	private static final List<Instance> instances = new ArrayList<>(); // Array with instances
+
 	@Override
-	public void handle(HttpExchange exchange) throws IOException {	
+	public void handle(HttpExchange exchange) throws IOException {
 		String requestBody = HttpRequestUtils.getRequestBodyString(exchange);
 		AbstractRequestType requestType = AbstractRequestType.ofRequest(exchange, requestBody);
 		RequestEstimation estimation = MetricStorageSystem.calculateEstimation(requestType);
-		forwardRequest(exchange, requestBody, estimation, requestType);
+		String instanceIP = "";
+		boolean instanceAvailable = AwsEc2Manager.checkAvailableInstances();
+
+		if (instances.isEmpty() && !instanceAvailable) {
+			Instance newInst = AwsEc2Manager.deployNewInstance();
+			instances.add(newInst);
+			instanceIP = newInst.publicIpAddress();
+		} else if (instanceAvailable && instances.isEmpty()) {
+			instances.addAll(AwsEc2Manager.getAllRunningInstances());
+			System.out.println("Instances: " + instances);
+			System.out.println("Instances: " + instances.get(0).instanceId());
+		} 
+		else if (!instances.isEmpty()) {
+			instanceIP = instances.get(0).publicIpAddress();
+		}
+
+		System.out.println("Forwarding request to instance: " + instanceIP);
+
+		HttpURLConnection connection = forwardRequest(exchange, requestBody, estimation, requestType, instanceIP);
+		RequestMetrics metrics = extractMetrics(connection);
+		MetricStorageSystem.storeMetric(requestType, metrics);
+
+		checkAndDeployNewInstance();
+
 	}
 
-	private void forwardRequest(HttpExchange exchange, String requestBody, RequestEstimation estimation, AbstractRequestType requestType) throws IOException {
-		//use estimation later to do forward logic
-		//Url of local workerWebServer
-		URL url = new URL("http", "localhost", 8000, exchange.getRequestURI().getPath());	
+	private static HttpURLConnection forwardRequest(HttpExchange exchange, String requestBody, RequestEstimation estimation, AbstractRequestType requestType, String instanceIP) throws IOException {
+		// Use estimation later to do forward logic
+		// URL of local workerWebServer
+
+		URL url = new URL("http", instanceIP, 8000, exchange.getRequestURI().getPath());
 		System.out.println("Handling request: " + exchange.getRequestURI().getPath());
 		HttpURLConnection connection = HttpRequestUtils.forwardRequest(url, exchange, requestBody);
 		int statusCode = HttpRequestUtils.sendResponseToClient(exchange, connection);
 
-		RequestMetrics metrics = extractMetrics(connection);
-		MetricStorageSystem.storeMetric(requestType, metrics);
+		return connection;
 	}
 
 	private RequestMetrics extractMetrics(HttpURLConnection connection) {
@@ -47,5 +78,13 @@ public class LoadBalancer implements HttpHandler {
 		long cpuTime = Long.parseLong(headers.get("Methodcpuexecutiontimens").get(0));
 		System.out.println("Request cpuTime: " + cpuTime);
 		return new RequestMetrics(cpuTime);
+	}
+
+	private void checkAndDeployNewInstance() {
+		//double cpuUsage = getCpuUsage();
+
+		//if (cpuUsage > CPU_THRESHOLD) {
+		//	deployNewEC2Instance();
+		//}
 	}
 }
