@@ -43,11 +43,8 @@ public class LoadBalancer implements HttpHandler {
 			instances.add(newInst);
 			instanceIP = newInst.publicIpAddress();
 		} else if (instanceAvailable && instances.isEmpty()) {
+			System.out.println("Instance already available and we are going to distribute the call");
 			instances.addAll(AwsEc2Manager.getAllRunningInstances());
-			System.out.println("Instances: " + instances);
-			System.out.println("Instances: " + instances.get(0).instanceId());
-		} 
-		else if (!instances.isEmpty()) {
 			instanceIP = instances.get(0).publicIpAddress();
 		}
 
@@ -56,8 +53,6 @@ public class LoadBalancer implements HttpHandler {
 		HttpURLConnection connection = forwardRequest(exchange, requestBody, estimation, requestType, instanceIP);
 		RequestMetrics metrics = extractMetrics(connection);
 		MetricStorageSystem.storeMetric(requestType, metrics);
-
-		checkAndDeployNewInstance();
 
 	}
 
@@ -78,13 +73,5 @@ public class LoadBalancer implements HttpHandler {
 		long cpuTime = Long.parseLong(headers.get("Methodcpuexecutiontimens").get(0));
 		System.out.println("Request cpuTime: " + cpuTime);
 		return new RequestMetrics(cpuTime);
-	}
-
-	private void checkAndDeployNewInstance() {
-		//double cpuUsage = getCpuUsage();
-
-		//if (cpuUsage > CPU_THRESHOLD) {
-		//	deployNewEC2Instance();
-		//}
 	}
 }

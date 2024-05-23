@@ -150,5 +150,4 @@ public class AwsEc2Manager {
 
         return runningInstances;
     }
-
 }
