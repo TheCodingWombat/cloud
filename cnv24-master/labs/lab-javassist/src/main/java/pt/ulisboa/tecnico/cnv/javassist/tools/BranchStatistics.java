@@ -12,7 +12,7 @@ public class BranchStatistics extends AbstractJavassistTool {
     /**
      * Maps method long names to a map of basic block positions to the number of executions.
      */
-    private static Map<String, Map<Integer, Integer>> counters = new HashMap<>();
+    private static final Map<String, Map<Integer, Integer>> counters = new HashMap<>();
 
     public BranchStatistics(List<String> packageNameList, String writeDestination) {
         super(packageNameList,writeDestination);
@@ -34,7 +34,7 @@ public class BranchStatistics extends AbstractJavassistTool {
     public static void printStatistics() {
         for (Map.Entry<String, Map<Integer, Integer>> method : counters.entrySet()) {
             for (Map.Entry<Integer, Integer> basicblock : method.getValue().entrySet()) {
-                System.out.println(String.format("[%s] %s basic block %s was called %s times", BranchStatistics.class.getSimpleName(), method.getKey(), basicblock.getKey(), basicblock.getValue()));
+                System.out.printf("[%s] %s basic block %s was called %s times%n", BranchStatistics.class.getSimpleName(), method.getKey(), basicblock.getKey(), basicblock.getValue());
             }
         }
     }
@@ -52,8 +52,8 @@ public class BranchStatistics extends AbstractJavassistTool {
     protected void transform(BasicBlock block) throws CannotCompileException {
         super.transform(block);
         for (int incoming : block.entrances) {
-            System.out.println(String.format("[%s] Basic block %s has an outgoing edge to basic block %s",
-                    BranchStatistics.class.getSimpleName(), incoming, block.getPosition()));
+            System.out.printf("[%s] Basic block %s has an outgoing edge to basic block %s%n",
+                    BranchStatistics.class.getSimpleName(), incoming, block.getPosition());
         }
 
 

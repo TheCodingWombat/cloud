@@ -19,10 +19,10 @@ import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsResult;
 public class EC2MeasureCPU {
 
     // TODO - fill fields with correct values.
-    private static String AWS_REGION = "us-east-2";
+    private static final String AWS_REGION = "us-east-2";
 
     // Total observation time in milliseconds.
-    private static long OBS_TIME = 1000 * 60 * 20;
+    private static final long OBS_TIME = 1000 * 60 * 20;
 
     private static Set<Instance> getInstances(AmazonEC2 ec2) throws Exception {
         Set<Instance> instances = new HashSet<Instance>();

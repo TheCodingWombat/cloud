@@ -14,9 +14,14 @@ sleep 10;
 sudo sed -i 's/\$releasever/6/g' /etc/yum.repos.d/epel-apache-maven.repo;
 sleep 10;
 sudo yum install -y apache-maven;
+cd cloud;
+mvn -f javaagent/pom.xml clean package;
+mvn -f cnv24-g22-master/pom.xml clean package;
+nohup java -cp cnv24-g22-master/webserver/target/webserver-1.0.0-SNAPSHOT-jar-with-dependencies.jar -javaagent:javaagent/target/JavassistWrapper-1.0-jar-with-dependencies.jar=MethodExecutionTimer:pt.ulisboa.tecnico.cnv:output pt.ulisboa.tecnico.cnv.webserver.WebServer > /tmp/webserver.log 2>&1 &
+
 #cd /home/ec2-user/cloud/cnv24-g22-master;
-cd /home/ec2-user/cloud/LoadBalancer;
-mvn clean package;
+#cd /home/ec2-user/cloud/LoadBalancer;
+#mvn clean package;
 #nohup java -cp webserver/target/webserver-1.0.0-SNAPSHOT-jar-with-dependencies.jar pt.ulisboa.tecnico.cnv.webserver.WebServer > webserver.log 2>&1;
 #nohup java -jar target/LoadBalancer-1.0-SNAPSHOT.jar > loadbalancer.log 2>&1;
 EOF

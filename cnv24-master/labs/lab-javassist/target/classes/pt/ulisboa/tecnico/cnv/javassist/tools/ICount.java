@@ -36,9 +36,9 @@ public class ICount extends CodeDumper {
     }
 
     public static void printStatistics() {
-        System.out.println(String.format("[%s] Number of executed methods: %s", ICount.class.getSimpleName(), nmethods));
-        System.out.println(String.format("[%s] Number of executed basic blocks: %s", ICount.class.getSimpleName(), nblocks));
-        System.out.println(String.format("[%s] Number of executed instructions: %s", ICount.class.getSimpleName(), ninsts));
+        System.out.printf("[%s] Number of executed methods: %s%n", ICount.class.getSimpleName(), nmethods);
+        System.out.printf("[%s] Number of executed basic blocks: %s%n", ICount.class.getSimpleName(), nblocks);
+        System.out.printf("[%s] Number of executed instructions: %s%n", ICount.class.getSimpleName(), ninsts);
     }
 
     @Override

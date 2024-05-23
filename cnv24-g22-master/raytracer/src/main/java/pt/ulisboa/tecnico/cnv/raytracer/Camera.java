@@ -1,16 +1,17 @@
 package pt.ulisboa.tecnico.cnv.raytracer;
 
 public class Camera {
-    private Point eye;
-    private Vector vx;
-    private Vector vy;
-    private Vector vz;
+    private final Point eye;
+    private final Vector vx;
+    private final Vector vy;
+    private final Vector vz;
 
-    private double windowDistance;
-    private double windowWidth;
-    private double windowHeight;
+    private final double windowDistance;
+    private final double windowWidth;
+    private final double windowHeight;
 
-    private double rows, cols;
+    private final double rows;
+    private final double cols;
 //    private double fovy, fovx;
 
     public Camera(Point eye, Point center, Vector up, double fovy, int cols, int rows) {
@@ -33,7 +34,7 @@ public class Camera {
         windowWidth = Math.sin(fovx / 2.0) * windowDistance * 2.0;
 
         Log.debug("  Viewframe:");
-        Log.debug("    Org: " + eye.toString());
+        Log.debug("    Org: " + eye);
         Log.debug("    X:   " + vx.toString());
         Log.debug("    Y:   " + vy.toString());
         Log.debug("    Z:   " + vz.toString());

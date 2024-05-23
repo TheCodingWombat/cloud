@@ -5,7 +5,7 @@ import pt.ulisboa.tecnico.cnv.raytracer.*;
 import java.util.List;
 
 public class Polyhedron extends Shape {
-    private List<Polygon> faces;
+    private final List<Polygon> faces;
 
     public Polyhedron(List<Polygon> faces) {
         this.faces = faces;

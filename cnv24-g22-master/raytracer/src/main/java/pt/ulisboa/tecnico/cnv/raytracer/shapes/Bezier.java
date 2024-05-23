@@ -5,7 +5,7 @@ import pt.ulisboa.tecnico.cnv.raytracer.*;
 import java.util.List;
 
 public class Bezier extends Shape {
-    private List<Point> points;
+    private final List<Point> points;
 
     public Bezier(List<Point> points) {
         this.points = points;

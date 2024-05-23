@@ -6,9 +6,9 @@ import java.awt.Color;
 
 
 public class CheckerPigment implements Pigment {
-    private Color color1;
-    private Color color2;
-    private double scale;
+    private final Color color1;
+    private final Color color2;
+    private final double scale;
 
     public CheckerPigment(Color color1, Color color2, double scale) {
         this.color1 = color1;

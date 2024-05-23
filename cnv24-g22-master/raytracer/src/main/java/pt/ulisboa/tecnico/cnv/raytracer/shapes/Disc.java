@@ -3,9 +3,9 @@ package pt.ulisboa.tecnico.cnv.raytracer.shapes;
 import pt.ulisboa.tecnico.cnv.raytracer.*;
 
 public class Disc extends Shape {
-    private Point center;
-    private Vector normal;
-    private double radius;
+    private final Point center;
+    private final Vector normal;
+    private final double radius;
 
     public Disc(Point center, Vector normal, double radius) {
         this.center = center;
