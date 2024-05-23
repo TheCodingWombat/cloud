@@ -131,43 +131,6 @@ public class RayTracer {
 
     public BufferedImage draw() {
 
-        class MyThread extends Thread {
-
-            public AtomicLong totalCpuTime;
-
-            public MyThread(Runnable r, AtomicLong totalCpuTime) {
-                super(r);
-                this.totalCpuTime = totalCpuTime;
-            }
-
-            @Override
-            public void run() {
-
-                super.run();
-                
-                totalCpuTime.addAndGet(java.lang.management.ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime());
-            }
-        }
-
-        class MyThreadFactory implements ThreadFactory {
-            public AtomicLong totalCpuTime;
-
-            public MyThreadFactory(AtomicLong totalCpuTime) {
-                this.totalCpuTime = totalCpuTime;
-            }
-
-            @Override
-            public Thread newThread(Runnable r) {
-                System.out.println("Creating a raytracer thread yaay");
-                return new MyThread(r, totalCpuTime);
-            }
-        }
-
-        long cpuStartTime = java.lang.management.ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
-        AtomicLong totalCpuTime = new AtomicLong(0);
-        // Code we want to instrument
-        MyThreadFactory myThreadFactory = new MyThreadFactory(totalCpuTime);
-
         final BufferedImage image = new BufferedImage(wcols, wrows, BufferedImage.TYPE_INT_RGB);
 
         long start = System.currentTimeMillis();
@@ -175,8 +138,6 @@ public class RayTracer {
         if(Main.MULTI_THREAD) {
             final ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 2, 100, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
             
-            executor.setThreadFactory(myThreadFactory);
-
             final AtomicInteger remaining = new AtomicInteger(wrows * wcols);
             for(int r = 0;r < wrows; r++) {
                 for(int c = 0;c < wcols; c++) {
@@ -202,14 +163,7 @@ public class RayTracer {
             }
         }
 
-        //TODO: Memory metric  sun ThreadMXBean getAllocatedMemory
-
         Log.info("Finished in: " + (System.currentTimeMillis()-start) + "ms");
-
-        // ALso include main thread time. TODO: This does not need to happen atomically anymore.
-        totalCpuTime.addAndGet(java.lang.management.ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime() - cpuStartTime);
-
-        System.out.println("Total time raytracer : " + totalCpuTime);
 
         return image;
     }

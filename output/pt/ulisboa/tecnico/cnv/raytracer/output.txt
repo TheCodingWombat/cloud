@@ -1,0 +1,2112 @@
+Classfile /home/richard/Documents/Programming/cloud/output/pt/ulisboa/tecnico/cnv/raytracer/RayTracer.class
+  Last modified May 23, 2024; size 13882 bytes
+  SHA-256 checksum 8546252d4716a348b4218b1e1d7977947174979901bce4c9d7940659a7472380
+  Compiled from "RayTracer.java"
+public class pt.ulisboa.tecnico.cnv.raytracer.RayTracer
+  minor version: 0
+  major version: 55
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #11                         // pt/ulisboa/tecnico/cnv/raytracer/RayTracer
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 13, methods: 12, attributes: 3
+Constant pool:
+    #1 = Methodref          #2.#3         // java/lang/Object."<init>":()V
+    #2 = Class              #4            // java/lang/Object
+    #3 = NameAndType        #5:#6         // "<init>":()V
+    #4 = Utf8               java/lang/Object
+    #5 = Utf8               <init>
+    #6 = Utf8               ()V
+    #7 = Class              #8            // java/util/ArrayList
+    #8 = Utf8               java/util/ArrayList
+    #9 = Methodref          #7.#3         // java/util/ArrayList."<init>":()V
+   #10 = Fieldref           #11.#12       // pt/ulisboa/tecnico/cnv/raytracer/RayTracer.lights:Ljava/util/ArrayList;
+   #11 = Class              #13           // pt/ulisboa/tecnico/cnv/raytracer/RayTracer
+   #12 = NameAndType        #14:#15       // lights:Ljava/util/ArrayList;
+   #13 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/RayTracer
+   #14 = Utf8               lights
+   #15 = Utf8               Ljava/util/ArrayList;
+   #16 = Fieldref           #11.#17       // pt/ulisboa/tecnico/cnv/raytracer/RayTracer.pigments:Ljava/util/ArrayList;
+   #17 = NameAndType        #18:#15       // pigments:Ljava/util/ArrayList;
+   #18 = Utf8               pigments
+   #19 = Fieldref           #11.#20       // pt/ulisboa/tecnico/cnv/raytracer/RayTracer.finishes:Ljava/util/ArrayList;
+   #20 = NameAndType        #21:#15       // finishes:Ljava/util/ArrayList;
+   #21 = Utf8               finishes
+   #22 = Fieldref           #11.#23       // pt/ulisboa/tecnico/cnv/raytracer/RayTracer.shapes:Ljava/util/ArrayList;
+   #23 = NameAndType        #24:#15       // shapes:Ljava/util/ArrayList;
+   #24 = Utf8               shapes
+   #25 = Fieldref           #11.#26       // pt/ulisboa/tecnico/cnv/raytracer/RayTracer.scols:I
+   #26 = NameAndType        #27:#28       // scols:I
+   #27 = Utf8               scols
+   #28 = Utf8               I
+   #29 = Fieldref           #11.#30       // pt/ulisboa/tecnico/cnv/raytracer/RayTracer.srows:I
+   #30 = NameAndType        #31:#28       // srows:I
+   #31 = Utf8               srows
+   #32 = Fieldref           #11.#33       // pt/ulisboa/tecnico/cnv/raytracer/RayTracer.wcols:I
+   #33 = NameAndType        #34:#28       // wcols:I
+   #34 = Utf8               wcols
+   #35 = Fieldref           #11.#36       // pt/ulisboa/tecnico/cnv/raytracer/RayTracer.wrows:I
+   #36 = NameAndType        #37:#28       // wrows:I
+   #37 = Utf8               wrows
+   #38 = Fieldref           #11.#39       // pt/ulisboa/tecnico/cnv/raytracer/RayTracer.coff:I
+   #39 = NameAndType        #40:#28       // coff:I
+   #40 = Utf8               coff
+   #41 = Fieldref           #11.#42       // pt/ulisboa/tecnico/cnv/raytracer/RayTracer.roff:I
+   #42 = NameAndType        #43:#28       // roff:I
+   #43 = Utf8               roff
+   #44 = Fieldref           #45.#46       // java/awt/Color.BLACK:Ljava/awt/Color;
+   #45 = Class              #47           // java/awt/Color
+   #46 = NameAndType        #48:#49       // BLACK:Ljava/awt/Color;
+   #47 = Utf8               java/awt/Color
+   #48 = Utf8               BLACK
+   #49 = Utf8               Ljava/awt/Color;
+   #50 = Methodref          #7.#51        // java/util/ArrayList.get:(I)Ljava/lang/Object;
+   #51 = NameAndType        #52:#53       // get:(I)Ljava/lang/Object;
+   #52 = Utf8               get
+   #53 = Utf8               (I)Ljava/lang/Object;
+   #54 = Class              #55           // pt/ulisboa/tecnico/cnv/raytracer/Light
+   #55 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/Light
+   #56 = Fieldref           #57.#58       // pt/ulisboa/tecnico/cnv/raytracer/RayHit.shape:Lpt/ulisboa/tecnico/cnv/raytracer/shapes/Shape;
+   #57 = Class              #59           // pt/ulisboa/tecnico/cnv/raytracer/RayHit
+   #58 = NameAndType        #60:#61       // shape:Lpt/ulisboa/tecnico/cnv/raytracer/shapes/Shape;
+   #59 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/RayHit
+   #60 = Utf8               shape
+   #61 = Utf8               Lpt/ulisboa/tecnico/cnv/raytracer/shapes/Shape;
+   #62 = Fieldref           #63.#64       // pt/ulisboa/tecnico/cnv/raytracer/shapes/Shape.finish:Lpt/ulisboa/tecnico/cnv/raytracer/pigments/Finish;
+   #63 = Class              #65           // pt/ulisboa/tecnico/cnv/raytracer/shapes/Shape
+   #64 = NameAndType        #66:#67       // finish:Lpt/ulisboa/tecnico/cnv/raytracer/pigments/Finish;
+   #65 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/shapes/Shape
+   #66 = Utf8               finish
+   #67 = Utf8               Lpt/ulisboa/tecnico/cnv/raytracer/pigments/Finish;
+   #68 = Fieldref           #69.#70       // pt/ulisboa/tecnico/cnv/raytracer/pigments/Finish.amb:F
+   #69 = Class              #71           // pt/ulisboa/tecnico/cnv/raytracer/pigments/Finish
+   #70 = NameAndType        #72:#73       // amb:F
+   #71 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/pigments/Finish
+   #72 = Utf8               amb
+   #73 = Utf8               F
+   #74 = Fieldref           #57.#75       // pt/ulisboa/tecnico/cnv/raytracer/RayHit.point:Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+   #75 = NameAndType        #76:#77       // point:Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+   #76 = Utf8               point
+   #77 = Utf8               Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+   #78 = Methodref          #63.#79       // pt/ulisboa/tecnico/cnv/raytracer/shapes/Shape.getColor:(Lpt/ulisboa/tecnico/cnv/raytracer/Point;)Ljava/awt/Color;
+   #79 = NameAndType        #80:#81       // getColor:(Lpt/ulisboa/tecnico/cnv/raytracer/Point;)Ljava/awt/Color;
+   #80 = Utf8               getColor
+   #81 = Utf8               (Lpt/ulisboa/tecnico/cnv/raytracer/Point;)Ljava/awt/Color;
+   #82 = Methodref          #54.#83       // pt/ulisboa/tecnico/cnv/raytracer/Light.getColor:(Lpt/ulisboa/tecnico/cnv/raytracer/RayHit;Lpt/ulisboa/tecnico/cnv/raytracer/Ray;)Ljava/awt/Color;
+   #83 = NameAndType        #80:#84       // getColor:(Lpt/ulisboa/tecnico/cnv/raytracer/RayHit;Lpt/ulisboa/tecnico/cnv/raytracer/Ray;)Ljava/awt/Color;
+   #84 = Utf8               (Lpt/ulisboa/tecnico/cnv/raytracer/RayHit;Lpt/ulisboa/tecnico/cnv/raytracer/Ray;)Ljava/awt/Color;
+   #85 = Methodref          #86.#87       // pt/ulisboa/tecnico/cnv/raytracer/ColorUtil.intensify:(Ljava/awt/Color;Ljava/awt/Color;)Ljava/awt/Color;
+   #86 = Class              #88           // pt/ulisboa/tecnico/cnv/raytracer/ColorUtil
+   #87 = NameAndType        #89:#90       // intensify:(Ljava/awt/Color;Ljava/awt/Color;)Ljava/awt/Color;
+   #88 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/ColorUtil
+   #89 = Utf8               intensify
+   #90 = Utf8               (Ljava/awt/Color;Ljava/awt/Color;)Ljava/awt/Color;
+   #91 = Methodref          #86.#92       // pt/ulisboa/tecnico/cnv/raytracer/ColorUtil.blend:(Ljava/awt/Color;Ljava/awt/Color;)Ljava/awt/Color;
+   #92 = NameAndType        #93:#90       // blend:(Ljava/awt/Color;Ljava/awt/Color;)Ljava/awt/Color;
+   #93 = Utf8               blend
+   #94 = Methodref          #7.#95        // java/util/ArrayList.size:()I
+   #95 = NameAndType        #96:#97       // size:()I
+   #96 = Utf8               size
+   #97 = Utf8               ()I
+   #98 = Class              #99           // pt/ulisboa/tecnico/cnv/raytracer/Vector
+   #99 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/Vector
+  #100 = Fieldref           #54.#101      // pt/ulisboa/tecnico/cnv/raytracer/Light.location:Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+  #101 = NameAndType        #102:#77      // location:Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+  #102 = Utf8               location
+  #103 = Methodref          #98.#104      // pt/ulisboa/tecnico/cnv/raytracer/Vector."<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Point;)V
+  #104 = NameAndType        #5:#105       // "<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Point;)V
+  #105 = Utf8               (Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Point;)V
+  #106 = Class              #107          // pt/ulisboa/tecnico/cnv/raytracer/Ray
+  #107 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/Ray
+  #108 = Methodref          #106.#109     // pt/ulisboa/tecnico/cnv/raytracer/Ray."<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Vector;)V
+  #109 = NameAndType        #5:#110       // "<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Vector;)V
+  #110 = Utf8               (Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Vector;)V
+  #111 = Methodref          #98.#112      // pt/ulisboa/tecnico/cnv/raytracer/Vector.magnitude:()D
+  #112 = NameAndType        #113:#114     // magnitude:()D
+  #113 = Utf8               magnitude
+  #114 = Utf8               ()D
+  #115 = Fieldref           #106.#116     // pt/ulisboa/tecnico/cnv/raytracer/Ray.t:D
+  #116 = NameAndType        #117:#118     // t:D
+  #117 = Utf8               t
+  #118 = Utf8               D
+  #119 = Methodref          #11.#120      // pt/ulisboa/tecnico/cnv/raytracer/RayTracer.findHit:(Lpt/ulisboa/tecnico/cnv/raytracer/Ray;)Lpt/ulisboa/tecnico/cnv/raytracer/RayHit;
+  #120 = NameAndType        #121:#122     // findHit:(Lpt/ulisboa/tecnico/cnv/raytracer/Ray;)Lpt/ulisboa/tecnico/cnv/raytracer/RayHit;
+  #121 = Utf8               findHit
+  #122 = Utf8               (Lpt/ulisboa/tecnico/cnv/raytracer/Ray;)Lpt/ulisboa/tecnico/cnv/raytracer/RayHit;
+  #123 = Methodref          #69.#124      // pt/ulisboa/tecnico/cnv/raytracer/pigments/Finish.isReflective:()Z
+  #124 = NameAndType        #125:#126     // isReflective:()Z
+  #125 = Utf8               isReflective
+  #126 = Utf8               ()Z
+  #127 = Methodref          #57.#128      // pt/ulisboa/tecnico/cnv/raytracer/RayHit.getReflectionRay:()Lpt/ulisboa/tecnico/cnv/raytracer/Ray;
+  #128 = NameAndType        #129:#130     // getReflectionRay:()Lpt/ulisboa/tecnico/cnv/raytracer/Ray;
+  #129 = Utf8               getReflectionRay
+  #130 = Utf8               ()Lpt/ulisboa/tecnico/cnv/raytracer/Ray;
+  #131 = Methodref          #11.#132      // pt/ulisboa/tecnico/cnv/raytracer/RayTracer.trace:(Lpt/ulisboa/tecnico/cnv/raytracer/Ray;I)Ljava/awt/Color;
+  #132 = NameAndType        #133:#134     // trace:(Lpt/ulisboa/tecnico/cnv/raytracer/Ray;I)Ljava/awt/Color;
+  #133 = Utf8               trace
+  #134 = Utf8               (Lpt/ulisboa/tecnico/cnv/raytracer/Ray;I)Ljava/awt/Color;
+  #135 = Fieldref           #69.#136      // pt/ulisboa/tecnico/cnv/raytracer/pigments/Finish.refl:F
+  #136 = NameAndType        #137:#73      // refl:F
+  #137 = Utf8               refl
+  #138 = Methodref          #86.#139      // pt/ulisboa/tecnico/cnv/raytracer/ColorUtil.intensify:(Ljava/awt/Color;F)Ljava/awt/Color;
+  #139 = NameAndType        #89:#140      // intensify:(Ljava/awt/Color;F)Ljava/awt/Color;
+  #140 = Utf8               (Ljava/awt/Color;F)Ljava/awt/Color;
+  #141 = Methodref          #69.#142      // pt/ulisboa/tecnico/cnv/raytracer/pigments/Finish.isTransmittive:()Z
+  #142 = NameAndType        #143:#126     // isTransmittive:()Z
+  #143 = Utf8               isTransmittive
+  #144 = Methodref          #57.#145      // pt/ulisboa/tecnico/cnv/raytracer/RayHit.getTransmissionRay:()Lpt/ulisboa/tecnico/cnv/raytracer/Ray;
+  #145 = NameAndType        #146:#130     // getTransmissionRay:()Lpt/ulisboa/tecnico/cnv/raytracer/Ray;
+  #146 = Utf8               getTransmissionRay
+  #147 = Fieldref           #69.#148      // pt/ulisboa/tecnico/cnv/raytracer/pigments/Finish.trans:F
+  #148 = NameAndType        #149:#73      // trans:F
+  #149 = Utf8               trans
+  #150 = Methodref          #7.#151       // java/util/ArrayList.iterator:()Ljava/util/Iterator;
+  #151 = NameAndType        #152:#153     // iterator:()Ljava/util/Iterator;
+  #152 = Utf8               iterator
+  #153 = Utf8               ()Ljava/util/Iterator;
+  #154 = InterfaceMethodref #155.#156     // java/util/Iterator.hasNext:()Z
+  #155 = Class              #157          // java/util/Iterator
+  #156 = NameAndType        #158:#126     // hasNext:()Z
+  #157 = Utf8               java/util/Iterator
+  #158 = Utf8               hasNext
+  #159 = InterfaceMethodref #155.#160     // java/util/Iterator.next:()Ljava/lang/Object;
+  #160 = NameAndType        #161:#162     // next:()Ljava/lang/Object;
+  #161 = Utf8               next
+  #162 = Utf8               ()Ljava/lang/Object;
+  #163 = Methodref          #63.#164      // pt/ulisboa/tecnico/cnv/raytracer/shapes/Shape.intersect:(Lpt/ulisboa/tecnico/cnv/raytracer/Ray;)Lpt/ulisboa/tecnico/cnv/raytracer/RayHit;
+  #164 = NameAndType        #165:#122     // intersect:(Lpt/ulisboa/tecnico/cnv/raytracer/Ray;)Lpt/ulisboa/tecnico/cnv/raytracer/RayHit;
+  #165 = Utf8               intersect
+  #166 = Fieldref           #57.#116      // pt/ulisboa/tecnico/cnv/raytracer/RayHit.t:D
+  #167 = Methodref          #11.#168      // pt/ulisboa/tecnico/cnv/raytracer/RayTracer.shade:(Lpt/ulisboa/tecnico/cnv/raytracer/RayHit;I)Ljava/awt/Color;
+  #168 = NameAndType        #169:#170     // shade:(Lpt/ulisboa/tecnico/cnv/raytracer/RayHit;I)Ljava/awt/Color;
+  #169 = Utf8               shade
+  #170 = Utf8               (Lpt/ulisboa/tecnico/cnv/raytracer/RayHit;I)Ljava/awt/Color;
+  #171 = Fieldref           #11.#172      // pt/ulisboa/tecnico/cnv/raytracer/RayTracer.BACKGROUND_COLOR:Ljava/awt/Color;
+  #172 = NameAndType        #173:#49      // BACKGROUND_COLOR:Ljava/awt/Color;
+  #173 = Utf8               BACKGROUND_COLOR
+  #174 = Class              #175          // java/awt/image/BufferedImage
+  #175 = Utf8               java/awt/image/BufferedImage
+  #176 = Methodref          #174.#177     // java/awt/image/BufferedImage."<init>":(III)V
+  #177 = NameAndType        #5:#178       // "<init>":(III)V
+  #178 = Utf8               (III)V
+  #179 = Methodref          #180.#181     // java/lang/System.currentTimeMillis:()J
+  #180 = Class              #182          // java/lang/System
+  #181 = NameAndType        #183:#184     // currentTimeMillis:()J
+  #182 = Utf8               java/lang/System
+  #183 = Utf8               currentTimeMillis
+  #184 = Utf8               ()J
+  #185 = Fieldref           #186.#187     // pt/ulisboa/tecnico/cnv/raytracer/Main.MULTI_THREAD:Z
+  #186 = Class              #188          // pt/ulisboa/tecnico/cnv/raytracer/Main
+  #187 = NameAndType        #189:#190     // MULTI_THREAD:Z
+  #188 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/Main
+  #189 = Utf8               MULTI_THREAD
+  #190 = Utf8               Z
+  #191 = Class              #192          // java/util/concurrent/ThreadPoolExecutor
+  #192 = Utf8               java/util/concurrent/ThreadPoolExecutor
+  #193 = Long               100l
+  #195 = Fieldref           #196.#197     // java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+  #196 = Class              #198          // java/util/concurrent/TimeUnit
+  #197 = NameAndType        #199:#200     // SECONDS:Ljava/util/concurrent/TimeUnit;
+  #198 = Utf8               java/util/concurrent/TimeUnit
+  #199 = Utf8               SECONDS
+  #200 = Utf8               Ljava/util/concurrent/TimeUnit;
+  #201 = Class              #202          // java/util/concurrent/LinkedBlockingQueue
+  #202 = Utf8               java/util/concurrent/LinkedBlockingQueue
+  #203 = Methodref          #201.#3       // java/util/concurrent/LinkedBlockingQueue."<init>":()V
+  #204 = Methodref          #191.#205     // java/util/concurrent/ThreadPoolExecutor."<init>":(IIJLjava/util/concurrent/TimeUnit;Ljava/util/concurrent/BlockingQueue;)V
+  #205 = NameAndType        #5:#206       // "<init>":(IIJLjava/util/concurrent/TimeUnit;Ljava/util/concurrent/BlockingQueue;)V
+  #206 = Utf8               (IIJLjava/util/concurrent/TimeUnit;Ljava/util/concurrent/BlockingQueue;)V
+  #207 = Class              #208          // java/util/concurrent/atomic/AtomicInteger
+  #208 = Utf8               java/util/concurrent/atomic/AtomicInteger
+  #209 = Methodref          #207.#210     // java/util/concurrent/atomic/AtomicInteger."<init>":(I)V
+  #210 = NameAndType        #5:#211       // "<init>":(I)V
+  #211 = Utf8               (I)V
+  #212 = InvokeDynamic      #0:#213       // #0:run:(Lpt/ulisboa/tecnico/cnv/raytracer/RayTracer;Ljava/awt/image/BufferedImage;II)Ljava/lang/Runnable;
+  #213 = NameAndType        #214:#215     // run:(Lpt/ulisboa/tecnico/cnv/raytracer/RayTracer;Ljava/awt/image/BufferedImage;II)Ljava/lang/Runnable;
+  #214 = Utf8               run
+  #215 = Utf8               (Lpt/ulisboa/tecnico/cnv/raytracer/RayTracer;Ljava/awt/image/BufferedImage;II)Ljava/lang/Runnable;
+  #216 = Methodref          #191.#217     // java/util/concurrent/ThreadPoolExecutor.execute:(Ljava/lang/Runnable;)V
+  #217 = NameAndType        #218:#219     // execute:(Ljava/lang/Runnable;)V
+  #218 = Utf8               execute
+  #219 = Utf8               (Ljava/lang/Runnable;)V
+  #220 = Methodref          #191.#221     // java/util/concurrent/ThreadPoolExecutor.shutdown:()V
+  #221 = NameAndType        #222:#6       // shutdown:()V
+  #222 = Utf8               shutdown
+  #223 = Long               5l
+  #225 = Fieldref           #196.#226     // java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+  #226 = NameAndType        #227:#200     // MINUTES:Ljava/util/concurrent/TimeUnit;
+  #227 = Utf8               MINUTES
+  #228 = Methodref          #191.#229     // java/util/concurrent/ThreadPoolExecutor.awaitTermination:(JLjava/util/concurrent/TimeUnit;)Z
+  #229 = NameAndType        #230:#231     // awaitTermination:(JLjava/util/concurrent/TimeUnit;)Z
+  #230 = Utf8               awaitTermination
+  #231 = Utf8               (JLjava/util/concurrent/TimeUnit;)Z
+  #232 = Methodref          #191.#233     // java/util/concurrent/ThreadPoolExecutor.shutdownNow:()Ljava/util/List;
+  #233 = NameAndType        #234:#235     // shutdownNow:()Ljava/util/List;
+  #234 = Utf8               shutdownNow
+  #235 = Utf8               ()Ljava/util/List;
+  #236 = Class              #237          // java/lang/InterruptedException
+  #237 = Utf8               java/lang/InterruptedException
+  #238 = Methodref          #11.#239      // pt/ulisboa/tecnico/cnv/raytracer/RayTracer.getPixelColor:(II)Ljava/awt/Color;
+  #239 = NameAndType        #240:#241     // getPixelColor:(II)Ljava/awt/Color;
+  #240 = Utf8               getPixelColor
+  #241 = Utf8               (II)Ljava/awt/Color;
+  #242 = Methodref          #45.#243      // java/awt/Color.getRGB:()I
+  #243 = NameAndType        #244:#97      // getRGB:()I
+  #244 = Utf8               getRGB
+  #245 = Methodref          #174.#246     // java/awt/image/BufferedImage.setRGB:(III)V
+  #246 = NameAndType        #247:#178     // setRGB:(III)V
+  #247 = Utf8               setRGB
+  #248 = InvokeDynamic      #1:#249       // #1:makeConcatWithConstants:(J)Ljava/lang/String;
+  #249 = NameAndType        #250:#251     // makeConcatWithConstants:(J)Ljava/lang/String;
+  #250 = Utf8               makeConcatWithConstants
+  #251 = Utf8               (J)Ljava/lang/String;
+  #252 = Methodref          #253.#254     // pt/ulisboa/tecnico/cnv/raytracer/Log.info:(Ljava/lang/String;)V
+  #253 = Class              #255          // pt/ulisboa/tecnico/cnv/raytracer/Log
+  #254 = NameAndType        #256:#257     // info:(Ljava/lang/String;)V
+  #255 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/Log
+  #256 = Utf8               info
+  #257 = Utf8               (Ljava/lang/String;)V
+  #258 = Fieldref           #186.#259     // pt/ulisboa/tecnico/cnv/raytracer/Main.ANTI_ALIAS:Z
+  #259 = NameAndType        #260:#190     // ANTI_ALIAS:Z
+  #260 = Utf8               ANTI_ALIAS
+  #261 = Fieldref           #11.#262      // pt/ulisboa/tecnico/cnv/raytracer/RayTracer.camera:Lpt/ulisboa/tecnico/cnv/raytracer/Camera;
+  #262 = NameAndType        #263:#264     // camera:Lpt/ulisboa/tecnico/cnv/raytracer/Camera;
+  #263 = Utf8               camera
+  #264 = Utf8               Lpt/ulisboa/tecnico/cnv/raytracer/Camera;
+  #265 = Methodref          #266.#267     // pt/ulisboa/tecnico/cnv/raytracer/Camera.getRay:(IIDD)Lpt/ulisboa/tecnico/cnv/raytracer/Ray;
+  #266 = Class              #268          // pt/ulisboa/tecnico/cnv/raytracer/Camera
+  #267 = NameAndType        #269:#270     // getRay:(IIDD)Lpt/ulisboa/tecnico/cnv/raytracer/Ray;
+  #268 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/Camera
+  #269 = Utf8               getRay
+  #270 = Utf8               (IIDD)Lpt/ulisboa/tecnico/cnv/raytracer/Ray;
+  #271 = Double             0.5d
+  #273 = Methodref          #86.#274      // pt/ulisboa/tecnico/cnv/raytracer/ColorUtil.average:([Ljava/awt/Color;)Ljava/awt/Color;
+  #274 = NameAndType        #275:#276     // average:([Ljava/awt/Color;)Ljava/awt/Color;
+  #275 = Utf8               average
+  #276 = Utf8               ([Ljava/awt/Color;)Ljava/awt/Color;
+  #277 = Methodref          #266.#278     // pt/ulisboa/tecnico/cnv/raytracer/Camera.getRay:(II)Lpt/ulisboa/tecnico/cnv/raytracer/Ray;
+  #278 = NameAndType        #269:#279     // getRay:(II)Lpt/ulisboa/tecnico/cnv/raytracer/Ray;
+  #279 = Utf8               (II)Lpt/ulisboa/tecnico/cnv/raytracer/Ray;
+  #280 = Class              #281          // java/util/Scanner
+  #281 = Utf8               java/util/Scanner
+  #282 = Class              #283          // java/io/ByteArrayInputStream
+  #283 = Utf8               java/io/ByteArrayInputStream
+  #284 = Methodref          #282.#285     // java/io/ByteArrayInputStream."<init>":([B)V
+  #285 = NameAndType        #5:#286       // "<init>":([B)V
+  #286 = Utf8               ([B)V
+  #287 = Methodref          #280.#288     // java/util/Scanner."<init>":(Ljava/io/InputStream;)V
+  #288 = NameAndType        #5:#289       // "<init>":(Ljava/io/InputStream;)V
+  #289 = Utf8               (Ljava/io/InputStream;)V
+  #290 = Methodref          #11.#291      // pt/ulisboa/tecnico/cnv/raytracer/RayTracer.readPoint:(Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+  #291 = NameAndType        #292:#293     // readPoint:(Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+  #292 = Utf8               readPoint
+  #293 = Utf8               (Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+  #294 = Methodref          #11.#295      // pt/ulisboa/tecnico/cnv/raytracer/RayTracer.readVector:(Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Vector;
+  #295 = NameAndType        #296:#297     // readVector:(Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Vector;
+  #296 = Utf8               readVector
+  #297 = Utf8               (Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Vector;
+  #298 = Methodref          #280.#299     // java/util/Scanner.nextDouble:()D
+  #299 = NameAndType        #300:#114     // nextDouble:()D
+  #300 = Utf8               nextDouble
+  #301 = Methodref          #266.#302     // pt/ulisboa/tecnico/cnv/raytracer/Camera."<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Vector;DII)V
+  #302 = NameAndType        #5:#303       // "<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Vector;DII)V
+  #303 = Utf8               (Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Vector;DII)V
+  #304 = Methodref          #280.#305     // java/util/Scanner.nextInt:()I
+  #305 = NameAndType        #306:#97      // nextInt:()I
+  #306 = Utf8               nextInt
+  #307 = Class              #308          // pt/ulisboa/tecnico/cnv/raytracer/AmbientLight
+  #308 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/AmbientLight
+  #309 = Methodref          #11.#310      // pt/ulisboa/tecnico/cnv/raytracer/RayTracer.readColor:(Ljava/util/Scanner;)Ljava/awt/Color;
+  #310 = NameAndType        #311:#312     // readColor:(Ljava/util/Scanner;)Ljava/awt/Color;
+  #311 = Utf8               readColor
+  #312 = Utf8               (Ljava/util/Scanner;)Ljava/awt/Color;
+  #313 = Methodref          #280.#314     // java/util/Scanner.nextFloat:()F
+  #314 = NameAndType        #315:#316     // nextFloat:()F
+  #315 = Utf8               nextFloat
+  #316 = Utf8               ()F
+  #317 = Methodref          #307.#318     // pt/ulisboa/tecnico/cnv/raytracer/AmbientLight."<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Ljava/awt/Color;FFF)V
+  #318 = NameAndType        #5:#319       // "<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Ljava/awt/Color;FFF)V
+  #319 = Utf8               (Lpt/ulisboa/tecnico/cnv/raytracer/Point;Ljava/awt/Color;FFF)V
+  #320 = Methodref          #7.#321       // java/util/ArrayList.add:(Ljava/lang/Object;)Z
+  #321 = NameAndType        #322:#323     // add:(Ljava/lang/Object;)Z
+  #322 = Utf8               add
+  #323 = Utf8               (Ljava/lang/Object;)Z
+  #324 = Methodref          #54.#318      // pt/ulisboa/tecnico/cnv/raytracer/Light."<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Ljava/awt/Color;FFF)V
+  #325 = Methodref          #280.#326     // java/util/Scanner.next:()Ljava/lang/String;
+  #326 = NameAndType        #161:#327     // next:()Ljava/lang/String;
+  #327 = Utf8               ()Ljava/lang/String;
+  #328 = String             #329          // solid
+  #329 = Utf8               solid
+  #330 = Methodref          #331.#332     // java/lang/String.equals:(Ljava/lang/Object;)Z
+  #331 = Class              #333          // java/lang/String
+  #332 = NameAndType        #334:#323     // equals:(Ljava/lang/Object;)Z
+  #333 = Utf8               java/lang/String
+  #334 = Utf8               equals
+  #335 = Class              #336          // pt/ulisboa/tecnico/cnv/raytracer/pigments/SolidPigment
+  #336 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/pigments/SolidPigment
+  #337 = Methodref          #335.#338     // pt/ulisboa/tecnico/cnv/raytracer/pigments/SolidPigment."<init>":(Ljava/awt/Color;)V
+  #338 = NameAndType        #5:#339       // "<init>":(Ljava/awt/Color;)V
+  #339 = Utf8               (Ljava/awt/Color;)V
+  #340 = String             #341          // checker
+  #341 = Utf8               checker
+  #342 = Class              #343          // pt/ulisboa/tecnico/cnv/raytracer/pigments/CheckerPigment
+  #343 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/pigments/CheckerPigment
+  #344 = Methodref          #342.#345     // pt/ulisboa/tecnico/cnv/raytracer/pigments/CheckerPigment."<init>":(Ljava/awt/Color;Ljava/awt/Color;D)V
+  #345 = NameAndType        #5:#346       // "<init>":(Ljava/awt/Color;Ljava/awt/Color;D)V
+  #346 = Utf8               (Ljava/awt/Color;Ljava/awt/Color;D)V
+  #347 = String             #348          // gradient
+  #348 = Utf8               gradient
+  #349 = Class              #350          // pt/ulisboa/tecnico/cnv/raytracer/pigments/GradientPigment
+  #350 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/pigments/GradientPigment
+  #351 = Methodref          #349.#352     // pt/ulisboa/tecnico/cnv/raytracer/pigments/GradientPigment."<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Vector;Ljava/awt/Color;Ljava/awt/Color;)V
+  #352 = NameAndType        #5:#353       // "<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Vector;Ljava/awt/Color;Ljava/awt/Color;)V
+  #353 = Utf8               (Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Vector;Ljava/awt/Color;Ljava/awt/Color;)V
+  #354 = String             #355          // texmap
+  #355 = Utf8               texmap
+  #356 = Class              #357          // pt/ulisboa/tecnico/cnv/raytracer/pigments/TexmapPigment
+  #357 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/pigments/TexmapPigment
+  #358 = Methodref          #356.#359     // pt/ulisboa/tecnico/cnv/raytracer/pigments/TexmapPigment."<init>":([BDDDDDDDD)V
+  #359 = NameAndType        #5:#360       // "<init>":([BDDDDDDDD)V
+  #360 = Utf8               ([BDDDDDDDD)V
+  #361 = Class              #362          // java/io/IOException
+  #362 = Utf8               java/io/IOException
+  #363 = String             #364          // Could not read texmap file.
+  #364 = Utf8               Could not read texmap file.
+  #365 = Methodref          #253.#366     // pt/ulisboa/tecnico/cnv/raytracer/Log.error:(Ljava/lang/String;)V
+  #366 = NameAndType        #367:#257     // error:(Ljava/lang/String;)V
+  #367 = Utf8               error
+  #368 = Class              #369          // java/lang/RuntimeException
+  #369 = Utf8               java/lang/RuntimeException
+  #370 = Methodref          #368.#371     // java/lang/RuntimeException."<init>":(Ljava/lang/String;)V
+  #371 = NameAndType        #5:#257       // "<init>":(Ljava/lang/String;)V
+  #372 = String             #373          // Could not find texmap file.
+  #373 = Utf8               Could not find texmap file.
+  #374 = Class              #375          // java/lang/UnsupportedOperationException
+  #375 = Utf8               java/lang/UnsupportedOperationException
+  #376 = InvokeDynamic      #2:#377       // #2:makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;
+  #377 = NameAndType        #250:#378     // makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;
+  #378 = Utf8               (Ljava/lang/String;)Ljava/lang/String;
+  #379 = Methodref          #374.#371     // java/lang/UnsupportedOperationException."<init>":(Ljava/lang/String;)V
+  #380 = Methodref          #69.#381      // pt/ulisboa/tecnico/cnv/raytracer/pigments/Finish."<init>":(FFFFFFF)V
+  #381 = NameAndType        #5:#382       // "<init>":(FFFFFFF)V
+  #382 = Utf8               (FFFFFFF)V
+  #383 = String             #384          // sphere
+  #384 = Utf8               sphere
+  #385 = Class              #386          // pt/ulisboa/tecnico/cnv/raytracer/shapes/Sphere
+  #386 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/shapes/Sphere
+  #387 = Methodref          #385.#388     // pt/ulisboa/tecnico/cnv/raytracer/shapes/Sphere."<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;D)V
+  #388 = NameAndType        #5:#389       // "<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;D)V
+  #389 = Utf8               (Lpt/ulisboa/tecnico/cnv/raytracer/Point;D)V
+  #390 = String             #391          // plane
+  #391 = Utf8               plane
+  #392 = Class              #393          // pt/ulisboa/tecnico/cnv/raytracer/shapes/Plane
+  #393 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/shapes/Plane
+  #394 = Methodref          #392.#395     // pt/ulisboa/tecnico/cnv/raytracer/shapes/Plane."<init>":(DDDD)V
+  #395 = NameAndType        #5:#396       // "<init>":(DDDD)V
+  #396 = Utf8               (DDDD)V
+  #397 = String             #398          // cylinder
+  #398 = Utf8               cylinder
+  #399 = Class              #400          // pt/ulisboa/tecnico/cnv/raytracer/shapes/Cylinder
+  #400 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/shapes/Cylinder
+  #401 = Methodref          #399.#402     // pt/ulisboa/tecnico/cnv/raytracer/shapes/Cylinder."<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Vector;D)V
+  #402 = NameAndType        #5:#403       // "<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Vector;D)V
+  #403 = Utf8               (Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Vector;D)V
+  #404 = String             #405          // cone
+  #405 = Utf8               cone
+  #406 = Class              #407          // pt/ulisboa/tecnico/cnv/raytracer/shapes/Cone
+  #407 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/shapes/Cone
+  #408 = Methodref          #406.#402     // pt/ulisboa/tecnico/cnv/raytracer/shapes/Cone."<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Vector;D)V
+  #409 = String             #410          // disc
+  #410 = Utf8               disc
+  #411 = Class              #412          // pt/ulisboa/tecnico/cnv/raytracer/shapes/Disc
+  #412 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/shapes/Disc
+  #413 = Methodref          #411.#402     // pt/ulisboa/tecnico/cnv/raytracer/shapes/Disc."<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Vector;D)V
+  #414 = String             #415          // polyhedron
+  #415 = Utf8               polyhedron
+  #416 = Methodref          #7.#210       // java/util/ArrayList."<init>":(I)V
+  #417 = Class              #418          // pt/ulisboa/tecnico/cnv/raytracer/shapes/Polygon
+  #418 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/shapes/Polygon
+  #419 = Methodref          #417.#395     // pt/ulisboa/tecnico/cnv/raytracer/shapes/Polygon."<init>":(DDDD)V
+  #420 = Class              #421          // pt/ulisboa/tecnico/cnv/raytracer/shapes/Polyhedron
+  #421 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/shapes/Polyhedron
+  #422 = Methodref          #420.#423     // pt/ulisboa/tecnico/cnv/raytracer/shapes/Polyhedron."<init>":(Ljava/util/List;)V
+  #423 = NameAndType        #5:#424       // "<init>":(Ljava/util/List;)V
+  #424 = Utf8               (Ljava/util/List;)V
+  #425 = String             #426          // triangle
+  #426 = Utf8               triangle
+  #427 = Class              #428          // pt/ulisboa/tecnico/cnv/raytracer/shapes/Triangle
+  #428 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/shapes/Triangle
+  #429 = Methodref          #427.#430     // pt/ulisboa/tecnico/cnv/raytracer/shapes/Triangle."<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Point;)V
+  #430 = NameAndType        #5:#431       // "<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Point;)V
+  #431 = Utf8               (Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Point;)V
+  #432 = String             #433          // parallelogram
+  #433 = Utf8               parallelogram
+  #434 = Class              #435          // pt/ulisboa/tecnico/cnv/raytracer/shapes/Parallelogram
+  #435 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/shapes/Parallelogram
+  #436 = Methodref          #434.#430     // pt/ulisboa/tecnico/cnv/raytracer/shapes/Parallelogram."<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Point;)V
+  #437 = String             #438          // bezier
+  #438 = Utf8               bezier
+  #439 = Class              #440          // pt/ulisboa/tecnico/cnv/raytracer/shapes/Bezier
+  #440 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/shapes/Bezier
+  #441 = Methodref          #439.#423     // pt/ulisboa/tecnico/cnv/raytracer/shapes/Bezier."<init>":(Ljava/util/List;)V
+  #442 = InvokeDynamic      #3:#377       // #3:makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;
+  #443 = Class              #444          // pt/ulisboa/tecnico/cnv/raytracer/pigments/Pigment
+  #444 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/pigments/Pigment
+  #445 = Methodref          #63.#446      // pt/ulisboa/tecnico/cnv/raytracer/shapes/Shape.setMaterial:(Lpt/ulisboa/tecnico/cnv/raytracer/pigments/Pigment;Lpt/ulisboa/tecnico/cnv/raytracer/pigments/Finish;)V
+  #446 = NameAndType        #447:#448     // setMaterial:(Lpt/ulisboa/tecnico/cnv/raytracer/pigments/Pigment;Lpt/ulisboa/tecnico/cnv/raytracer/pigments/Finish;)V
+  #447 = Utf8               setMaterial
+  #448 = Utf8               (Lpt/ulisboa/tecnico/cnv/raytracer/pigments/Pigment;Lpt/ulisboa/tecnico/cnv/raytracer/pigments/Finish;)V
+  #449 = Methodref          #86.#450      // pt/ulisboa/tecnico/cnv/raytracer/ColorUtil.clamp:(F)F
+  #450 = NameAndType        #451:#452     // clamp:(F)F
+  #451 = Utf8               clamp
+  #452 = Utf8               (F)F
+  #453 = Methodref          #45.#454      // java/awt/Color."<init>":(FFF)V
+  #454 = NameAndType        #5:#455       // "<init>":(FFF)V
+  #455 = Utf8               (FFF)V
+  #456 = Methodref          #98.#457      // pt/ulisboa/tecnico/cnv/raytracer/Vector."<init>":(DDD)V
+  #457 = NameAndType        #5:#458       // "<init>":(DDD)V
+  #458 = Utf8               (DDD)V
+  #459 = Class              #460          // pt/ulisboa/tecnico/cnv/raytracer/Point
+  #460 = Utf8               pt/ulisboa/tecnico/cnv/raytracer/Point
+  #461 = Methodref          #459.#457     // pt/ulisboa/tecnico/cnv/raytracer/Point."<init>":(DDD)V
+  #462 = Fieldref           #45.#463      // java/awt/Color.GRAY:Ljava/awt/Color;
+  #463 = NameAndType        #464:#49      // GRAY:Ljava/awt/Color;
+  #464 = Utf8               GRAY
+  #465 = Utf8               MAX_RECURSION_LEVEL
+  #466 = Utf8               ConstantValue
+  #467 = Integer            5
+  #468 = Utf8               Signature
+  #469 = Utf8               Ljava/util/ArrayList<Lpt/ulisboa/tecnico/cnv/raytracer/Light;>;
+  #470 = Utf8               Ljava/util/ArrayList<Lpt/ulisboa/tecnico/cnv/raytracer/pigments/Pigment;>;
+  #471 = Utf8               Ljava/util/ArrayList<Lpt/ulisboa/tecnico/cnv/raytracer/pigments/Finish;>;
+  #472 = Utf8               Ljava/util/ArrayList<Lpt/ulisboa/tecnico/cnv/raytracer/shapes/Shape;>;
+  #473 = Utf8               (IIIIII)V
+  #474 = Utf8               Code
+  #475 = Utf8               LineNumberTable
+  #476 = Utf8               LocalVariableTable
+  #477 = Utf8               this
+  #478 = Utf8               Lpt/ulisboa/tecnico/cnv/raytracer/RayTracer;
+  #479 = Utf8               c
+  #480 = Utf8               lightRayVec
+  #481 = Utf8               Lpt/ulisboa/tecnico/cnv/raytracer/Vector;
+  #482 = Utf8               lightRay
+  #483 = Utf8               Lpt/ulisboa/tecnico/cnv/raytracer/Ray;
+  #484 = Utf8               obstruction
+  #485 = Utf8               Lpt/ulisboa/tecnico/cnv/raytracer/RayHit;
+  #486 = Utf8               i
+  #487 = Utf8               hit
+  #488 = Utf8               depth
+  #489 = Utf8               color
+  #490 = Utf8               light
+  #491 = Utf8               Lpt/ulisboa/tecnico/cnv/raytracer/Light;
+  #492 = Utf8               StackMapTable
+  #493 = Utf8               h
+  #494 = Utf8               ray
+  #495 = Utf8               draw
+  #496 = Utf8               ()Ljava/awt/image/BufferedImage;
+  #497 = Utf8               cc
+  #498 = Utf8               rr
+  #499 = Utf8               r
+  #500 = Utf8               e
+  #501 = Utf8               Ljava/lang/InterruptedException;
+  #502 = Utf8               executor
+  #503 = Utf8               Ljava/util/concurrent/ThreadPoolExecutor;
+  #504 = Utf8               remaining
+  #505 = Utf8               Ljava/util/concurrent/atomic/AtomicInteger;
+  #506 = Utf8               image
+  #507 = Utf8               Ljava/awt/image/BufferedImage;
+  #508 = Utf8               start
+  #509 = Utf8               J
+  #510 = Utf8               c1
+  #511 = Utf8               c2
+  #512 = Utf8               c3
+  #513 = Utf8               c4
+  #514 = Utf8               col
+  #515 = Utf8               row
+  #516 = Utf8               bmpRow
+  #517 = Utf8               readScene
+  #518 = Utf8               ([B[B)V
+  #519 = Utf8               Ljava/io/IOException;
+  #520 = Utf8               name
+  #521 = Utf8               Ljava/lang/String;
+  #522 = Utf8               f
+  #523 = Utf8               numFaces
+  #524 = Utf8               faces
+  #525 = Utf8               s
+  #526 = Utf8               points
+  #527 = Utf8               pigNum
+  #528 = Utf8               finishNum
+  #529 = Utf8               input
+  #530 = Utf8               [B
+  #531 = Utf8               scanner
+  #532 = Utf8               Ljava/util/Scanner;
+  #533 = Utf8               eye
+  #534 = Utf8               center
+  #535 = Utf8               up
+  #536 = Utf8               fovy
+  #537 = Utf8               numLights
+  #538 = Utf8               numPigments
+  #539 = Utf8               numFins
+  #540 = Utf8               numShapes
+  #541 = Utf8               LocalVariableTypeTable
+  #542 = Utf8               Ljava/util/ArrayList<Lpt/ulisboa/tecnico/cnv/raytracer/shapes/Polygon;>;
+  #543 = Utf8               Ljava/util/ArrayList<Lpt/ulisboa/tecnico/cnv/raytracer/Point;>;
+  #544 = Class              #530          // "[B"
+  #545 = Utf8               lambda$draw$0
+  #546 = Utf8               (Ljava/awt/image/BufferedImage;II)V
+  #547 = Utf8               <clinit>
+  #548 = Utf8               SourceFile
+  #549 = Utf8               RayTracer.java
+  #550 = Utf8               BootstrapMethods
+  #551 = MethodHandle       6:#552        // REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #552 = Methodref          #553.#554     // java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #553 = Class              #555          // java/lang/invoke/LambdaMetafactory
+  #554 = NameAndType        #556:#557     // metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #555 = Utf8               java/lang/invoke/LambdaMetafactory
+  #556 = Utf8               metafactory
+  #557 = Utf8               (Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+  #558 = MethodType         #6            //  ()V
+  #559 = MethodHandle       7:#560        // REF_invokeSpecial pt/ulisboa/tecnico/cnv/raytracer/RayTracer.lambda$draw$0:(Ljava/awt/image/BufferedImage;II)V
+  #560 = Methodref          #11.#561      // pt/ulisboa/tecnico/cnv/raytracer/RayTracer.lambda$draw$0:(Ljava/awt/image/BufferedImage;II)V
+  #561 = NameAndType        #545:#546     // lambda$draw$0:(Ljava/awt/image/BufferedImage;II)V
+  #562 = MethodHandle       6:#563        // REF_invokeStatic java/lang/invoke/StringConcatFactory.makeConcatWithConstants:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;
+  #563 = Methodref          #564.#565     // java/lang/invoke/StringConcatFactory.makeConcatWithConstants:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;
+  #564 = Class              #566          // java/lang/invoke/StringConcatFactory
+  #565 = NameAndType        #250:#567     // makeConcatWithConstants:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;
+  #566 = Utf8               java/lang/invoke/StringConcatFactory
+  #567 = Utf8               (Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;
+  #568 = String             #569          // Finished in: \u0001ms
+  #569 = Utf8               Finished in: \u0001ms
+  #570 = String             #571          // Unrecognized pigment: \'\u0001\'.
+  #571 = Utf8               Unrecognized pigment: \'\u0001\'.
+  #572 = String             #573          // Unrecognized shape: \'\u0001\'.
+  #573 = Utf8               Unrecognized shape: \'\u0001\'.
+  #574 = Utf8               InnerClasses
+  #575 = Class              #576          // java/lang/invoke/MethodHandles$Lookup
+  #576 = Utf8               java/lang/invoke/MethodHandles$Lookup
+  #577 = Class              #578          // java/lang/invoke/MethodHandles
+  #578 = Utf8               java/lang/invoke/MethodHandles
+  #579 = Utf8               Lookup
+  #580 = Utf8               myThreadFactory
+  #581 = Utf8               Lpt/ulisboa/tecnico/cnv/javassist/tools/MyThreadFactory;
+  #582 = Utf8               out
+  #583 = Utf8               Ljava/io/PrintStream;
+  #584 = NameAndType        #582:#583     // out:Ljava/io/PrintStream;
+  #585 = Fieldref           #180.#584     // java/lang/System.out:Ljava/io/PrintStream;
+  #586 = Utf8               Adding stuff to threadpoolexecutor
+  #587 = String             #586          // Adding stuff to threadpoolexecutor
+  #588 = Utf8               java/io/PrintStream
+  #589 = Class              #588          // java/io/PrintStream
+  #590 = Utf8               println
+  #591 = NameAndType        #590:#257     // println:(Ljava/lang/String;)V
+  #592 = Methodref          #589.#591     // java/io/PrintStream.println:(Ljava/lang/String;)V
+{
+  public static final int MAX_RECURSION_LEVEL;
+    descriptor: I
+    flags: (0x0019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL
+    ConstantValue: int 5
+
+  public static final java.awt.Color BACKGROUND_COLOR;
+    descriptor: Ljava/awt/Color;
+    flags: (0x0019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL
+
+  private pt.ulisboa.tecnico.cnv.raytracer.Camera camera;
+    descriptor: Lpt/ulisboa/tecnico/cnv/raytracer/Camera;
+    flags: (0x0002) ACC_PRIVATE
+
+  private final java.util.ArrayList<pt.ulisboa.tecnico.cnv.raytracer.Light> lights;
+    descriptor: Ljava/util/ArrayList;
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+    Signature: #469                         // Ljava/util/ArrayList<Lpt/ulisboa/tecnico/cnv/raytracer/Light;>;
+
+  private final java.util.ArrayList<pt.ulisboa.tecnico.cnv.raytracer.pigments.Pigment> pigments;
+    descriptor: Ljava/util/ArrayList;
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+    Signature: #470                         // Ljava/util/ArrayList<Lpt/ulisboa/tecnico/cnv/raytracer/pigments/Pigment;>;
+
+  private final java.util.ArrayList<pt.ulisboa.tecnico.cnv.raytracer.pigments.Finish> finishes;
+    descriptor: Ljava/util/ArrayList;
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+    Signature: #471                         // Ljava/util/ArrayList<Lpt/ulisboa/tecnico/cnv/raytracer/pigments/Finish;>;
+
+  private final java.util.ArrayList<pt.ulisboa.tecnico.cnv.raytracer.shapes.Shape> shapes;
+    descriptor: Ljava/util/ArrayList;
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+    Signature: #472                         // Ljava/util/ArrayList<Lpt/ulisboa/tecnico/cnv/raytracer/shapes/Shape;>;
+
+  private final int scols;
+    descriptor: I
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+
+  private final int srows;
+    descriptor: I
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+
+  private final int wcols;
+    descriptor: I
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+
+  private final int wrows;
+    descriptor: I
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+
+  private final int coff;
+    descriptor: I
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+
+  private final int roff;
+    descriptor: I
+    flags: (0x0012) ACC_PRIVATE, ACC_FINAL
+
+  public pt.ulisboa.tecnico.cnv.raytracer.RayTracer(int, int, int, int, int, int);
+    descriptor: (IIIIII)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=3, locals=7, args_size=7
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: aload_0
+         5: new           #7                  // class java/util/ArrayList
+         8: dup
+         9: invokespecial #9                  // Method java/util/ArrayList."<init>":()V
+        12: putfield      #10                 // Field lights:Ljava/util/ArrayList;
+        15: aload_0
+        16: new           #7                  // class java/util/ArrayList
+        19: dup
+        20: invokespecial #9                  // Method java/util/ArrayList."<init>":()V
+        23: putfield      #16                 // Field pigments:Ljava/util/ArrayList;
+        26: aload_0
+        27: new           #7                  // class java/util/ArrayList
+        30: dup
+        31: invokespecial #9                  // Method java/util/ArrayList."<init>":()V
+        34: putfield      #19                 // Field finishes:Ljava/util/ArrayList;
+        37: aload_0
+        38: new           #7                  // class java/util/ArrayList
+        41: dup
+        42: invokespecial #9                  // Method java/util/ArrayList."<init>":()V
+        45: putfield      #22                 // Field shapes:Ljava/util/ArrayList;
+        48: aload_0
+        49: iload_1
+        50: putfield      #25                 // Field scols:I
+        53: aload_0
+        54: iload_2
+        55: putfield      #29                 // Field srows:I
+        58: aload_0
+        59: iload_3
+        60: putfield      #32                 // Field wcols:I
+        63: aload_0
+        64: iload         4
+        66: putfield      #35                 // Field wrows:I
+        69: aload_0
+        70: iload         5
+        72: putfield      #38                 // Field coff:I
+        75: aload_0
+        76: iload         6
+        78: putfield      #41                 // Field roff:I
+        81: return
+      LineNumberTable:
+        line 28: 0
+        line 20: 4
+        line 21: 15
+        line 22: 26
+        line 23: 37
+        line 29: 48
+        line 30: 53
+        line 31: 58
+        line 32: 63
+        line 33: 69
+        line 34: 75
+        line 35: 81
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      82     0  this   Lpt/ulisboa/tecnico/cnv/raytracer/RayTracer;
+            0      82     1 scols   I
+            0      82     2 srows   I
+            0      82     3 wcols   I
+            0      82     4 wrows   I
+            0      82     5  coff   I
+            0      82     6  roff   I
+
+  private java.awt.Color shade(pt.ulisboa.tecnico.cnv.raytracer.RayHit, int);
+    descriptor: (Lpt/ulisboa/tecnico/cnv/raytracer/RayHit;I)Ljava/awt/Color;
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=5, locals=10, args_size=3
+         0: getstatic     #44                 // Field java/awt/Color.BLACK:Ljava/awt/Color;
+         3: astore_3
+         4: aload_0
+         5: getfield      #10                 // Field lights:Ljava/util/ArrayList;
+         8: iconst_0
+         9: invokevirtual #50                 // Method java/util/ArrayList.get:(I)Ljava/lang/Object;
+        12: checkcast     #54                 // class pt/ulisboa/tecnico/cnv/raytracer/Light
+        15: astore        4
+        17: aload         4
+        19: ifnull        63
+        22: aload_1
+        23: getfield      #56                 // Field pt/ulisboa/tecnico/cnv/raytracer/RayHit.shape:Lpt/ulisboa/tecnico/cnv/raytracer/shapes/Shape;
+        26: getfield      #62                 // Field pt/ulisboa/tecnico/cnv/raytracer/shapes/Shape.finish:Lpt/ulisboa/tecnico/cnv/raytracer/pigments/Finish;
+        29: getfield      #68                 // Field pt/ulisboa/tecnico/cnv/raytracer/pigments/Finish.amb:F
+        32: fconst_0
+        33: fcmpl
+        34: ifle          63
+        37: aload_3
+        38: aload_1
+        39: getfield      #56                 // Field pt/ulisboa/tecnico/cnv/raytracer/RayHit.shape:Lpt/ulisboa/tecnico/cnv/raytracer/shapes/Shape;
+        42: aload_1
+        43: getfield      #74                 // Field pt/ulisboa/tecnico/cnv/raytracer/RayHit.point:Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+        46: invokevirtual #78                 // Method pt/ulisboa/tecnico/cnv/raytracer/shapes/Shape.getColor:(Lpt/ulisboa/tecnico/cnv/raytracer/Point;)Ljava/awt/Color;
+        49: aload         4
+        51: aload_1
+        52: aconst_null
+        53: invokevirtual #82                 // Method pt/ulisboa/tecnico/cnv/raytracer/Light.getColor:(Lpt/ulisboa/tecnico/cnv/raytracer/RayHit;Lpt/ulisboa/tecnico/cnv/raytracer/Ray;)Ljava/awt/Color;
+        56: invokestatic  #85                 // Method pt/ulisboa/tecnico/cnv/raytracer/ColorUtil.intensify:(Ljava/awt/Color;Ljava/awt/Color;)Ljava/awt/Color;
+        59: invokestatic  #91                 // Method pt/ulisboa/tecnico/cnv/raytracer/ColorUtil.blend:(Ljava/awt/Color;Ljava/awt/Color;)Ljava/awt/Color;
+        62: astore_3
+        63: iconst_1
+        64: istore        5
+        66: iload         5
+        68: aload_0
+        69: getfield      #10                 // Field lights:Ljava/util/ArrayList;
+        72: invokevirtual #94                 // Method java/util/ArrayList.size:()I
+        75: if_icmpge     171
+        78: aload_0
+        79: getfield      #10                 // Field lights:Ljava/util/ArrayList;
+        82: iload         5
+        84: invokevirtual #50                 // Method java/util/ArrayList.get:(I)Ljava/lang/Object;
+        87: checkcast     #54                 // class pt/ulisboa/tecnico/cnv/raytracer/Light
+        90: astore        4
+        92: new           #98                 // class pt/ulisboa/tecnico/cnv/raytracer/Vector
+        95: dup
+        96: aload_1
+        97: getfield      #74                 // Field pt/ulisboa/tecnico/cnv/raytracer/RayHit.point:Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+       100: aload         4
+       102: getfield      #100                // Field pt/ulisboa/tecnico/cnv/raytracer/Light.location:Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+       105: invokespecial #103                // Method pt/ulisboa/tecnico/cnv/raytracer/Vector."<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Point;)V
+       108: astore        6
+       110: new           #106                // class pt/ulisboa/tecnico/cnv/raytracer/Ray
+       113: dup
+       114: aload_1
+       115: getfield      #74                 // Field pt/ulisboa/tecnico/cnv/raytracer/RayHit.point:Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+       118: aload         6
+       120: invokespecial #108                // Method pt/ulisboa/tecnico/cnv/raytracer/Ray."<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Vector;)V
+       123: astore        7
+       125: aload         7
+       127: aload         6
+       129: invokevirtual #111                // Method pt/ulisboa/tecnico/cnv/raytracer/Vector.magnitude:()D
+       132: putfield      #115                // Field pt/ulisboa/tecnico/cnv/raytracer/Ray.t:D
+       135: aload_0
+       136: aload         7
+       138: invokevirtual #119                // Method findHit:(Lpt/ulisboa/tecnico/cnv/raytracer/Ray;)Lpt/ulisboa/tecnico/cnv/raytracer/RayHit;
+       141: astore        8
+       143: aload         8
+       145: ifnonnull     165
+       148: aload         4
+       150: aload_1
+       151: aload         7
+       153: invokevirtual #82                 // Method pt/ulisboa/tecnico/cnv/raytracer/Light.getColor:(Lpt/ulisboa/tecnico/cnv/raytracer/RayHit;Lpt/ulisboa/tecnico/cnv/raytracer/Ray;)Ljava/awt/Color;
+       156: astore        9
+       158: aload_3
+       159: aload         9
+       161: invokestatic  #91                 // Method pt/ulisboa/tecnico/cnv/raytracer/ColorUtil.blend:(Ljava/awt/Color;Ljava/awt/Color;)Ljava/awt/Color;
+       164: astore_3
+       165: iinc          5, 1
+       168: goto          66
+       171: iload_2
+       172: iconst_5
+       173: if_icmpgt     260
+       176: aload_1
+       177: getfield      #56                 // Field pt/ulisboa/tecnico/cnv/raytracer/RayHit.shape:Lpt/ulisboa/tecnico/cnv/raytracer/shapes/Shape;
+       180: getfield      #62                 // Field pt/ulisboa/tecnico/cnv/raytracer/shapes/Shape.finish:Lpt/ulisboa/tecnico/cnv/raytracer/pigments/Finish;
+       183: invokevirtual #123                // Method pt/ulisboa/tecnico/cnv/raytracer/pigments/Finish.isReflective:()Z
+       186: ifeq          218
+       189: aload_3
+       190: aload_0
+       191: aload_1
+       192: invokevirtual #127                // Method pt/ulisboa/tecnico/cnv/raytracer/RayHit.getReflectionRay:()Lpt/ulisboa/tecnico/cnv/raytracer/Ray;
+       195: iload_2
+       196: iconst_1
+       197: iadd
+       198: invokevirtual #131                // Method trace:(Lpt/ulisboa/tecnico/cnv/raytracer/Ray;I)Ljava/awt/Color;
+       201: aload_1
+       202: getfield      #56                 // Field pt/ulisboa/tecnico/cnv/raytracer/RayHit.shape:Lpt/ulisboa/tecnico/cnv/raytracer/shapes/Shape;
+       205: getfield      #62                 // Field pt/ulisboa/tecnico/cnv/raytracer/shapes/Shape.finish:Lpt/ulisboa/tecnico/cnv/raytracer/pigments/Finish;
+       208: getfield      #135                // Field pt/ulisboa/tecnico/cnv/raytracer/pigments/Finish.refl:F
+       211: invokestatic  #138                // Method pt/ulisboa/tecnico/cnv/raytracer/ColorUtil.intensify:(Ljava/awt/Color;F)Ljava/awt/Color;
+       214: invokestatic  #91                 // Method pt/ulisboa/tecnico/cnv/raytracer/ColorUtil.blend:(Ljava/awt/Color;Ljava/awt/Color;)Ljava/awt/Color;
+       217: astore_3
+       218: aload_1
+       219: getfield      #56                 // Field pt/ulisboa/tecnico/cnv/raytracer/RayHit.shape:Lpt/ulisboa/tecnico/cnv/raytracer/shapes/Shape;
+       222: getfield      #62                 // Field pt/ulisboa/tecnico/cnv/raytracer/shapes/Shape.finish:Lpt/ulisboa/tecnico/cnv/raytracer/pigments/Finish;
+       225: invokevirtual #141                // Method pt/ulisboa/tecnico/cnv/raytracer/pigments/Finish.isTransmittive:()Z
+       228: ifeq          260
+       231: aload_3
+       232: aload_0
+       233: aload_1
+       234: invokevirtual #144                // Method pt/ulisboa/tecnico/cnv/raytracer/RayHit.getTransmissionRay:()Lpt/ulisboa/tecnico/cnv/raytracer/Ray;
+       237: iload_2
+       238: iconst_1
+       239: iadd
+       240: invokevirtual #131                // Method trace:(Lpt/ulisboa/tecnico/cnv/raytracer/Ray;I)Ljava/awt/Color;
+       243: aload_1
+       244: getfield      #56                 // Field pt/ulisboa/tecnico/cnv/raytracer/RayHit.shape:Lpt/ulisboa/tecnico/cnv/raytracer/shapes/Shape;
+       247: getfield      #62                 // Field pt/ulisboa/tecnico/cnv/raytracer/shapes/Shape.finish:Lpt/ulisboa/tecnico/cnv/raytracer/pigments/Finish;
+       250: getfield      #147                // Field pt/ulisboa/tecnico/cnv/raytracer/pigments/Finish.trans:F
+       253: invokestatic  #138                // Method pt/ulisboa/tecnico/cnv/raytracer/ColorUtil.intensify:(Ljava/awt/Color;F)Ljava/awt/Color;
+       256: invokestatic  #91                 // Method pt/ulisboa/tecnico/cnv/raytracer/ColorUtil.blend:(Ljava/awt/Color;Ljava/awt/Color;)Ljava/awt/Color;
+       259: astore_3
+       260: aload_3
+       261: areturn
+      LineNumberTable:
+        line 39: 0
+        line 42: 4
+        line 43: 17
+        line 44: 37
+        line 47: 63
+        line 49: 78
+        line 50: 92
+        line 51: 110
+        line 52: 125
+        line 55: 135
+        line 56: 143
+        line 62: 148
+        line 64: 158
+        line 47: 165
+        line 68: 171
+        line 69: 176
+        line 70: 189
+        line 73: 218
+        line 74: 231
+        line 78: 260
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+          158       7     9     c   Ljava/awt/Color;
+          110      55     6 lightRayVec   Lpt/ulisboa/tecnico/cnv/raytracer/Vector;
+          125      40     7 lightRay   Lpt/ulisboa/tecnico/cnv/raytracer/Ray;
+          143      22     8 obstruction   Lpt/ulisboa/tecnico/cnv/raytracer/RayHit;
+           66     105     5     i   I
+            0     262     0  this   Lpt/ulisboa/tecnico/cnv/raytracer/RayTracer;
+            0     262     1   hit   Lpt/ulisboa/tecnico/cnv/raytracer/RayHit;
+            0     262     2 depth   I
+            4     258     3 color   Ljava/awt/Color;
+           17     245     4 light   Lpt/ulisboa/tecnico/cnv/raytracer/Light;
+      StackMapTable: number_of_entries = 6
+        frame_type = 253 /* append */
+          offset_delta = 63
+          locals = [ class java/awt/Color, class pt/ulisboa/tecnico/cnv/raytracer/Light ]
+        frame_type = 252 /* append */
+          offset_delta = 2
+          locals = [ int ]
+        frame_type = 251 /* same_frame_extended */
+          offset_delta = 98
+        frame_type = 250 /* chop */
+          offset_delta = 5
+        frame_type = 46 /* same */
+        frame_type = 41 /* same */
+
+  private pt.ulisboa.tecnico.cnv.raytracer.RayHit findHit(pt.ulisboa.tecnico.cnv.raytracer.Ray);
+    descriptor: (Lpt/ulisboa/tecnico/cnv/raytracer/Ray;)Lpt/ulisboa/tecnico/cnv/raytracer/RayHit;
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=4, locals=6, args_size=2
+         0: aconst_null
+         1: astore_2
+         2: aload_0
+         3: getfield      #22                 // Field shapes:Ljava/util/ArrayList;
+         6: invokevirtual #150                // Method java/util/ArrayList.iterator:()Ljava/util/Iterator;
+         9: astore_3
+        10: aload_3
+        11: invokeinterface #154,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+        16: ifeq          71
+        19: aload_3
+        20: invokeinterface #159,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+        25: checkcast     #63                 // class pt/ulisboa/tecnico/cnv/raytracer/shapes/Shape
+        28: astore        4
+        30: aload         4
+        32: aload_1
+        33: invokevirtual #163                // Method pt/ulisboa/tecnico/cnv/raytracer/shapes/Shape.intersect:(Lpt/ulisboa/tecnico/cnv/raytracer/Ray;)Lpt/ulisboa/tecnico/cnv/raytracer/RayHit;
+        36: astore        5
+        38: aload         5
+        40: ifnull        68
+        43: aload         5
+        45: getfield      #166                // Field pt/ulisboa/tecnico/cnv/raytracer/RayHit.t:D
+        48: aload_1
+        49: getfield      #115                // Field pt/ulisboa/tecnico/cnv/raytracer/Ray.t:D
+        52: dcmpg
+        53: ifge          68
+        56: aload         5
+        58: astore_2
+        59: aload_1
+        60: aload         5
+        62: getfield      #166                // Field pt/ulisboa/tecnico/cnv/raytracer/RayHit.t:D
+        65: putfield      #115                // Field pt/ulisboa/tecnico/cnv/raytracer/Ray.t:D
+        68: goto          10
+        71: aload_2
+        72: areturn
+      LineNumberTable:
+        line 103: 0
+        line 105: 2
+        line 106: 30
+        line 108: 38
+        line 110: 56
+        line 111: 59
+        line 113: 68
+        line 115: 71
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           38      30     5     h   Lpt/ulisboa/tecnico/cnv/raytracer/RayHit;
+           30      38     4 shape   Lpt/ulisboa/tecnico/cnv/raytracer/shapes/Shape;
+            0      73     0  this   Lpt/ulisboa/tecnico/cnv/raytracer/RayTracer;
+            0      73     1   ray   Lpt/ulisboa/tecnico/cnv/raytracer/Ray;
+            2      71     2   hit   Lpt/ulisboa/tecnico/cnv/raytracer/RayHit;
+      StackMapTable: number_of_entries = 3
+        frame_type = 253 /* append */
+          offset_delta = 10
+          locals = [ class pt/ulisboa/tecnico/cnv/raytracer/RayHit, class java/util/Iterator ]
+        frame_type = 57 /* same */
+        frame_type = 250 /* chop */
+          offset_delta = 2
+
+  private java.awt.Color trace(pt.ulisboa.tecnico.cnv.raytracer.Ray, int);
+    descriptor: (Lpt/ulisboa/tecnico/cnv/raytracer/Ray;I)Ljava/awt/Color;
+    flags: (0x0002) ACC_PRIVATE
+    Code:
+      stack=3, locals=4, args_size=3
+         0: aload_0
+         1: aload_1
+         2: invokevirtual #119                // Method findHit:(Lpt/ulisboa/tecnico/cnv/raytracer/Ray;)Lpt/ulisboa/tecnico/cnv/raytracer/RayHit;
+         5: astore_3
+         6: aload_3
+         7: ifnull        17
+        10: aload_0
+        11: aload_3
+        12: iload_2
+        13: invokevirtual #167                // Method shade:(Lpt/ulisboa/tecnico/cnv/raytracer/RayHit;I)Ljava/awt/Color;
+        16: areturn
+        17: getstatic     #171                // Field BACKGROUND_COLOR:Ljava/awt/Color;
+        20: areturn
+      LineNumberTable:
+        line 121: 0
+        line 123: 6
+        line 124: 10
+        line 128: 17
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      21     0  this   Lpt/ulisboa/tecnico/cnv/raytracer/RayTracer;
+            0      21     1   ray   Lpt/ulisboa/tecnico/cnv/raytracer/Ray;
+            0      21     2 depth   I
+            6      15     3   hit   Lpt/ulisboa/tecnico/cnv/raytracer/RayHit;
+      StackMapTable: number_of_entries = 1
+        frame_type = 252 /* append */
+          offset_delta = 17
+          locals = [ class pt/ulisboa/tecnico/cnv/raytracer/RayHit ]
+
+  public java.awt.image.BufferedImage draw();
+    descriptor: ()Ljava/awt/image/BufferedImage;
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=11, locals=19, args_size=1
+         0: new           #174                // class java/awt/image/BufferedImage
+         3: dup
+         4: aload_0
+         5: getfield      #32                 // Field wcols:I
+         8: aload_0
+         9: getfield      #35                 // Field wrows:I
+        12: iconst_1
+        13: invokespecial #176                // Method java/awt/image/BufferedImage."<init>":(III)V
+        16: astore_1
+        17: invokestatic  #179                // Method java/lang/System.currentTimeMillis:()J
+        20: lstore_2
+        21: getstatic     #185                // Field pt/ulisboa/tecnico/cnv/raytracer/Main.MULTI_THREAD:Z
+        24: ifeq          211
+        27: nop
+        28: nop
+        29: nop
+        30: nop
+        31: iconst_2
+        32: iconst_2
+        33: ldc2_w        #193                // long 100l
+        36: getstatic     #195                // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+        39: new           #201                // class java/util/concurrent/LinkedBlockingQueue
+        42: dup
+        43: invokespecial #203                // Method java/util/concurrent/LinkedBlockingQueue."<init>":()V
+        46: astore        17
+        48: astore        16
+        50: lstore        14
+        52: istore        13
+        54: istore        12
+        56: aconst_null
+        57: astore        11
+        59: aconst_null
+        60: astore        18
+        62: new           #191                // class java/util/concurrent/ThreadPoolExecutor
+        65: dup
+        66: iload         12
+        68: iload         13
+        70: lload         14
+        72: aload         16
+        74: aload         17
+        76: invokespecial #204                // Method java/util/concurrent/ThreadPoolExecutor."<init>":(IIJLjava/util/concurrent/TimeUnit;Ljava/util/concurrent/BlockingQueue;)V
+        79: astore        18
+        81: getstatic     #585                // Field java/lang/System.out:Ljava/io/PrintStream;
+        84: ldc_w         #587                // String Adding stuff to threadpoolexecutor
+        87: invokevirtual #592                // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        90: aload         18
+        92: astore        4
+        94: new           #207                // class java/util/concurrent/atomic/AtomicInteger
+        97: dup
+        98: aload_0
+        99: getfield      #35                 // Field wrows:I
+       102: aload_0
+       103: getfield      #32                 // Field wcols:I
+       106: imul
+       107: invokespecial #209                // Method java/util/concurrent/atomic/AtomicInteger."<init>":(I)V
+       110: astore        5
+       112: iconst_0
+       113: istore        6
+       115: iload         6
+       117: aload_0
+       118: getfield      #35                 // Field wrows:I
+       121: if_icmpge     172
+       124: iconst_0
+       125: istore        7
+       127: iload         7
+       129: aload_0
+       130: getfield      #32                 // Field wcols:I
+       133: if_icmpge     166
+       136: iload         7
+       138: istore        8
+       140: iload         6
+       142: istore        9
+       144: aload         4
+       146: aload_0
+       147: aload_1
+       148: iload         8
+       150: iload         9
+       152: invokedynamic #212,  0            // InvokeDynamic #0:run:(Lpt/ulisboa/tecnico/cnv/raytracer/RayTracer;Ljava/awt/image/BufferedImage;II)Ljava/lang/Runnable;
+       157: invokevirtual #216                // Method java/util/concurrent/ThreadPoolExecutor.execute:(Ljava/lang/Runnable;)V
+       160: iinc          7, 1
+       163: goto          127
+       166: iinc          6, 1
+       169: goto          115
+       172: aload         4
+       174: invokevirtual #220                // Method java/util/concurrent/ThreadPoolExecutor.shutdown:()V
+       177: aload         4
+       179: ldc2_w        #223                // long 5l
+       182: getstatic     #225                // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+       185: invokevirtual #228                // Method java/util/concurrent/ThreadPoolExecutor.awaitTermination:(JLjava/util/concurrent/TimeUnit;)Z
+       188: ifne          197
+       191: aload         4
+       193: invokevirtual #232                // Method java/util/concurrent/ThreadPoolExecutor.shutdownNow:()Ljava/util/List;
+       196: pop
+       197: goto          208
+       200: astore        6
+       202: aload         4
+       204: invokevirtual #232                // Method java/util/concurrent/ThreadPoolExecutor.shutdownNow:()Ljava/util/List;
+       207: pop
+       208: goto          276
+       211: iconst_0
+       212: istore        4
+       214: iload         4
+       216: aload_0
+       217: getfield      #35                 // Field wrows:I
+       220: if_icmpge     276
+       223: iconst_0
+       224: istore        5
+       226: iload         5
+       228: aload_0
+       229: getfield      #32                 // Field wcols:I
+       232: if_icmpge     270
+       235: aload_1
+       236: iload         5
+       238: iload         4
+       240: aload_0
+       241: iload         5
+       243: aload_0
+       244: getfield      #38                 // Field coff:I
+       247: iadd
+       248: iload         4
+       250: aload_0
+       251: getfield      #41                 // Field roff:I
+       254: iadd
+       255: invokevirtual #238                // Method getPixelColor:(II)Ljava/awt/Color;
+       258: invokevirtual #242                // Method java/awt/Color.getRGB:()I
+       261: invokevirtual #245                // Method java/awt/image/BufferedImage.setRGB:(III)V
+       264: iinc          5, 1
+       267: goto          226
+       270: iinc          4, 1
+       273: goto          214
+       276: invokestatic  #179                // Method java/lang/System.currentTimeMillis:()J
+       279: lload_2
+       280: lsub
+       281: invokedynamic #248,  0            // InvokeDynamic #1:makeConcatWithConstants:(J)Ljava/lang/String;
+       286: invokestatic  #252                // Method pt/ulisboa/tecnico/cnv/raytracer/Log.info:(Ljava/lang/String;)V
+       289: aload_1
+       290: areturn
+      Exception table:
+         from    to  target type
+           177   197   200   Class java/lang/InterruptedException
+      LineNumberTable:
+        line 134: 0
+        line 136: 17
+        line 138: 21
+        line 139: 27
+        line 141: 94
+        line 142: 112
+        line 143: 124
+        line 144: 136
+        line 145: 140
+        line 146: 144
+        line 143: 160
+        line 142: 166
+        line 150: 172
+        line 152: 177
+        line 153: 191
+        line 157: 197
+        line 155: 200
+        line 156: 202
+        line 158: 208
+        line 159: 211
+        line 160: 223
+        line 161: 235
+        line 160: 264
+        line 159: 270
+        line 166: 276
+        line 168: 289
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+          140      20     8    cc   I
+          144      16     9    rr   I
+          127      39     7     c   I
+          115      57     6     r   I
+          202       6     6     e   Ljava/lang/InterruptedException;
+           94     114     4 executor   Ljava/util/concurrent/ThreadPoolExecutor;
+          112      96     5 remaining   Ljava/util/concurrent/atomic/AtomicInteger;
+          226      44     5     c   I
+          214      62     4     r   I
+            0     291     0  this   Lpt/ulisboa/tecnico/cnv/raytracer/RayTracer;
+           17     274     1 image   Ljava/awt/image/BufferedImage;
+           21     270     2 start   J
+            0     291    10 myThreadFactory   Lpt/ulisboa/tecnico/cnv/javassist/tools/MyThreadFactory;
+      StackMapTable: number_of_entries = 12
+        frame_type = 255 /* full_frame */
+          offset_delta = 115
+          locals = [ class pt/ulisboa/tecnico/cnv/raytracer/RayTracer, class java/awt/image/BufferedImage, long, class java/util/concurrent/ThreadPoolExecutor, class java/util/concurrent/atomic/AtomicInteger, int, top, top, top, top, null, int, int, long, class java/util/concurrent/TimeUnit, class java/util/concurrent/LinkedBlockingQueue, class java/util/concurrent/ThreadPoolExecutor ]
+          stack = []
+        frame_type = 255 /* full_frame */
+          offset_delta = 11
+          locals = [ class pt/ulisboa/tecnico/cnv/raytracer/RayTracer, class java/awt/image/BufferedImage, long, class java/util/concurrent/ThreadPoolExecutor, class java/util/concurrent/atomic/AtomicInteger, int, int, top, top, top, null, int, int, long, class java/util/concurrent/TimeUnit, class java/util/concurrent/LinkedBlockingQueue, class java/util/concurrent/ThreadPoolExecutor ]
+          stack = []
+        frame_type = 38 /* same */
+        frame_type = 255 /* full_frame */
+          offset_delta = 5
+          locals = [ class pt/ulisboa/tecnico/cnv/raytracer/RayTracer, class java/awt/image/BufferedImage, long, class java/util/concurrent/ThreadPoolExecutor, class java/util/concurrent/atomic/AtomicInteger, int, top, top, top, top, null, int, int, long, class java/util/concurrent/TimeUnit, class java/util/concurrent/LinkedBlockingQueue, class java/util/concurrent/ThreadPoolExecutor ]
+          stack = []
+        frame_type = 24 /* same */
+        frame_type = 66 /* same_locals_1_stack_item */
+          stack = [ class java/lang/InterruptedException ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 7
+          locals = [ class pt/ulisboa/tecnico/cnv/raytracer/RayTracer, class java/awt/image/BufferedImage, long, class java/util/concurrent/ThreadPoolExecutor, class java/util/concurrent/atomic/AtomicInteger, top, top, top, top, top, null, int, int, long, class java/util/concurrent/TimeUnit, class java/util/concurrent/LinkedBlockingQueue, class java/util/concurrent/ThreadPoolExecutor ]
+          stack = []
+        frame_type = 255 /* full_frame */
+          offset_delta = 2
+          locals = [ class pt/ulisboa/tecnico/cnv/raytracer/RayTracer, class java/awt/image/BufferedImage, long ]
+          stack = []
+        frame_type = 252 /* append */
+          offset_delta = 2
+          locals = [ int ]
+        frame_type = 252 /* append */
+          offset_delta = 11
+          locals = [ int ]
+        frame_type = 43 /* same */
+        frame_type = 249 /* chop */
+          offset_delta = 5
+
+  public java.awt.Color getPixelColor(int, int);
+    descriptor: (II)Ljava/awt/Color;
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=7, locals=9, args_size=3
+         0: aload_0
+         1: getfield      #35                 // Field wrows:I
+         4: iconst_1
+         5: isub
+         6: iload_2
+         7: isub
+         8: istore_3
+         9: getstatic     #258                // Field pt/ulisboa/tecnico/cnv/raytracer/Main.ANTI_ALIAS:Z
+        12: ifeq          139
+        15: aload_0
+        16: getfield      #261                // Field camera:Lpt/ulisboa/tecnico/cnv/raytracer/Camera;
+        19: iload_1
+        20: iload_3
+        21: dconst_0
+        22: dconst_0
+        23: invokevirtual #265                // Method pt/ulisboa/tecnico/cnv/raytracer/Camera.getRay:(IIDD)Lpt/ulisboa/tecnico/cnv/raytracer/Ray;
+        26: astore        4
+        28: aload_0
+        29: aload         4
+        31: iconst_0
+        32: invokevirtual #131                // Method trace:(Lpt/ulisboa/tecnico/cnv/raytracer/Ray;I)Ljava/awt/Color;
+        35: astore        5
+        37: aload_0
+        38: getfield      #261                // Field camera:Lpt/ulisboa/tecnico/cnv/raytracer/Camera;
+        41: iload_1
+        42: iload_3
+        43: ldc2_w        #271                // double 0.5d
+        46: dconst_0
+        47: invokevirtual #265                // Method pt/ulisboa/tecnico/cnv/raytracer/Camera.getRay:(IIDD)Lpt/ulisboa/tecnico/cnv/raytracer/Ray;
+        50: astore        4
+        52: aload_0
+        53: aload         4
+        55: iconst_0
+        56: invokevirtual #131                // Method trace:(Lpt/ulisboa/tecnico/cnv/raytracer/Ray;I)Ljava/awt/Color;
+        59: astore        6
+        61: aload_0
+        62: getfield      #261                // Field camera:Lpt/ulisboa/tecnico/cnv/raytracer/Camera;
+        65: iload_1
+        66: iload_3
+        67: dconst_0
+        68: ldc2_w        #271                // double 0.5d
+        71: invokevirtual #265                // Method pt/ulisboa/tecnico/cnv/raytracer/Camera.getRay:(IIDD)Lpt/ulisboa/tecnico/cnv/raytracer/Ray;
+        74: astore        4
+        76: aload_0
+        77: aload         4
+        79: iconst_0
+        80: invokevirtual #131                // Method trace:(Lpt/ulisboa/tecnico/cnv/raytracer/Ray;I)Ljava/awt/Color;
+        83: astore        7
+        85: aload_0
+        86: getfield      #261                // Field camera:Lpt/ulisboa/tecnico/cnv/raytracer/Camera;
+        89: iload_1
+        90: iload_3
+        91: ldc2_w        #271                // double 0.5d
+        94: ldc2_w        #271                // double 0.5d
+        97: invokevirtual #265                // Method pt/ulisboa/tecnico/cnv/raytracer/Camera.getRay:(IIDD)Lpt/ulisboa/tecnico/cnv/raytracer/Ray;
+       100: astore        4
+       102: aload_0
+       103: aload         4
+       105: iconst_0
+       106: invokevirtual #131                // Method trace:(Lpt/ulisboa/tecnico/cnv/raytracer/Ray;I)Ljava/awt/Color;
+       109: astore        8
+       111: iconst_4
+       112: anewarray     #45                 // class java/awt/Color
+       115: dup
+       116: iconst_0
+       117: aload         5
+       119: aastore
+       120: dup
+       121: iconst_1
+       122: aload         6
+       124: aastore
+       125: dup
+       126: iconst_2
+       127: aload         7
+       129: aastore
+       130: dup
+       131: iconst_3
+       132: aload         8
+       134: aastore
+       135: invokestatic  #273                // Method pt/ulisboa/tecnico/cnv/raytracer/ColorUtil.average:([Ljava/awt/Color;)Ljava/awt/Color;
+       138: areturn
+       139: aload_0
+       140: getfield      #261                // Field camera:Lpt/ulisboa/tecnico/cnv/raytracer/Camera;
+       143: iload_1
+       144: iload_3
+       145: invokevirtual #277                // Method pt/ulisboa/tecnico/cnv/raytracer/Camera.getRay:(II)Lpt/ulisboa/tecnico/cnv/raytracer/Ray;
+       148: astore        4
+       150: aload_0
+       151: aload         4
+       153: iconst_0
+       154: invokevirtual #131                // Method trace:(Lpt/ulisboa/tecnico/cnv/raytracer/Ray;I)Ljava/awt/Color;
+       157: areturn
+      LineNumberTable:
+        line 173: 0
+        line 177: 9
+        line 178: 15
+        line 179: 28
+        line 180: 37
+        line 181: 52
+        line 182: 61
+        line 183: 76
+        line 184: 85
+        line 185: 102
+        line 187: 111
+        line 189: 139
+        line 190: 150
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+           28     111     4   ray   Lpt/ulisboa/tecnico/cnv/raytracer/Ray;
+           37     102     5    c1   Ljava/awt/Color;
+           61      78     6    c2   Ljava/awt/Color;
+           85      54     7    c3   Ljava/awt/Color;
+          111      28     8    c4   Ljava/awt/Color;
+          150       8     4   ray   Lpt/ulisboa/tecnico/cnv/raytracer/Ray;
+            0     158     0  this   Lpt/ulisboa/tecnico/cnv/raytracer/RayTracer;
+            0     158     1   col   I
+            0     158     2   row   I
+            9     149     3 bmpRow   I
+      StackMapTable: number_of_entries = 1
+        frame_type = 252 /* append */
+          offset_delta = 139
+          locals = [ int ]
+
+  public void readScene(byte[], byte[]);
+    descriptor: ([B[B)V
+    flags: (0x0001) ACC_PUBLIC
+    Code:
+      stack=20, locals=21, args_size=3
+         0: new           #280                // class java/util/Scanner
+         3: dup
+         4: new           #282                // class java/io/ByteArrayInputStream
+         7: dup
+         8: aload_1
+         9: invokespecial #284                // Method java/io/ByteArrayInputStream."<init>":([B)V
+        12: invokespecial #287                // Method java/util/Scanner."<init>":(Ljava/io/InputStream;)V
+        15: astore_3
+        16: aload_3
+        17: invokestatic  #290                // Method readPoint:(Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+        20: astore        4
+        22: aload_3
+        23: invokestatic  #290                // Method readPoint:(Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+        26: astore        5
+        28: aload_3
+        29: invokestatic  #294                // Method readVector:(Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Vector;
+        32: astore        6
+        34: aload_3
+        35: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+        38: dstore        7
+        40: aload_0
+        41: new           #266                // class pt/ulisboa/tecnico/cnv/raytracer/Camera
+        44: dup
+        45: aload         4
+        47: aload         5
+        49: aload         6
+        51: dload         7
+        53: aload_0
+        54: getfield      #25                 // Field scols:I
+        57: aload_0
+        58: getfield      #29                 // Field srows:I
+        61: invokespecial #301                // Method pt/ulisboa/tecnico/cnv/raytracer/Camera."<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Vector;DII)V
+        64: putfield      #261                // Field camera:Lpt/ulisboa/tecnico/cnv/raytracer/Camera;
+        67: aload_3
+        68: invokevirtual #304                // Method java/util/Scanner.nextInt:()I
+        71: istore        9
+        73: iload         9
+        75: ifle          113
+        78: aload_0
+        79: getfield      #10                 // Field lights:Ljava/util/ArrayList;
+        82: new           #307                // class pt/ulisboa/tecnico/cnv/raytracer/AmbientLight
+        85: dup
+        86: aload_3
+        87: invokestatic  #290                // Method readPoint:(Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+        90: aload_3
+        91: invokestatic  #309                // Method readColor:(Ljava/util/Scanner;)Ljava/awt/Color;
+        94: aload_3
+        95: invokevirtual #313                // Method java/util/Scanner.nextFloat:()F
+        98: aload_3
+        99: invokevirtual #313                // Method java/util/Scanner.nextFloat:()F
+       102: aload_3
+       103: invokevirtual #313                // Method java/util/Scanner.nextFloat:()F
+       106: invokespecial #317                // Method pt/ulisboa/tecnico/cnv/raytracer/AmbientLight."<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Ljava/awt/Color;FFF)V
+       109: invokevirtual #320                // Method java/util/ArrayList.add:(Ljava/lang/Object;)Z
+       112: pop
+       113: iconst_1
+       114: istore        10
+       116: iload         10
+       118: iload         9
+       120: if_icmpge     164
+       123: aload_0
+       124: getfield      #10                 // Field lights:Ljava/util/ArrayList;
+       127: new           #54                 // class pt/ulisboa/tecnico/cnv/raytracer/Light
+       130: dup
+       131: aload_3
+       132: invokestatic  #290                // Method readPoint:(Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+       135: aload_3
+       136: invokestatic  #309                // Method readColor:(Ljava/util/Scanner;)Ljava/awt/Color;
+       139: aload_3
+       140: invokevirtual #313                // Method java/util/Scanner.nextFloat:()F
+       143: aload_3
+       144: invokevirtual #313                // Method java/util/Scanner.nextFloat:()F
+       147: aload_3
+       148: invokevirtual #313                // Method java/util/Scanner.nextFloat:()F
+       151: invokespecial #324                // Method pt/ulisboa/tecnico/cnv/raytracer/Light."<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Ljava/awt/Color;FFF)V
+       154: invokevirtual #320                // Method java/util/ArrayList.add:(Ljava/lang/Object;)Z
+       157: pop
+       158: iinc          10, 1
+       161: goto          116
+       164: aload_3
+       165: invokevirtual #304                // Method java/util/Scanner.nextInt:()I
+       168: istore        10
+       170: iconst_0
+       171: istore        11
+       173: iload         11
+       175: iload         10
+       177: if_icmpge     433
+       180: aload_3
+       181: invokevirtual #325                // Method java/util/Scanner.next:()Ljava/lang/String;
+       184: astore        12
+       186: ldc_w         #328                // String solid
+       189: aload         12
+       191: invokevirtual #330                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       194: ifeq          219
+       197: aload_0
+       198: getfield      #16                 // Field pigments:Ljava/util/ArrayList;
+       201: new           #335                // class pt/ulisboa/tecnico/cnv/raytracer/pigments/SolidPigment
+       204: dup
+       205: aload_3
+       206: invokestatic  #309                // Method readColor:(Ljava/util/Scanner;)Ljava/awt/Color;
+       209: invokespecial #337                // Method pt/ulisboa/tecnico/cnv/raytracer/pigments/SolidPigment."<init>":(Ljava/awt/Color;)V
+       212: invokevirtual #320                // Method java/util/ArrayList.add:(Ljava/lang/Object;)Z
+       215: pop
+       216: goto          427
+       219: ldc_w         #340                // String checker
+       222: aload         12
+       224: invokevirtual #330                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       227: ifeq          260
+       230: aload_0
+       231: getfield      #16                 // Field pigments:Ljava/util/ArrayList;
+       234: new           #342                // class pt/ulisboa/tecnico/cnv/raytracer/pigments/CheckerPigment
+       237: dup
+       238: aload_3
+       239: invokestatic  #309                // Method readColor:(Ljava/util/Scanner;)Ljava/awt/Color;
+       242: aload_3
+       243: invokestatic  #309                // Method readColor:(Ljava/util/Scanner;)Ljava/awt/Color;
+       246: aload_3
+       247: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+       250: invokespecial #344                // Method pt/ulisboa/tecnico/cnv/raytracer/pigments/CheckerPigment."<init>":(Ljava/awt/Color;Ljava/awt/Color;D)V
+       253: invokevirtual #320                // Method java/util/ArrayList.add:(Ljava/lang/Object;)Z
+       256: pop
+       257: goto          427
+       260: ldc_w         #347                // String gradient
+       263: aload         12
+       265: invokevirtual #330                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       268: ifeq          305
+       271: aload_0
+       272: getfield      #16                 // Field pigments:Ljava/util/ArrayList;
+       275: new           #349                // class pt/ulisboa/tecnico/cnv/raytracer/pigments/GradientPigment
+       278: dup
+       279: aload_3
+       280: invokestatic  #290                // Method readPoint:(Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+       283: aload_3
+       284: invokestatic  #294                // Method readVector:(Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Vector;
+       287: aload_3
+       288: invokestatic  #309                // Method readColor:(Ljava/util/Scanner;)Ljava/awt/Color;
+       291: aload_3
+       292: invokestatic  #309                // Method readColor:(Ljava/util/Scanner;)Ljava/awt/Color;
+       295: invokespecial #351                // Method pt/ulisboa/tecnico/cnv/raytracer/pigments/GradientPigment."<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Vector;Ljava/awt/Color;Ljava/awt/Color;)V
+       298: invokevirtual #320                // Method java/util/ArrayList.add:(Ljava/lang/Object;)Z
+       301: pop
+       302: goto          427
+       305: ldc_w         #354                // String texmap
+       308: aload         12
+       310: invokevirtual #330                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       313: ifeq          412
+       316: aload_3
+       317: invokevirtual #325                // Method java/util/Scanner.next:()Ljava/lang/String;
+       320: pop
+       321: aload_2
+       322: ifnull        395
+       325: aload_0
+       326: getfield      #16                 // Field pigments:Ljava/util/ArrayList;
+       329: new           #356                // class pt/ulisboa/tecnico/cnv/raytracer/pigments/TexmapPigment
+       332: dup
+       333: aload_2
+       334: aload_3
+       335: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+       338: aload_3
+       339: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+       342: aload_3
+       343: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+       346: aload_3
+       347: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+       350: aload_3
+       351: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+       354: aload_3
+       355: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+       358: aload_3
+       359: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+       362: aload_3
+       363: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+       366: invokespecial #358                // Method pt/ulisboa/tecnico/cnv/raytracer/pigments/TexmapPigment."<init>":([BDDDDDDDD)V
+       369: invokevirtual #320                // Method java/util/ArrayList.add:(Ljava/lang/Object;)Z
+       372: pop
+       373: goto          427
+       376: astore        13
+       378: ldc_w         #363                // String Could not read texmap file.
+       381: invokestatic  #365                // Method pt/ulisboa/tecnico/cnv/raytracer/Log.error:(Ljava/lang/String;)V
+       384: new           #368                // class java/lang/RuntimeException
+       387: dup
+       388: ldc_w         #363                // String Could not read texmap file.
+       391: invokespecial #370                // Method java/lang/RuntimeException."<init>":(Ljava/lang/String;)V
+       394: athrow
+       395: ldc_w         #372                // String Could not find texmap file.
+       398: invokestatic  #365                // Method pt/ulisboa/tecnico/cnv/raytracer/Log.error:(Ljava/lang/String;)V
+       401: new           #368                // class java/lang/RuntimeException
+       404: dup
+       405: ldc_w         #372                // String Could not find texmap file.
+       408: invokespecial #370                // Method java/lang/RuntimeException."<init>":(Ljava/lang/String;)V
+       411: athrow
+       412: new           #374                // class java/lang/UnsupportedOperationException
+       415: dup
+       416: aload         12
+       418: invokedynamic #376,  0            // InvokeDynamic #2:makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;
+       423: invokespecial #379                // Method java/lang/UnsupportedOperationException."<init>":(Ljava/lang/String;)V
+       426: athrow
+       427: iinc          11, 1
+       430: goto          173
+       433: aload_3
+       434: invokevirtual #304                // Method java/util/Scanner.nextInt:()I
+       437: istore        11
+       439: iconst_0
+       440: istore        12
+       442: iload         12
+       444: iload         11
+       446: if_icmpge     498
+       449: aload_0
+       450: getfield      #19                 // Field finishes:Ljava/util/ArrayList;
+       453: new           #69                 // class pt/ulisboa/tecnico/cnv/raytracer/pigments/Finish
+       456: dup
+       457: aload_3
+       458: invokevirtual #313                // Method java/util/Scanner.nextFloat:()F
+       461: aload_3
+       462: invokevirtual #313                // Method java/util/Scanner.nextFloat:()F
+       465: aload_3
+       466: invokevirtual #313                // Method java/util/Scanner.nextFloat:()F
+       469: aload_3
+       470: invokevirtual #313                // Method java/util/Scanner.nextFloat:()F
+       473: aload_3
+       474: invokevirtual #313                // Method java/util/Scanner.nextFloat:()F
+       477: aload_3
+       478: invokevirtual #313                // Method java/util/Scanner.nextFloat:()F
+       481: aload_3
+       482: invokevirtual #313                // Method java/util/Scanner.nextFloat:()F
+       485: invokespecial #380                // Method pt/ulisboa/tecnico/cnv/raytracer/pigments/Finish."<init>":(FFFFFFF)V
+       488: invokevirtual #320                // Method java/util/ArrayList.add:(Ljava/lang/Object;)Z
+       491: pop
+       492: iinc          12, 1
+       495: goto          442
+       498: aload_3
+       499: invokevirtual #304                // Method java/util/Scanner.nextInt:()I
+       502: istore        12
+       504: iconst_0
+       505: istore        13
+       507: iload         13
+       509: iload         12
+       511: if_icmpge     986
+       514: aload_3
+       515: invokevirtual #304                // Method java/util/Scanner.nextInt:()I
+       518: istore        14
+       520: aload_3
+       521: invokevirtual #304                // Method java/util/Scanner.nextInt:()I
+       524: istore        15
+       526: aload_3
+       527: invokevirtual #325                // Method java/util/Scanner.next:()Ljava/lang/String;
+       530: astore        16
+       532: ldc_w         #383                // String sphere
+       535: aload         16
+       537: invokevirtual #330                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       540: ifeq          563
+       543: new           #385                // class pt/ulisboa/tecnico/cnv/raytracer/shapes/Sphere
+       546: dup
+       547: aload_3
+       548: invokestatic  #290                // Method readPoint:(Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+       551: aload_3
+       552: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+       555: invokespecial #387                // Method pt/ulisboa/tecnico/cnv/raytracer/shapes/Sphere."<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;D)V
+       558: astore        17
+       560: goto          941
+       563: ldc_w         #390                // String plane
+       566: aload         16
+       568: invokevirtual #330                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       571: ifeq          602
+       574: new           #392                // class pt/ulisboa/tecnico/cnv/raytracer/shapes/Plane
+       577: dup
+       578: aload_3
+       579: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+       582: aload_3
+       583: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+       586: aload_3
+       587: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+       590: aload_3
+       591: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+       594: invokespecial #394                // Method pt/ulisboa/tecnico/cnv/raytracer/shapes/Plane."<init>":(DDDD)V
+       597: astore        17
+       599: goto          941
+       602: ldc_w         #397                // String cylinder
+       605: aload         16
+       607: invokevirtual #330                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       610: ifeq          637
+       613: new           #399                // class pt/ulisboa/tecnico/cnv/raytracer/shapes/Cylinder
+       616: dup
+       617: aload_3
+       618: invokestatic  #290                // Method readPoint:(Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+       621: aload_3
+       622: invokestatic  #294                // Method readVector:(Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Vector;
+       625: aload_3
+       626: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+       629: invokespecial #401                // Method pt/ulisboa/tecnico/cnv/raytracer/shapes/Cylinder."<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Vector;D)V
+       632: astore        17
+       634: goto          941
+       637: ldc_w         #404                // String cone
+       640: aload         16
+       642: invokevirtual #330                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       645: ifeq          672
+       648: new           #406                // class pt/ulisboa/tecnico/cnv/raytracer/shapes/Cone
+       651: dup
+       652: aload_3
+       653: invokestatic  #290                // Method readPoint:(Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+       656: aload_3
+       657: invokestatic  #294                // Method readVector:(Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Vector;
+       660: aload_3
+       661: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+       664: invokespecial #408                // Method pt/ulisboa/tecnico/cnv/raytracer/shapes/Cone."<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Vector;D)V
+       667: astore        17
+       669: goto          941
+       672: ldc_w         #409                // String disc
+       675: aload         16
+       677: invokevirtual #330                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       680: ifeq          707
+       683: new           #411                // class pt/ulisboa/tecnico/cnv/raytracer/shapes/Disc
+       686: dup
+       687: aload_3
+       688: invokestatic  #290                // Method readPoint:(Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+       691: aload_3
+       692: invokestatic  #294                // Method readVector:(Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Vector;
+       695: aload_3
+       696: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+       699: invokespecial #413                // Method pt/ulisboa/tecnico/cnv/raytracer/shapes/Disc."<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Vector;D)V
+       702: astore        17
+       704: goto          941
+       707: ldc_w         #414                // String polyhedron
+       710: aload         16
+       712: invokevirtual #330                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       715: ifeq          794
+       718: aload_3
+       719: invokevirtual #304                // Method java/util/Scanner.nextInt:()I
+       722: istore        18
+       724: new           #7                  // class java/util/ArrayList
+       727: dup
+       728: iload         18
+       730: invokespecial #416                // Method java/util/ArrayList."<init>":(I)V
+       733: astore        19
+       735: iconst_0
+       736: istore        20
+       738: iload         20
+       740: iload         18
+       742: if_icmpge     780
+       745: aload         19
+       747: new           #417                // class pt/ulisboa/tecnico/cnv/raytracer/shapes/Polygon
+       750: dup
+       751: aload_3
+       752: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+       755: aload_3
+       756: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+       759: aload_3
+       760: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+       763: aload_3
+       764: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+       767: invokespecial #419                // Method pt/ulisboa/tecnico/cnv/raytracer/shapes/Polygon."<init>":(DDDD)V
+       770: invokevirtual #320                // Method java/util/ArrayList.add:(Ljava/lang/Object;)Z
+       773: pop
+       774: iinc          20, 1
+       777: goto          738
+       780: new           #420                // class pt/ulisboa/tecnico/cnv/raytracer/shapes/Polyhedron
+       783: dup
+       784: aload         19
+       786: invokespecial #422                // Method pt/ulisboa/tecnico/cnv/raytracer/shapes/Polyhedron."<init>":(Ljava/util/List;)V
+       789: astore        17
+       791: goto          941
+       794: ldc_w         #425                // String triangle
+       797: aload         16
+       799: invokevirtual #330                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       802: ifeq          829
+       805: new           #427                // class pt/ulisboa/tecnico/cnv/raytracer/shapes/Triangle
+       808: dup
+       809: aload_3
+       810: invokestatic  #290                // Method readPoint:(Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+       813: aload_3
+       814: invokestatic  #290                // Method readPoint:(Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+       817: aload_3
+       818: invokestatic  #290                // Method readPoint:(Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+       821: invokespecial #429                // Method pt/ulisboa/tecnico/cnv/raytracer/shapes/Triangle."<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Point;)V
+       824: astore        17
+       826: goto          941
+       829: ldc_w         #432                // String parallelogram
+       832: aload         16
+       834: invokevirtual #330                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       837: ifeq          864
+       840: new           #434                // class pt/ulisboa/tecnico/cnv/raytracer/shapes/Parallelogram
+       843: dup
+       844: aload_3
+       845: invokestatic  #290                // Method readPoint:(Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+       848: aload_3
+       849: invokestatic  #290                // Method readPoint:(Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+       852: aload_3
+       853: invokestatic  #290                // Method readPoint:(Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+       856: invokespecial #436                // Method pt/ulisboa/tecnico/cnv/raytracer/shapes/Parallelogram."<init>":(Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Point;Lpt/ulisboa/tecnico/cnv/raytracer/Point;)V
+       859: astore        17
+       861: goto          941
+       864: ldc_w         #437                // String bezier
+       867: aload         16
+       869: invokevirtual #330                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       872: ifeq          926
+       875: new           #7                  // class java/util/ArrayList
+       878: dup
+       879: bipush        16
+       881: invokespecial #416                // Method java/util/ArrayList."<init>":(I)V
+       884: astore        18
+       886: iconst_0
+       887: istore        19
+       889: iload         19
+       891: bipush        16
+       893: if_icmpge     912
+       896: aload         18
+       898: aload_3
+       899: invokestatic  #290                // Method readPoint:(Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+       902: invokevirtual #320                // Method java/util/ArrayList.add:(Ljava/lang/Object;)Z
+       905: pop
+       906: iinc          19, 1
+       909: goto          889
+       912: new           #439                // class pt/ulisboa/tecnico/cnv/raytracer/shapes/Bezier
+       915: dup
+       916: aload         18
+       918: invokespecial #441                // Method pt/ulisboa/tecnico/cnv/raytracer/shapes/Bezier."<init>":(Ljava/util/List;)V
+       921: astore        17
+       923: goto          941
+       926: new           #374                // class java/lang/UnsupportedOperationException
+       929: dup
+       930: aload         16
+       932: invokedynamic #442,  0            // InvokeDynamic #3:makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;
+       937: invokespecial #379                // Method java/lang/UnsupportedOperationException."<init>":(Ljava/lang/String;)V
+       940: athrow
+       941: aload         17
+       943: aload_0
+       944: getfield      #16                 // Field pigments:Ljava/util/ArrayList;
+       947: iload         14
+       949: invokevirtual #50                 // Method java/util/ArrayList.get:(I)Ljava/lang/Object;
+       952: checkcast     #443                // class pt/ulisboa/tecnico/cnv/raytracer/pigments/Pigment
+       955: aload_0
+       956: getfield      #19                 // Field finishes:Ljava/util/ArrayList;
+       959: iload         15
+       961: invokevirtual #50                 // Method java/util/ArrayList.get:(I)Ljava/lang/Object;
+       964: checkcast     #69                 // class pt/ulisboa/tecnico/cnv/raytracer/pigments/Finish
+       967: invokevirtual #445                // Method pt/ulisboa/tecnico/cnv/raytracer/shapes/Shape.setMaterial:(Lpt/ulisboa/tecnico/cnv/raytracer/pigments/Pigment;Lpt/ulisboa/tecnico/cnv/raytracer/pigments/Finish;)V
+       970: aload_0
+       971: getfield      #22                 // Field shapes:Ljava/util/ArrayList;
+       974: aload         17
+       976: invokevirtual #320                // Method java/util/ArrayList.add:(Ljava/lang/Object;)Z
+       979: pop
+       980: iinc          13, 1
+       983: goto          507
+       986: return
+      Exception table:
+         from    to  target type
+           325   373   376   Class java/io/IOException
+      LineNumberTable:
+        line 198: 0
+        line 201: 16
+        line 202: 22
+        line 203: 28
+        line 204: 34
+        line 205: 40
+        line 208: 67
+        line 209: 73
+        line 210: 113
+        line 211: 123
+        line 210: 158
+        line 215: 164
+        line 216: 170
+        line 217: 180
+        line 218: 186
+        line 219: 197
+        line 220: 219
+        line 221: 230
+        line 222: 260
+        line 223: 271
+        line 224: 305
+        line 227: 316
+        line 228: 321
+        line 230: 325
+        line 234: 373
+        line 231: 376
+        line 232: 378
+        line 233: 384
+        line 236: 395
+        line 237: 401
+        line 240: 412
+        line 216: 427
+        line 245: 433
+        line 246: 439
+        line 247: 449
+        line 246: 492
+        line 251: 498
+        line 252: 504
+        line 253: 514
+        line 254: 520
+        line 255: 526
+        line 257: 532
+        line 258: 543
+        line 259: 563
+        line 260: 574
+        line 261: 602
+        line 262: 613
+        line 263: 637
+        line 264: 648
+        line 265: 672
+        line 266: 683
+        line 267: 707
+        line 268: 718
+        line 269: 724
+        line 270: 735
+        line 271: 745
+        line 270: 774
+        line 273: 780
+        line 274: 791
+        line 275: 805
+        line 276: 829
+        line 277: 840
+        line 278: 864
+        line 279: 875
+        line 280: 886
+        line 281: 896
+        line 280: 906
+        line 283: 912
+        line 284: 923
+        line 285: 926
+        line 288: 941
+        line 289: 970
+        line 252: 980
+        line 291: 986
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+          116      48    10     i   I
+          378      17    13     e   Ljava/io/IOException;
+          186     241    12  name   Ljava/lang/String;
+          173     260    11     i   I
+          442      56    12     i   I
+          560       3    17 shape   Lpt/ulisboa/tecnico/cnv/raytracer/shapes/Shape;
+          599       3    17 shape   Lpt/ulisboa/tecnico/cnv/raytracer/shapes/Shape;
+          634       3    17 shape   Lpt/ulisboa/tecnico/cnv/raytracer/shapes/Shape;
+          669       3    17 shape   Lpt/ulisboa/tecnico/cnv/raytracer/shapes/Shape;
+          704       3    17 shape   Lpt/ulisboa/tecnico/cnv/raytracer/shapes/Shape;
+          738      42    20     f   I
+          724      67    18 numFaces   I
+          735      56    19 faces   Ljava/util/ArrayList;
+          791       3    17 shape   Lpt/ulisboa/tecnico/cnv/raytracer/shapes/Shape;
+          826       3    17 shape   Lpt/ulisboa/tecnico/cnv/raytracer/shapes/Shape;
+          861       3    17 shape   Lpt/ulisboa/tecnico/cnv/raytracer/shapes/Shape;
+          889      23    19     s   I
+          886      37    18 points   Ljava/util/ArrayList;
+          923       3    17 shape   Lpt/ulisboa/tecnico/cnv/raytracer/shapes/Shape;
+          520     460    14 pigNum   I
+          526     454    15 finishNum   I
+          532     448    16  name   Ljava/lang/String;
+          941      39    17 shape   Lpt/ulisboa/tecnico/cnv/raytracer/shapes/Shape;
+          507     479    13     i   I
+            0     987     0  this   Lpt/ulisboa/tecnico/cnv/raytracer/RayTracer;
+            0     987     1 input   [B
+            0     987     2 texmap   [B
+           16     971     3 scanner   Ljava/util/Scanner;
+           22     965     4   eye   Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+           28     959     5 center   Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+           34     953     6    up   Lpt/ulisboa/tecnico/cnv/raytracer/Vector;
+           40     947     7  fovy   D
+           73     914     9 numLights   I
+          170     817    10 numPigments   I
+          439     548    11 numFins   I
+          504     483    12 numShapes   I
+      LocalVariableTypeTable:
+        Start  Length  Slot  Name   Signature
+          735      56    19 faces   Ljava/util/ArrayList<Lpt/ulisboa/tecnico/cnv/raytracer/shapes/Polygon;>;
+          886      37    18 points   Ljava/util/ArrayList<Lpt/ulisboa/tecnico/cnv/raytracer/Point;>;
+      StackMapTable: number_of_entries = 30
+        frame_type = 255 /* full_frame */
+          offset_delta = 113
+          locals = [ class pt/ulisboa/tecnico/cnv/raytracer/RayTracer, class "[B", class "[B", class java/util/Scanner, class pt/ulisboa/tecnico/cnv/raytracer/Point, class pt/ulisboa/tecnico/cnv/raytracer/Point, class pt/ulisboa/tecnico/cnv/raytracer/Vector, double, int ]
+          stack = []
+        frame_type = 252 /* append */
+          offset_delta = 2
+          locals = [ int ]
+        frame_type = 250 /* chop */
+          offset_delta = 47
+        frame_type = 253 /* append */
+          offset_delta = 8
+          locals = [ int, int ]
+        frame_type = 252 /* append */
+          offset_delta = 45
+          locals = [ class java/lang/String ]
+        frame_type = 40 /* same */
+        frame_type = 44 /* same */
+        frame_type = 247 /* same_locals_1_stack_item_frame_extended */
+          offset_delta = 70
+          stack = [ class java/io/IOException ]
+        frame_type = 18 /* same */
+        frame_type = 16 /* same */
+        frame_type = 250 /* chop */
+          offset_delta = 14
+        frame_type = 250 /* chop */
+          offset_delta = 5
+        frame_type = 253 /* append */
+          offset_delta = 8
+          locals = [ int, int ]
+        frame_type = 250 /* chop */
+          offset_delta = 55
+        frame_type = 253 /* append */
+          offset_delta = 8
+          locals = [ int, int ]
+        frame_type = 254 /* append */
+          offset_delta = 55
+          locals = [ int, int, class java/lang/String ]
+        frame_type = 38 /* same */
+        frame_type = 34 /* same */
+        frame_type = 34 /* same */
+        frame_type = 34 /* same */
+        frame_type = 255 /* full_frame */
+          offset_delta = 30
+          locals = [ class pt/ulisboa/tecnico/cnv/raytracer/RayTracer, class "[B", class "[B", class java/util/Scanner, class pt/ulisboa/tecnico/cnv/raytracer/Point, class pt/ulisboa/tecnico/cnv/raytracer/Point, class pt/ulisboa/tecnico/cnv/raytracer/Vector, double, int, int, int, int, int, int, int, class java/lang/String, top, int, class java/util/ArrayList, int ]
+          stack = []
+        frame_type = 250 /* chop */
+          offset_delta = 41
+        frame_type = 248 /* chop */
+          offset_delta = 13
+        frame_type = 34 /* same */
+        frame_type = 34 /* same */
+        frame_type = 254 /* append */
+          offset_delta = 24
+          locals = [ top, class java/util/ArrayList, int ]
+        frame_type = 250 /* chop */
+          offset_delta = 22
+        frame_type = 249 /* chop */
+          offset_delta = 13
+        frame_type = 252 /* append */
+          offset_delta = 14
+          locals = [ class pt/ulisboa/tecnico/cnv/raytracer/shapes/Shape ]
+        frame_type = 255 /* full_frame */
+          offset_delta = 44
+          locals = [ class pt/ulisboa/tecnico/cnv/raytracer/RayTracer, class "[B", class "[B", class java/util/Scanner, class pt/ulisboa/tecnico/cnv/raytracer/Point, class pt/ulisboa/tecnico/cnv/raytracer/Point, class pt/ulisboa/tecnico/cnv/raytracer/Vector, double, int, int, int, int ]
+          stack = []
+
+  private static java.awt.Color readColor(java.util.Scanner);
+    descriptor: (Ljava/util/Scanner;)Ljava/awt/Color;
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=5, locals=1, args_size=1
+         0: new           #45                 // class java/awt/Color
+         3: dup
+         4: aload_0
+         5: invokevirtual #313                // Method java/util/Scanner.nextFloat:()F
+         8: invokestatic  #449                // Method pt/ulisboa/tecnico/cnv/raytracer/ColorUtil.clamp:(F)F
+        11: aload_0
+        12: invokevirtual #313                // Method java/util/Scanner.nextFloat:()F
+        15: invokestatic  #449                // Method pt/ulisboa/tecnico/cnv/raytracer/ColorUtil.clamp:(F)F
+        18: aload_0
+        19: invokevirtual #313                // Method java/util/Scanner.nextFloat:()F
+        22: invokestatic  #449                // Method pt/ulisboa/tecnico/cnv/raytracer/ColorUtil.clamp:(F)F
+        25: invokespecial #453                // Method java/awt/Color."<init>":(FFF)V
+        28: areturn
+      LineNumberTable:
+        line 294: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      29     0 scanner   Ljava/util/Scanner;
+
+  private static pt.ulisboa.tecnico.cnv.raytracer.Vector readVector(java.util.Scanner);
+    descriptor: (Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Vector;
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=8, locals=1, args_size=1
+         0: new           #98                 // class pt/ulisboa/tecnico/cnv/raytracer/Vector
+         3: dup
+         4: aload_0
+         5: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+         8: aload_0
+         9: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+        12: aload_0
+        13: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+        16: invokespecial #456                // Method pt/ulisboa/tecnico/cnv/raytracer/Vector."<init>":(DDD)V
+        19: areturn
+      LineNumberTable:
+        line 297: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      20     0 scanner   Ljava/util/Scanner;
+
+  private static pt.ulisboa.tecnico.cnv.raytracer.Point readPoint(java.util.Scanner);
+    descriptor: (Ljava/util/Scanner;)Lpt/ulisboa/tecnico/cnv/raytracer/Point;
+    flags: (0x000a) ACC_PRIVATE, ACC_STATIC
+    Code:
+      stack=8, locals=1, args_size=1
+         0: new           #459                // class pt/ulisboa/tecnico/cnv/raytracer/Point
+         3: dup
+         4: aload_0
+         5: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+         8: aload_0
+         9: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+        12: aload_0
+        13: invokevirtual #298                // Method java/util/Scanner.nextDouble:()D
+        16: invokespecial #461                // Method pt/ulisboa/tecnico/cnv/raytracer/Point."<init>":(DDD)V
+        19: areturn
+      LineNumberTable:
+        line 300: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      20     0 scanner   Ljava/util/Scanner;
+
+  private void lambda$draw$0(java.awt.image.BufferedImage, int, int);
+    descriptor: (Ljava/awt/image/BufferedImage;II)V
+    flags: (0x1002) ACC_PRIVATE, ACC_SYNTHETIC
+    Code:
+      stack=7, locals=4, args_size=4
+         0: aload_1
+         1: iload_2
+         2: iload_3
+         3: aload_0
+         4: iload_2
+         5: aload_0
+         6: getfield      #38                 // Field coff:I
+         9: iadd
+        10: iload_3
+        11: aload_0
+        12: getfield      #41                 // Field roff:I
+        15: iadd
+        16: invokevirtual #238                // Method getPixelColor:(II)Ljava/awt/Color;
+        19: invokevirtual #242                // Method java/awt/Color.getRGB:()I
+        22: invokevirtual #245                // Method java/awt/image/BufferedImage.setRGB:(III)V
+        25: return
+      LineNumberTable:
+        line 146: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0      26     0  this   Lpt/ulisboa/tecnico/cnv/raytracer/RayTracer;
+            0      26     1 image   Ljava/awt/image/BufferedImage;
+            0      26     2    cc   I
+            0      26     3    rr   I
+
+  static {};
+    descriptor: ()V
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=1, locals=0, args_size=0
+         0: getstatic     #462                // Field java/awt/Color.GRAY:Ljava/awt/Color;
+         3: putstatic     #171                // Field BACKGROUND_COLOR:Ljava/awt/Color;
+         6: return
+      LineNumberTable:
+        line 17: 0
+}
+SourceFile: "RayTracer.java"
+BootstrapMethods:
+  0: #551 REF_invokeStatic java/lang/invoke/LambdaMetafactory.metafactory:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #558 ()V
+      #559 REF_invokeSpecial pt/ulisboa/tecnico/cnv/raytracer/RayTracer.lambda$draw$0:(Ljava/awt/image/BufferedImage;II)V
+      #558 ()V
+  1: #562 REF_invokeStatic java/lang/invoke/StringConcatFactory.makeConcatWithConstants:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #568 Finished in: \u0001ms
+  2: #562 REF_invokeStatic java/lang/invoke/StringConcatFactory.makeConcatWithConstants:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #570 Unrecognized pigment: \'\u0001\'.
+  3: #562 REF_invokeStatic java/lang/invoke/StringConcatFactory.makeConcatWithConstants:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;
+    Method arguments:
+      #572 Unrecognized shape: \'\u0001\'.
+InnerClasses:
+  public static final #579= #575 of #577; // Lookup=class java/lang/invoke/MethodHandles$Lookup of class java/lang/invoke/MethodHandles
