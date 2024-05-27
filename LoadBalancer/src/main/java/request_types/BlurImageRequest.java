@@ -30,9 +30,10 @@ public class BlurImageRequest extends AbstractRequestType {
 		System.out.println(toString());
 	}
 
+	//there are doubts if this is right
 	private long calculateTotalSizeInBytes(BufferedImage image) {
 		ColorModel colorModel = image.getColorModel();
-		int bytesPerPixel = colorModel.getPixelSize() / 8; // 8 Bits pro Byte
+		int bytesPerPixel = colorModel.getPixelSize();
 		return (long) pixelCount * bytesPerPixel;
 	}
 
