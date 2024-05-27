@@ -48,3 +48,52 @@ After setting up the configuration, there are two main scripts that will help yo
 - [initializeServerLB.sh](reate-image.sh), launches 2 VMs, one with the Webserver and another with the LoadBalancer running on ports 8000 and 8001 respectivly;
 
 - [terminateVM.sh](terminateVM.sh), terminates all deployed EC2 machines;
+
+
+
+## To Create WebserviceVM
+1. Execute [launchBasicVM.sh](launchBasicVM.sh).
+2. When its ready execute [setupVM.sh](setupVM.sh) - installs all the needed dependancies like Java17, Maven, git repo and etc. Also starts the webservice + javaagent.
+3. Connect manually via ssh to the VM - ssh -i ~/.aws/key.pem ec2-user@publicIP 
+4. Execute the following:
+```
+sudo nano /etc/systemd/system/rc-local.service
+```
+
+Copy and paste in the rc-local.service:
+```
+[Unit]
+ Description=/etc/rc.local Compatibility
+ ConditionPathExists=/etc/rc.local
+
+[Service]
+ Type=forking
+ ExecStart=/etc/rc.local start
+ TimeoutSec=0
+ StandardOutput=tty
+ RemainAfterExit=yes
+ SysVStartPriority=99
+
+[Install]
+ WantedBy=multi-user.target
+```
+
+Save it and create:
+
+```
+sudo touch /etc/rc.local
+sudo chmod +x /etc/rc.local
+```
+Open the file and paste there:
+```
+sudo nano /etc/rc.local
+
+nohup java -cp cnv24-g22-master/webserver/target/webserver-1.0.0-SNAPSHOT-jar-with-dependencies.jar -javaagent:javaagent/target/JavassistWrapper-1.0-jar-with-dependencies.jar=MethodExecutionTimer:pt.ulisboa.tecnico.cnv:output pt.ulisboa.tecnico.cnv.webserver.WebServer > /tmp/webserver.log 2>&1 &
+
+```
+Save it and you can reboot the EC2 instance.
+
+Try if the service is working with a call. If yes, Right click on the EC2 instance -> Image and templates -> Create Image 
+
+Once the image is available, copy the image ID and paste it in the project to recreate every time working EC2 worker.
+
