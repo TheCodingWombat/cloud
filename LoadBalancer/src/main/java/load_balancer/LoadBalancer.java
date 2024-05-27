@@ -48,37 +48,37 @@ public class LoadBalancer implements HttpHandler {
 
 		boolean instanceAvailable = AwsEc2Manager.checkAvailableInstances();
 
-		if (instances.isEmpty() && !instanceAvailable) {
-			deployNewInstance();
-			CURRENT_INSTANCES++;
+//		if (instances.isEmpty() && !instanceAvailable) {
+//			deployNewInstance();
+//			CURRENT_INSTANCES++;
+//
+//		} else if (instanceAvailable && instances.isEmpty()) {
+//			System.out.println("Instance already available and we are going to distribute the call");
+//			instances.addAll(AwsEc2Manager.getAllRunningInstances());
+//			instanceIP = instances.get(0).publicIpAddress();
+//			instanceID = instances.get(0).instanceId();
+//
+//			for (Instance inst : instances) {
+//				instanceRequestCount.put(inst.instanceId(), 0);
+//				CURRENT_INSTANCES++;
+//			}
+//		} else if (!instances.isEmpty()) {
+//			System.out.println("Instance already available and we are going to distribute the call");
+//			// Check if there is an instance with 3 current requests if yes deploy new instance
+//			if (instanceRequestCount.get(instanceID) == REQUEST_COUNT_MAX && CURRENT_INSTANCES <= MAX_INSTANCES) {
+//				deployNewInstance();
+//			}
+//			else {
+//				System.out.println("MAX INSTANCES IS REACHED");
+//			}
+//		}
+//
+//		// Increment request count for the chosen instance
+//		instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) + 1);
+//		System.out.println("Request count for instance: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
+//
 
-		} else if (instanceAvailable && instances.isEmpty()) {
-			System.out.println("Instance already available and we are going to distribute the call");
-			instances.addAll(AwsEc2Manager.getAllRunningInstances());
-			instanceIP = instances.get(0).publicIpAddress();
-			instanceID = instances.get(0).instanceId();
-
-			for (Instance inst : instances) {
-				instanceRequestCount.put(inst.instanceId(), 0);
-				CURRENT_INSTANCES++;
-			}
-		} else if (!instances.isEmpty()) {
-			System.out.println("Instance already available and we are going to distribute the call");
-			// Check if there is an instance with 3 current requests if yes deploy new instance
-			if (instanceRequestCount.get(instanceID) == REQUEST_COUNT_MAX && CURRENT_INSTANCES <= MAX_INSTANCES) {
-				deployNewInstance();
-			}
-			else {
-				System.out.println("MAX INSTANCES IS REACHED");
-			}
-		}
-
-		// Increment request count for the chosen instance
-		instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) + 1);
-		System.out.println("Request count for instance: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
-
-
-		//instanceIP = "localhost";
+		instanceIP = "localhost";
 		forwardRequest(exchange, requestBody, estimation, requestType, instanceIP, instanceID);
 	}
 
@@ -99,8 +99,8 @@ public class LoadBalancer implements HttpHandler {
 		int statusCode = HttpRequestUtils.sendResponseToClient(exchange, connection);
 
 		// Decrement request count for the chosen instance after response is sent
-		instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) - 1);
-		System.out.println("Request count for instance now is: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
+//		instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) - 1);
+//		System.out.println("Request count for instance now is: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
 
 		RequestMetrics metrics = extractMetrics(connection);
 		MetricStorageSystem.storeMetric(requestType, metrics);

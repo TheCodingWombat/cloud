@@ -1,38 +1,39 @@
 package request_types;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
+import javax.imageio.ImageIO;
 
 import com.sun.net.httpserver.HttpExchange;
 
-import utils.HttpRequestUtils;
+import utils.PictureFormat;
 
 public class BlurImageRequest extends AbstractRequestType {
 
-	public static enum PictureFormat {
-		BMP, JPEG, PNG, OTHER;
-
-		public static PictureFormat ofString(String name) {
-			switch (name) {
-			case "jpeg":
-				return JPEG;
-			case "bmp":
-				return BMP;
-			case "png":
-				return PNG;
-
-			default:
-				return OTHER;
-			}
-		}
-	}
-
 	private final PictureFormat pictureFormat;
-
+	private final int width;
+	private final int height;
+	private final int pixelCount;
+	private final long totalSizeInBytes;
+	
 	public BlurImageRequest(HttpExchange exchange, String requestBody) {
 		this.pictureFormat = setPictureFormat(requestBody);
+		BufferedImage image = base64ToBufferedImage(requestBody);
+		width = image.getWidth();
+		height = image.getHeight();
+		pixelCount = image.getWidth() * image.getHeight(); 
+		totalSizeInBytes = calculateTotalSizeInBytes(image);
+		System.out.println(toString());
+	}
 
+	private long calculateTotalSizeInBytes(BufferedImage image) {
+		ColorModel colorModel = image.getColorModel();
+		int bytesPerPixel = colorModel.getPixelSize() / 8; // 8 Bits pro Byte
+		return (long) pixelCount * bytesPerPixel;
 	}
 
 	private PictureFormat setPictureFormat(String requestBody) {
@@ -50,5 +51,35 @@ public class BlurImageRequest extends AbstractRequestType {
 		} else {
 			throw new IllegalArgumentException("Payload does not match expectation");
 		}
+	}
+
+	private BufferedImage base64ToBufferedImage(String base64DecodedPicture) {
+		String cleanBase64String = convertToCleanString(base64DecodedPicture);
+		return base64ToImage(cleanBase64String);
+	}
+
+	private String convertToCleanString(String base64DecodedPicture) {
+		int firstSemicolonIndex = base64DecodedPicture.indexOf(',');
+		return base64DecodedPicture.substring(firstSemicolonIndex + 1);
+	}
+
+	private BufferedImage base64ToImage(String base64DecodedPicture) {
+		byte[] imageBytes = Base64.getDecoder().decode(base64DecodedPicture);
+		BufferedImage image;
+		try {
+			image = ImageIO.read(new ByteArrayInputStream(imageBytes));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		if (image == null) {
+			throw new RuntimeException("Picture could not be loaded");
+		}
+		return image;
+	}
+
+	@Override
+	public String toString() {
+		return "BlurImageRequest [pictureFormat=" + pictureFormat + ", width=" + width + ", height=" + height
+				+ ", pixelCount=" + pixelCount + ", totalSizeInBytes=" + totalSizeInBytes + "]";
 	}
 }
