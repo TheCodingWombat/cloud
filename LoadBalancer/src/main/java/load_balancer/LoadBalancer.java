@@ -25,10 +25,10 @@ import deployment_manager.AwsEc2Manager;
 import software.amazon.awssdk.services.ec2.model.Instance;
 
 public class LoadBalancer implements HttpHandler {
-
-	private static final double CPU_THRESHOLD = 75.0; // CPU usage threshold in percentage
+	// CPU usage threshold in percentage
 	private static final int MAX_INSTANCES = 5; // Maximum number of instances to deploy
 	private static final int MIN_INSTANCES = 1; // Minimum number of instances to keep running
+	private static int CURRENT_INSTANCES = 0; // Current number of instances
 	private static final List<Instance> instances = new ArrayList<>(); // Array with instances
 	private static final int MAX_MEMORY = 1000000000; // 1GB
 	private static final int REQUEST_COUNT_MAX = 3; // Maximum number of requests per instance
@@ -50,6 +50,7 @@ public class LoadBalancer implements HttpHandler {
 
 		if (instances.isEmpty() && !instanceAvailable) {
 			deployNewInstance();
+			CURRENT_INSTANCES++;
 
 		} else if (instanceAvailable && instances.isEmpty()) {
 			System.out.println("Instance already available and we are going to distribute the call");
@@ -59,18 +60,25 @@ public class LoadBalancer implements HttpHandler {
 
 			for (Instance inst : instances) {
 				instanceRequestCount.put(inst.instanceId(), 0);
+				CURRENT_INSTANCES++;
 			}
 		} else if (!instances.isEmpty()) {
 			System.out.println("Instance already available and we are going to distribute the call");
 			// Check if there is an instance with 3 current requests if yes deploy new instance
-			if (instanceRequestCount.get(instanceID) == REQUEST_COUNT_MAX) {
+			if (instanceRequestCount.get(instanceID) == REQUEST_COUNT_MAX && CURRENT_INSTANCES <= MAX_INSTANCES) {
 				deployNewInstance();
+			}
+			else {
+				System.out.println("MAX INSTANCES IS REACHED");
 			}
 		}
 
 		// Increment request count for the chosen instance
 		instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) + 1);
 		System.out.println("Request count for instance: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
+
+
+		//instanceIP = "localhost";
 		forwardRequest(exchange, requestBody, estimation, requestType, instanceIP, instanceID);
 	}
 
