@@ -12,7 +12,7 @@ import com.sun.net.httpserver.HttpExchange;
 
 import utils.PictureFormat;
 
-public class BlurImageRequest extends AbstractRequestType {
+public class ImageProcessingRequest extends AbstractRequestType {
 
 	private final PictureFormat pictureFormat;
 	private final int width;
@@ -20,7 +20,7 @@ public class BlurImageRequest extends AbstractRequestType {
 	private final int pixelCount;
 	private final long totalSizeInBytes;
 	
-	public BlurImageRequest(HttpExchange exchange, String requestBody) {
+	public ImageProcessingRequest(HttpExchange exchange, String requestBody) {
 		this.pictureFormat = setPictureFormat(requestBody);
 		BufferedImage image = base64ToBufferedImage(requestBody);
 		width = image.getWidth();
