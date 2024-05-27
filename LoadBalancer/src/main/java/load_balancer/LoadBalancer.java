@@ -1,8 +1,6 @@
 package load_balancer;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -23,6 +21,9 @@ import request_types.AbstractRequestType;
 import utils.HttpRequestUtils;
 import deployment_manager.AwsEc2Manager;
 import software.amazon.awssdk.services.ec2.model.Instance;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
 
 public class LoadBalancer implements HttpHandler {
 	// CPU usage threshold in percentage
@@ -46,6 +47,11 @@ public class LoadBalancer implements HttpHandler {
 		AbstractRequestType requestType = AbstractRequestType.ofRequest(exchange, requestBody);
 		RequestEstimation estimation = MetricStorageSystem.calculateEstimation(requestType);
 
+
+		String memoryUsed = getUsedMemoryFromRemoteVM("13.38.36.169", "ec2-user", "C:/Users/tedoc/newkey.pem");
+		System.out.println("Current memory used: " + memoryUsed);
+
+		/*
 		boolean instanceAvailable = AwsEc2Manager.checkAvailableInstances();
 
 		if (instances.isEmpty() && !instanceAvailable) {
@@ -77,9 +83,10 @@ public class LoadBalancer implements HttpHandler {
 		instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) + 1);
 		System.out.println("Request count for instance: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
 
-
 		//instanceIP = "localhost";
 		forwardRequest(exchange, requestBody, estimation, requestType, instanceIP, instanceID);
+
+		 */
 	}
 
 	private void forwardRequest(HttpExchange exchange, String requestBody, RequestEstimation estimation, AbstractRequestType requestType, String instanceIP, String instanceID) throws IOException {
@@ -127,5 +134,35 @@ public class LoadBalancer implements HttpHandler {
 		instanceID = newInst.instanceId();
 		instanceIP = newInst.publicIpAddress();
 		System.out.println("New instance deployed with id: " + instanceID + " and IP: " + instanceIP);
+	}
+
+	private String getUsedMemoryFromRemoteVM(String host, String user, String privateKeyPath) {
+		System.out.println("Getting memory usage from remote VM");
+
+		String command = String.format("ssh -i %s %s@%s free -h | grep Mem | awk '{print $3}'", privateKeyPath, user, host);
+		StringBuilder output = new StringBuilder();
+
+		try {
+			ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command);
+			processBuilder.redirectErrorStream(true);
+			Process process = processBuilder.start();
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String line;
+			while ((line = reader.readLine()) != null) {
+				output.append(line);
+				System.out.println("Memory used: " + output.toString());
+			}
+
+			int exitCode = process.waitFor();
+			if (exitCode != 0) {
+				throw new RuntimeException("Shell script exited with non-zero status");
+			}
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Failed to execute remote command", e);
+		}
+
+		return output.toString().trim();
 	}
 }
