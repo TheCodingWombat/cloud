@@ -13,6 +13,7 @@ public class MetricStorageSystem {
 
 	public static void storeMetric(AbstractRequestType requestType, RequestMetrics metric) {
 		metrics.put(requestType, metric);
+		CsvExporter.mapToCsv(metrics);
 
 	}
 
