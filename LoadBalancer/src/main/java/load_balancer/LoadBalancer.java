@@ -52,10 +52,14 @@ public class LoadBalancer implements HttpHandler {
 
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
+		try {
 
 		String requestBody = HttpRequestUtils.getRequestBodyString(exchange);
 		AbstractRequestType requestType = AbstractRequestType.ofRequest(exchange, requestBody);
 		RequestEstimation estimation = MetricStorageSystem.calculateEstimation(requestType);
+
+		System.out.println("CPU time estimation: "+ estimation.cpuTime);
+		System.out.println("Memory estimation: "+ estimation.memory);
 
 		if (DEBUG) {
 			System.out.println("Running in debug mode");
@@ -107,6 +111,9 @@ public class LoadBalancer implements HttpHandler {
 		System.out.println("Request count for instance: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
 
 		forwardRequest(exchange, requestBody, estimation, requestType, instanceIP, instanceID);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void forwardRequest(HttpExchange exchange, String requestBody, RequestEstimation estimation,
@@ -120,13 +127,13 @@ public class LoadBalancer implements HttpHandler {
 		}
 
 		URL url = new URL("http", instanceIP, 8000, uri);
-		System.out.println("Handling request: " + uri);
+		System.out.println("Handlingg request: " + uri);
 		HttpURLConnection connection = HttpRequestUtils.forwardRequest(url, exchange, requestBody);
 		int statusCode = HttpRequestUtils.sendResponseToClient(exchange, connection);
 
 		// Decrement request count for the chosen instance after response is sent
-		instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) - 1);
-		System.out.println("Request count for instance now is: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
+		// instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) - 1); // TODO: commented for local testing
+		// System.out.println("Request count for instance now is: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
 
 		RequestMetrics metrics = RequestMetrics.extractMetrics(connection);
 		MetricStorageSystem.storeMetric(requestType, metrics);
