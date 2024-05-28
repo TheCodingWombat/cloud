@@ -11,23 +11,24 @@ import utils.CSVSerializable;
  */
 public class RequestMetrics implements CSVSerializable {
 
-    long cpuTime;
-    long memory;
+	private static int gobalRequestCounter = 0;
 
+	private final long cpuTime;
+    private final long memory;
+    private final int requestCounter;
+    
     public RequestMetrics(long cpuTime, long memory) {
-        this.cpuTime = cpuTime;
+    	gobalRequestCounter++;
+
+    	this.cpuTime = cpuTime;
         this.memory = memory;
+        requestCounter = gobalRequestCounter;
     }
     
 	public static RequestMetrics extractMetrics(HttpURLConnection connection) {
 		Map<String, List<String>> headers = connection.getHeaderFields();
-
 		long memory = Long.parseLong(headers.get("Methodmemoryallocatedbytes").get(0));
-		System.out.println("Request memory: " + memory);
-
 		long cpuTime = Long.parseLong(headers.get("Methodcpuexecutiontimens").get(0));
-		System.out.println("Requestt cpuTime: " + cpuTime);
-
 		return new RequestMetrics(cpuTime, memory);
 	}
 
@@ -39,8 +40,6 @@ public class RequestMetrics implements CSVSerializable {
 	}
 	@Override
 	public String serializeCsv() {
-		return cpuTime + ";" + memory;
+		return cpuTime + ";" + memory + ";" + requestCounter;
 	}
 }
-
-
