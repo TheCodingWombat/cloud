@@ -4,10 +4,12 @@ import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Map;
 
+import utils.CSVSerializable;
+
 /**
  * Holds the metrics for a request. Every instance of this class is associated with one AbstractRequestType
  */
-public class RequestMetrics {
+public class RequestMetrics implements CSVSerializable {
 
     long cpuTime;
     long memory;
@@ -29,4 +31,8 @@ public class RequestMetrics {
 		return new RequestMetrics(cpuTime, memory);
 	}
 
+	@Override
+	public String serializeCsv() {
+		return cpuTime + ";" + memory;
+	}
 }

@@ -19,17 +19,17 @@ public class ImageProcessingRequest extends AbstractRequestType {
 	private final int height;
 	private final int pixelCount;
 	private final long totalSizeInBytes;
-	
+
 	public ImageProcessingRequest(HttpExchange exchange, String requestBody) {
 		this.pictureFormat = setPictureFormat(requestBody);
 		BufferedImage image = base64ToBufferedImage(requestBody);
 		width = image.getWidth();
 		height = image.getHeight();
-		pixelCount = image.getWidth() * image.getHeight(); 
+		pixelCount = image.getWidth() * image.getHeight();
 		totalSizeInBytes = calculateTotalSizeInBytes(image);
 	}
 
-	//there are doubts if this is right
+	// there are doubts if this is right
 	private long calculateTotalSizeInBytes(BufferedImage image) {
 		ColorModel colorModel = image.getColorModel();
 		int bytesPerPixel = colorModel.getPixelSize();
@@ -75,5 +75,10 @@ public class ImageProcessingRequest extends AbstractRequestType {
 			throw new RuntimeException("Picture could not be loaded");
 		}
 		return image;
+	}
+
+	@Override
+	public String serializeCsv() {
+		return pictureFormat + ";" + width + ";" + height + ";" + pixelCount + ";" + totalSizeInBytes + ";";
 	}
 }
