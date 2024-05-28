@@ -3,6 +3,9 @@ package metric_storage_system;
 import java.util.HashMap;
 
 import request_types.AbstractRequestType;
+import request_types.ImageProcessingRequest;
+
+import utils.PictureFormat;
 
 /**
  * This class will hold the data that were transfered from the instrumented
@@ -12,37 +15,42 @@ public class MetricStorageSystem {
 	// TODO: WHy is it an arraylist of a map? Why not just a hashmap? Current implementation will be a list of single  element maps
 	static HashMap<AbstractRequestType, RequestMetrics> metrics = new HashMap<AbstractRequestType,RequestMetrics>(); 
 	
-	LinearModel blurImagePNGModel = new LinearModel();
-	LinearModel blurImageJPEGModel = new LinearModel();
+	static MultipleOutputLinearModel blurImagePNGModel = new MultipleOutputLinearModel(2);
+	static MultipleOutputLinearModel blurImageJPEGModel = new MultipleOutputLinearModel(2);
 
 	// TODO: Shouldn't we just have a class for this for each metric type?
-	public static void storeMetric(AbstractRequestType requestType, RequestMetrics metrics) {
-		metrics.put(requestType, metrics);
+	public static void storeMetric(AbstractRequestType requestType, RequestMetrics requestMetrics) {
+		metrics.put(requestType, requestMetrics);
 
+		System.out.println("Storing metrics");
+
+		// TODO: Batch metrics and do not refit on every request.
 		if(requestType instanceof ImageProcessingRequest) {
-			if (((ImageProcessingRequest) requestType).PictureFormat == ImageProcessingRequest.PictureFormatEnum.PNG) {
-				blurImagePNGModel.refitModel(requestType.toXArray(), metrics.toYArray());
-			} else if (((ImageProcessingRequest) requestType).PictureFormat == ImageProcessingRequest.PictureFormatEnum.JPEG) {
-				blurImageJPEGModel.refitModel(requestType.toXArray(), metrics.toYArray());
+			if (((ImageProcessingRequest) requestType).pictureFormat == utils.PictureFormat.PNG) {
+				blurImagePNGModel.refit(requestType.toXArray(), requestMetrics.toYArray());
+			} else if (((ImageProcessingRequest) requestType).pictureFormat == utils.PictureFormat.JPEG) {
+				blurImageJPEGModel.refit(requestType.toXArray(), requestMetrics.toYArray());
 			}
 		}
 	}
 
-	public static RequestMetrics calculateEstimation(AbstractRequestType requestType) {
+	public static RequestEstimation calculateEstimation(AbstractRequestType requestType) {
 		
-		LinearModel model = chooseModel(requestType); // Chooses blur image png linear regression model for blur image png for example, and jpeg linear regression model for blur image jpeg
-		RequestMetrics metrics = model.predict(requestType.getXData()); // Predicts the metrics for the request type
+		MultipleOutputLinearModel model = chooseModel(requestType); // Chooses blur image png linear regression model for blur image png for example, and jpeg linear regression model for blur image jpeg
+		double[] outputs = model.predict(requestType.toXArray()); // Predicts the metrics for the request type
 
-		return metrics;
+		return new RequestEstimation((long) outputs[0], (long) outputs[1]);
 	}
 
-	public static MyModel chooseModel(AbstractRequestType requestType) {
+	public static MultipleOutputLinearModel chooseModel(AbstractRequestType requestType) {
 		if (requestType instanceof ImageProcessingRequest) { //TODO: Assume for now only blur images
-			if (((ImageProcessingRequest) requestType).PictureFormat == ImageProcessingRequest.PictureFormatEnum.PNG) {
+			if (((ImageProcessingRequest) requestType).pictureFormat == utils.PictureFormat.PNG) {
 				return blurImagePNGModel;
-			} else if (((ImageProcessingRequest) requestType).PictureFormat == ImageProcessingRequest.PictureFormatEnum.JPEG) {
+			} else if (((ImageProcessingRequest) requestType).pictureFormat == utils.PictureFormat.JPEG) {
 				return blurImageJPEGModel;
 			}
 		}
+
+		throw new IllegalArgumentException("Request type not supported");
 	}
 }

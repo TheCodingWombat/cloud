@@ -29,4 +29,8 @@ public class RequestMetrics {
 		return new RequestMetrics(cpuTime, memory);
 	}
 
+    public double[] toYArray() {
+        return new double[]{cpuTime, memory};
+    }
+
 }

@@ -45,12 +45,6 @@ public class LinearModel {
         this.coefficients = regression.estimateRegressionParameters();
     }
 
-    public void addDataPoint(double[] xData, double yData) {
-        this.xData.add(xData);
-        this.yData.add(yData);
-        refitModel();
-    }
-
     public double predict(double[] xData) {
         if (coefficients == null) {
             throw new IllegalStateException("Model has not been trained yet.");

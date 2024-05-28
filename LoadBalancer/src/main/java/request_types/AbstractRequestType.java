@@ -23,4 +23,7 @@ public abstract class AbstractRequestType {
 			return null;
 		}
 	}
+
+	// Returns the parameters of the request as an array of integers to be used in a machine learning model
+	public abstract double[] toXArray();
 }

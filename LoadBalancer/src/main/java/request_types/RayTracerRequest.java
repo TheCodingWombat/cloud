@@ -33,4 +33,9 @@ public class RayTracerRequest extends AbstractRequestType {
 		return "RayTracerRequest [scols=" + scols + ", srows=" + srows + ", wcols=" + wcols + ", wrows=" + wrows
 				+ ", coff=" + coff + ", roff=" + roff + ", aa=" + aa + ", multi=" + multi + "]";
 	}
+
+	@Override
+	public double[] toXArray() {
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
 }

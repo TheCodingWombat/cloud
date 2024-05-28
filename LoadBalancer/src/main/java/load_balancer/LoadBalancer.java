@@ -45,13 +45,15 @@ public class LoadBalancer implements HttpHandler {
 	 * PASTE THE VM ID IN THE VARIABLE instanceID.
 	 *
 	 */
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	private static String instanceIP = "localhost";
 	private static String instanceID = "i-0927c392dd954b616";
 	private static final String KEYPATH = "C:/Users/tedoc/newkey.pem";
 
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
+
+		System.out.println("Handling some stuff");
 
 		String requestBody = HttpRequestUtils.getRequestBodyString(exchange);
 		AbstractRequestType requestType = AbstractRequestType.ofRequest(exchange, requestBody);
@@ -116,7 +118,7 @@ public class LoadBalancer implements HttpHandler {
 		}
 	
 		URL url = new URL("http", instanceIP, 8000, uri);
-		System.out.println("Handling request: " + uri);
+		System.out.println("Handlingg request: " + uri);
 		HttpURLConnection connection = HttpRequestUtils.forwardRequest(url, exchange, requestBody);
 		int statusCode = HttpRequestUtils.sendResponseToClient(exchange, connection);
 
