@@ -27,7 +27,6 @@ public class ImageProcessingRequest extends AbstractRequestType {
 		height = image.getHeight();
 		pixelCount = image.getWidth() * image.getHeight(); 
 		totalSizeInBytes = calculateTotalSizeInBytes(image);
-		System.out.println(toString());
 	}
 
 	//there are doubts if this is right
@@ -76,11 +75,5 @@ public class ImageProcessingRequest extends AbstractRequestType {
 			throw new RuntimeException("Picture could not be loaded");
 		}
 		return image;
-	}
-
-	@Override
-	public String toString() {
-		return "BlurImageRequest [pictureFormat=" + pictureFormat + ", width=" + width + ", height=" + height
-				+ ", pixelCount=" + pixelCount + ", totalSizeInBytes=" + totalSizeInBytes + "]";
 	}
 }
