@@ -31,6 +31,11 @@ public class RequestMetrics implements CSVSerializable {
 		return new RequestMetrics(cpuTime, memory);
 	}
 
+    public double[] toYArray() {
+        return new double[]{cpuTime, memory};
+    }
+
+
 	public String toJson(){
 		return "{\n" +
 				"  \"cpuTime\": " + cpuTime + ",\n" +
@@ -42,5 +47,3 @@ public class RequestMetrics implements CSVSerializable {
 		return cpuTime + ";" + memory;
 	}
 }
-
-
