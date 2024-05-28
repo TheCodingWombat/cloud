@@ -51,10 +51,17 @@ public class MetricStorageSystem {
 
 	public static RequestEstimation calculateEstimation(AbstractRequestType requestType) {
 		
-		MultipleOutputLinearModel model = chooseModel(requestType); // Chooses blur image png linear regression model for blur image png for example, and jpeg linear regression model for blur image jpeg
-		double[] outputs = model.predict(requestType.toXArray()); // Predicts the metrics for the request type
+		try {
+			MultipleOutputLinearModel model = chooseModel(requestType); // Chooses blur image png linear regression model for blur image png for example, and jpeg linear regression model for blur image jpeg
+			double[] outputs = model.predict(requestType.toXArray()); // Predicts the metrics for the request type
+			return new RequestEstimation((long) outputs[0], (long) outputs[1]);
+		} catch (Exception e) {
+			System.out.println("Error in calculating estimation");
+			e.printStackTrace();
+		}
 
-		return new RequestEstimation((long) outputs[0], (long) outputs[1]);
+		return new RequestEstimation((long) 0, (long) 0);
+		
 	}
 
 	public static MultipleOutputLinearModel chooseModel(AbstractRequestType requestType) {
