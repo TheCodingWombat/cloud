@@ -86,12 +86,11 @@ public class LoadBalancer implements HttpHandler {
 						instanceIP = inst.publicIpAddress();
 						isFound = true;
 						break;
-
 					}
 				}
 				if (!isFound) {
 					System.out.println("All instances are full, deploying new instance");
-					//deployNewInstance();
+					// deployNewInstance();
 				}
 			}
 		}
@@ -107,19 +106,19 @@ public class LoadBalancer implements HttpHandler {
 		instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) + 1);
 		System.out.println("Request count for instance: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
 
-		//instanceIP = "localhost";
 		forwardRequest(exchange, requestBody, estimation, requestType, instanceIP, instanceID);
 	}
 
-	private void forwardRequest(HttpExchange exchange, String requestBody, RequestEstimation estimation, AbstractRequestType requestType, String instanceIP, String instanceID) throws IOException {
+	private void forwardRequest(HttpExchange exchange, String requestBody, RequestEstimation estimation,
+			AbstractRequestType requestType, String instanceIP, String instanceID) throws IOException {
 		// Use estimation later to do forward logic
 		// URL of local workerWebServer
-        String uri = exchange.getRequestURI().getPath();
+		String uri = exchange.getRequestURI().getPath();
 		String query = exchange.getRequestURI().getQuery();
 		if (query != null) {
 			uri += "?" + query;
 		}
-	
+
 		URL url = new URL("http", instanceIP, 8000, uri);
 		System.out.println("Handling request: " + uri);
 		HttpURLConnection connection = HttpRequestUtils.forwardRequest(url, exchange, requestBody);
@@ -145,8 +144,8 @@ public class LoadBalancer implements HttpHandler {
 
 	private String getUsageFromRemoteVM(String command) {
 		StringBuilder output = new StringBuilder();
-		int retryCount = 5;  // Number of retries
-		int retryDelay = 5000;  // Delay between retries in milliseconds
+		int retryCount = 5; // Number of retries
+		int retryDelay = 5000; // Delay between retries in milliseconds
 
 		for (int attempt = 1; attempt <= retryCount; attempt++) {
 			try {

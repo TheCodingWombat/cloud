@@ -86,4 +86,9 @@ public class ImageProcessingRequest extends AbstractRequestType {
 				"  \"totalSizeInBytes\": " + totalSizeInBytes + "\n" +
 				"}";
 	}
+
+	@Override
+	public String serializeCsv() {
+		return pictureFormat + ";" + width + ";" + height + ";" + pixelCount + ";" + totalSizeInBytes + ";";
+	}
 }

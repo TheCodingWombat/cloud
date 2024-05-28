@@ -46,5 +46,5 @@ def send_requests(url, directory_path, num_requests):
 
 url = "http://localhost:8001/blurimage"
 directory_path = "C:\\Users\\herrt\\git\\cloud\\testScripts\\base64_encoded_pictures\\"
-num_requests = 10
+num_requests = 15
 send_requests(url, directory_path, num_requests)

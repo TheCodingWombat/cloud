@@ -42,5 +42,10 @@ public class RayTracerRequest extends AbstractRequestType {
 				"  \"roff\": " + roff + ",\n" +
 				"  \"aa\": " + aa + "\n" +
 				"}";
-	};
+	}
+
+	@Override
+	public String serializeCsv() {
+		return scols + ";" + srows + ";" + wcols + ";" + wrows + ";" + coff + ";" + roff + ";" + aa + ";";
+	}
 }
