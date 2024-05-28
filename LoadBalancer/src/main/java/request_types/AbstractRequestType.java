@@ -25,4 +25,5 @@ public abstract class AbstractRequestType implements CSVSerializable {
 			return null;
 		}
 	}
+	public abstract String toJson();
 }

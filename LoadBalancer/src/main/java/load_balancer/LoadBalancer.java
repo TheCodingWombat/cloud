@@ -20,6 +20,7 @@ import software.amazon.awssdk.services.ec2.model.Instance;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
+
 public class LoadBalancer implements HttpHandler {
 	// CPU usage threshold in percentage
 	private static final int MAX_INSTANCES = 5; // Maximum number of instances to deploy
@@ -33,19 +34,18 @@ public class LoadBalancer implements HttpHandler {
 	private static final String USER = "ec2-user";
 	private static final Map<String, Integer> instanceRequestCount = new HashMap<>(); // Map to store request counts
 
-	// do the same as below but do map with string and then list with 2 elements
-	// integer and integet
-	// private static final Map<String, List<Integer>> instanceRequestCount = new
-	// HashMap<>(); // Map to store VM ip : <request counts, estimated memory usage>
+	// do the same as below but do map with string and then list with 2 elements integer and integet
+	//private static final Map<String, List<Integer>> instanceRequestCount = new HashMap<>(); // Map to store VM ip : <request counts, estimated memory usage>
 
 	/*
-	 * Debug flag SET DEBUG TO TRUE TO RUN WITH ONE VM IN AWS
+	 * Debug flag
+	 * SET DEBUG TO TRUE TO RUN WITH ONE VM IN AWS
 	 *
-	 * PASTE THE VM IP IN THE VARIABLE instanceIP. PASTE THE VM ID IN THE VARIABLE
-	 * instanceID.
+	 * PASTE THE VM IP IN THE VARIABLE instanceIP.
+	 * PASTE THE VM ID IN THE VARIABLE instanceID.
 	 *
 	 */
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	private static String instanceIP = "localhost";
 	private static String instanceID = "i-0927c392dd954b616";
 	private static final String KEYPATH = "C:/Users/tedoc/newkey.pem";
@@ -59,7 +59,8 @@ public class LoadBalancer implements HttpHandler {
 
 		if (DEBUG) {
 			System.out.println("Running in debug mode");
-		} else {
+		}
+		else {
 			boolean instanceAvailable = AwsEc2Manager.checkAvailableInstances();
 
 			if (instances.isEmpty()) {
@@ -76,11 +77,10 @@ public class LoadBalancer implements HttpHandler {
 			if (!instances.isEmpty()) {
 				boolean isFound = false;
 				System.out.println("Instance already available and we are going to distribute the call");
-				// Check if there is an instance with 3 current requests if yes deploy new
-				// instance
+				// Check if there is an instance with 3 current requests if yes deploy new instance
 				for (Instance inst : instances) {
 
-					if (CURRENT_INSTANCES < MAX_INSTANCES && !isInstanceFull(getCurrentUsage(inst.publicIpAddress()))) {
+					if (CURRENT_INSTANCES < MAX_INSTANCES && instanceRequestCount.get(inst.instanceId()) < REQUEST_COUNT_MAX) {
 						System.out.println("Instance: " + inst.instanceId() + " fine and available for request");
 						instanceID = inst.instanceId();
 						instanceIP = inst.publicIpAddress();
@@ -92,15 +92,19 @@ public class LoadBalancer implements HttpHandler {
 					System.out.println("All instances are full, deploying new instance");
 					// deployNewInstance();
 				}
-				List<Double> usageMetrics = getCurrentUsage(instanceIP);
-				System.out.println("Current CPU usage: " + usageMetrics.get(0));
-				System.out.println("Current memory usage: " + usageMetrics.get(1));
-
-				// Increment request count for the chosen instance
-				instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) + 1);
-				System.out.println("Request count for instance: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
 			}
 		}
+
+		double cpuUsage = AwsEc2Manager.getCpuUtilization(instanceID);
+		System.out.println("Current CPU usage: " + cpuUsage);
+
+		//List<Double> usageMetrics = getCurrentUsage(instanceIP);
+		//System.out.println("Current CPU usage: " + usageMetrics.get(0));
+		//System.out.println("Current memory usage: " + usageMetrics.get(1));
+
+		// Increment request count for the chosen instance
+		instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) + 1);
+		System.out.println("Request count for instance: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
 
 		forwardRequest(exchange, requestBody, estimation, requestType, instanceIP, instanceID);
 	}
@@ -121,8 +125,8 @@ public class LoadBalancer implements HttpHandler {
 		int statusCode = HttpRequestUtils.sendResponseToClient(exchange, connection);
 
 		// Decrement request count for the chosen instance after response is sent
-//		instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) - 1);
-//		System.out.println("Request count for instance now is: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
+		instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) - 1);
+		System.out.println("Request count for instance now is: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
 
 		RequestMetrics metrics = RequestMetrics.extractMetrics(connection);
 		MetricStorageSystem.storeMetric(requestType, metrics);
@@ -189,8 +193,9 @@ public class LoadBalancer implements HttpHandler {
 
 	private List<Double> getCurrentUsage(String instanceIP) {
 		String command = String.format(
-				"ssh -o StrictHostKeyChecking=no -i %s %s@%s 'free -h | grep Mem && mpstat | grep \"all\"'", KEYPATH,
-				USER, instanceIP);
+				"ssh -o StrictHostKeyChecking=no -i %s %s@%s 'free -h | grep Mem && mpstat | grep \"all\"'",
+				KEYPATH, USER, instanceIP
+		);
 		List<Double> usage = new ArrayList<>();
 		String output = getUsageFromRemoteVM(command);
 

@@ -1,7 +1,9 @@
 package metric_storage_system;
 
+import java.time.Instant;
 import java.util.HashMap;
 
+import deployment_manager.AwsEc2Manager;
 import request_types.AbstractRequestType;
 
 /**
@@ -14,6 +16,16 @@ public class MetricStorageSystem {
 	public static void storeMetric(AbstractRequestType requestType, RequestMetrics metric) {
 		metrics.put(requestType, metric);
 		CsvExporter.mapToCsv(metrics);
+
+		//Implement db store
+		// Get the current timestamp
+		String timestamp = Instant.now().toString();
+		// Store the metric in DynamoDB
+		// Serialize the requestType to JSON
+		String requestTypeJson = requestType.toJson();
+		String metricJson = metric.toJson();
+
+		AwsEc2Manager.storeMetricInDynamoDB(timestamp, requestTypeJson, metricJson);
 
 	}
 

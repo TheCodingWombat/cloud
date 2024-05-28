@@ -1,20 +1,27 @@
 package deployment_manager;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.cloudwatch.CloudWatchClient;
+import software.amazon.awssdk.services.cloudwatch.model.GetMetricStatisticsRequest;
+import software.amazon.awssdk.services.cloudwatch.model.GetMetricStatisticsResponse;
+import software.amazon.awssdk.services.cloudwatch.model.Statistic;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.DescribeInstancesRequest;
 import software.amazon.awssdk.services.ec2.model.DescribeInstancesResponse;
 import software.amazon.awssdk.services.ec2.model.Instance;
-import software.amazon.awssdk.services.ec2.model.InstanceStateName;
 import software.amazon.awssdk.services.ec2.model.Reservation;
 import software.amazon.awssdk.services.ec2.model.RunInstancesRequest;
 import software.amazon.awssdk.services.ec2.model.RunInstancesResponse;
 import software.amazon.awssdk.services.ec2.model.Filter;
 import software.amazon.awssdk.services.ec2.model.Ec2Exception;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+
+
+import java.time.Instant;
+import java.util.*;
 
 public class AwsEc2Manager {
 
@@ -22,8 +29,19 @@ public class AwsEc2Manager {
     private static final String AMI_ID = "ami-0b85d21c87147d1d6";
     private static final String KEY_NAME = "newkey";
     private static final String SEC_GROUP_ID = "sg-070bd3e1192ba2323";
+    private static final String DB_TABLE = "MetricsTable";
 
     private static final Ec2Client ec2 = Ec2Client.builder()
+            .region(Region.of(AWS_REGION))
+            .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+            .build();
+
+    private static final CloudWatchClient cloudWatch = CloudWatchClient.builder()
+            .region(Region.of(AWS_REGION))
+            .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+            .build();
+
+    private static final DynamoDbClient dynamoDb = DynamoDbClient.builder()
             .region(Region.of(AWS_REGION))
             .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
             .build();
@@ -67,6 +85,7 @@ public class AwsEc2Manager {
                 .maxCount(1)
                 .keyName(KEY_NAME)
                 .securityGroupIds(SEC_GROUP_ID)
+                .monitoring(builder -> builder.enabled(true))
                 .build();
 
         RunInstancesResponse runInstancesResponse = ec2.runInstances(runInstancesRequest);
@@ -106,6 +125,7 @@ public class AwsEc2Manager {
             }
         }
     }
+
     private static Instance getInstanceDetails(String instanceId) {
         Instance instance = null;
         do {
@@ -149,5 +169,39 @@ public class AwsEc2Manager {
         }
 
         return runningInstances;
+    }
+
+    public static double getCpuUtilization(String instanceId) {
+        GetMetricStatisticsRequest request = GetMetricStatisticsRequest.builder()
+                .namespace("AWS/EC2")
+                .metricName("CPUUtilization")
+                .dimensions(d -> d.name("InstanceId").value(instanceId))
+                .startTime(Instant.now().minusSeconds(3600))  // Last hour
+                .endTime(Instant.now())
+                .period(60)
+                .statistics(Statistic.AVERAGE)
+                .build();
+
+        GetMetricStatisticsResponse response = cloudWatch.getMetricStatistics(request);
+
+        if (!response.datapoints().isEmpty()) {
+            return response.datapoints().get(0).average();
+        } else {
+            System.out.println("No data points found for CPU utilization.");
+            return 0.0;
+        }
+    }
+    public static void storeMetricInDynamoDB(String timestamp, String requestType, String metric) {
+        Map<String, AttributeValue> item = new HashMap<>();
+        item.put("timestamp", AttributeValue.builder().s(timestamp).build());
+        item.put("requestType", AttributeValue.builder().s(requestType).build());
+        item.put("metric", AttributeValue.builder().s(metric).build());
+
+        PutItemRequest request = PutItemRequest.builder()
+                .tableName(DB_TABLE)
+                .item(item)
+                .build();
+
+        dynamoDb.putItem(request);
     }
 }
