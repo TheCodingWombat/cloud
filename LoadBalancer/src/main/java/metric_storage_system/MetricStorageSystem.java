@@ -21,7 +21,7 @@ public class MetricStorageSystem {
 	// TODO: Shouldn't we just have a class for this for each metric type?
 	public static void storeMetric(AbstractRequestType requestType, RequestMetrics requestMetrics) {
 		metrics.put(requestType, requestMetrics);
-		CsvExporter.mapToCsv(requestMetrics);
+		CsvExporter.mapToCsv(metrics);
 
 		System.out.println("Storing metrics");
 
