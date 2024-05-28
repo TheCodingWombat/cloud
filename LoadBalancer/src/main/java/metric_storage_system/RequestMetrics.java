@@ -36,6 +36,12 @@ public class RequestMetrics implements CSVSerializable {
     }
 
 
+	public String toJson(){
+		return "{\n" +
+				"  \"cpuTime\": " + cpuTime + ",\n" +
+				"  \"memory\": " + memory + "\n" +
+				"}";
+	}
 	@Override
 	public String serializeCsv() {
 		return cpuTime + ";" + memory;

@@ -1,7 +1,9 @@
 package metric_storage_system;
 
+import java.time.Instant;
 import java.util.HashMap;
 
+import deployment_manager.AwsEc2Manager;
 import request_types.AbstractRequestType;
 import request_types.ImageProcessingRequest;
 
@@ -33,6 +35,16 @@ public class MetricStorageSystem {
 				blurImageJPEGModel.refit(requestType.toXArray(), requestMetrics.toYArray());
 			}
 		}
+		//Implement db store
+		// Get the current timestamp
+		String timestamp = Instant.now().toString();
+		// Store the metric in DynamoDB
+		// Serialize the requestType to JSON
+		String requestTypeJson = requestType.toJson();
+		String metricJson = requestMetrics.toJson();
+
+		AwsEc2Manager.storeMetricInDynamoDB(timestamp, requestTypeJson, metricJson);
+
 	}
 
 	public static RequestEstimation calculateEstimation(AbstractRequestType requestType) {

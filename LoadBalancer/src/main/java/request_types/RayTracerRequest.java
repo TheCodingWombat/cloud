@@ -13,7 +13,6 @@ public class RayTracerRequest extends AbstractRequestType {
 	private final int coff;
 	private final int roff;
 	private final boolean aa;
-	private final boolean multi;
 
 	public RayTracerRequest(HttpExchange exchange, String requestBody) {
 		QueryStringParser parser = new QueryStringParser(exchange.getRequestURI().getQuery());
@@ -24,14 +23,25 @@ public class RayTracerRequest extends AbstractRequestType {
 		coff = parser.getParameterValueOfInteger("coff");
 		roff = parser.getParameterValueOfInteger("roff");
 		aa = parser.getParameterValueOfBoolean("aa");
-		multi = parser.getParameterValueOfBoolean("multi");
 		System.out.println(toString());
 	}
 
 	@Override
 	public String toString() {
 		return "RayTracerRequest [scols=" + scols + ", srows=" + srows + ", wcols=" + wcols + ", wrows=" + wrows
-				+ ", coff=" + coff + ", roff=" + roff + ", aa=" + aa + ", multi=" + multi + "]";
+				+ ", coff=" + coff + ", roff=" + roff + ", aa=" + aa + "]";
+	}
+	@Override
+	public String toJson(){
+		return "{\n" +
+				"  \"scols\": " + scols + ",\n" +
+				"  \"srows\": " + srows + ",\n" +
+				"  \"wcols\": " + wcols + ",\n" +
+				"  \"wrows\": " + wrows + ",\n" +
+				"  \"coff\": " + coff + ",\n" +
+				"  \"roff\": " + roff + ",\n" +
+				"  \"aa\": " + aa + "\n" +
+				"}";
 	}
 
 	@Override
@@ -40,6 +50,6 @@ public class RayTracerRequest extends AbstractRequestType {
 	}
 	
 	public String serializeCsv() {
-		return scols + ";" + srows + ";" + wcols + ";" + wrows + ";" + coff + ";" + roff + ";" + aa + ";" + multi + ";";
+		return scols + ";" + srows + ";" + wcols + ";" + wrows + ";" + coff + ";" + roff + ";" + aa + ";";
 	}
 }
