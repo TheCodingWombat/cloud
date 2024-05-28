@@ -80,12 +80,13 @@ public class LoadBalancer implements HttpHandler {
 				// Check if there is an instance with 3 current requests if yes deploy new instance
 				for (Instance inst : instances) {
 
-					if (CURRENT_INSTANCES < MAX_INSTANCES && !isInstanceFull(getCurrentUsage(inst.publicIpAddress()))) {
+					if (CURRENT_INSTANCES < MAX_INSTANCES && instanceRequestCount.get(inst.instanceId()) < REQUEST_COUNT_MAX) {
 						System.out.println("Instance: " + inst.instanceId() + " fine and available for request");
 						instanceID = inst.instanceId();
 						instanceIP = inst.publicIpAddress();
 						isFound = true;
 						break;
+
 					}
 				}
 				if (!isFound) {
@@ -94,6 +95,12 @@ public class LoadBalancer implements HttpHandler {
 				}
 			}
 		}
+
+		//double memoryUsage = AwsEc2Manager.getMemoryUtilization(instanceID);
+		//double cpuUsage = AwsEc2Manager.getCpuUtilization(instanceID);
+		//System.out.println("Current CPU usage: " + cpuUsage);
+		//System.out.println("Current memory usage: " + memoryUsage);
+
 		List<Double> usageMetrics = getCurrentUsage(instanceIP);
 		System.out.println("Current CPU usage: " + usageMetrics.get(0));
 		System.out.println("Current memory usage: " + usageMetrics.get(1));
