@@ -122,7 +122,7 @@ public class LoadBalancer implements HttpHandler {
 		HttpURLConnection connection = HttpRequestUtils.forwardRequest(url, exchange, requestBody);
 		int statusCode = HttpRequestUtils.sendResponseToClient(exchange, connection);
 
-		if (DEBUG) {
+		if (!DEBUG) {
 			// Decrement request count for the chosen instance after response is sent
 			instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) - 1);
 			System.out.println("Request count for instance now is: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
