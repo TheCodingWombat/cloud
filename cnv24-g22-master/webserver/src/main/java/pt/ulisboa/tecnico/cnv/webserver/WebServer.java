@@ -9,7 +9,10 @@ import pt.ulisboa.tecnico.cnv.raytracer.RaytracerHandler;
 
 public class WebServer {
     public static void main(String[] args) throws Exception {
-        HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
+    	System.out.println("Start Worker-Webservice");
+    	int socketNum = 8000;
+        HttpServer server = HttpServer.create(new InetSocketAddress(socketNum), 0);
+        System.out.println("Worker-Webservice running on Port: " + socketNum);
         server.setExecutor(java.util.concurrent.Executors.newCachedThreadPool());
         server.createContext("/", new RootHandler());
         server.createContext("/raytracer", new RaytracerHandler());

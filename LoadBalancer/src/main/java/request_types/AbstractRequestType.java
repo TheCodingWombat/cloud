@@ -13,9 +13,9 @@ public abstract class AbstractRequestType {
 	public static AbstractRequestType ofRequest(HttpExchange exchange, String requestBody) {
 		String uriPath = exchange.getRequestURI().getPath();
 		if (uriPath.equals("/blurimage")) {
-			return new BlurImageRequest(exchange, requestBody);
+			return new ImageProcessingRequest(exchange, requestBody);
 		} else if (uriPath.equals("/enhanceimage")) {
-			return new EnhanceImageRequest(exchange, requestBody);
+			return new ImageProcessingRequest(exchange, requestBody);
 		} else if (uriPath.equals("/raytracer")) {
 			return new RayTracerRequest(exchange, requestBody);
 		} else {
