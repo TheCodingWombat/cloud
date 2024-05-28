@@ -45,7 +45,7 @@ public class LoadBalancer implements HttpHandler {
 	 * PASTE THE VM ID IN THE VARIABLE instanceID.
 	 *
 	 */
-	private static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 	private static String instanceIP = "localhost";
 	private static String instanceID = "i-0927c392dd954b616";
 	private static final String KEYPATH = "C:/Users/tedoc/newkey.pem";
@@ -93,18 +93,16 @@ public class LoadBalancer implements HttpHandler {
 					// deployNewInstance();
 				}
 			}
+			double cpuUsage = AwsEc2Manager.getCpuUtilization(instanceID);
+			System.out.println("Current CPU usage: " + cpuUsage);
+			// Increment request count for the chosen instance
+			instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) + 1);
+			System.out.println("Request count for instance: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
 		}
-
-		double cpuUsage = AwsEc2Manager.getCpuUtilization(instanceID);
-		System.out.println("Current CPU usage: " + cpuUsage);
 
 		//List<Double> usageMetrics = getCurrentUsage(instanceIP);
 		//System.out.println("Current CPU usage: " + usageMetrics.get(0));
 		//System.out.println("Current memory usage: " + usageMetrics.get(1));
-
-		// Increment request count for the chosen instance
-		instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) + 1);
-		System.out.println("Request count for instance: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
 
 		forwardRequest(exchange, requestBody, estimation, requestType, instanceIP, instanceID);
 	}
@@ -124,9 +122,11 @@ public class LoadBalancer implements HttpHandler {
 		HttpURLConnection connection = HttpRequestUtils.forwardRequest(url, exchange, requestBody);
 		int statusCode = HttpRequestUtils.sendResponseToClient(exchange, connection);
 
-		// Decrement request count for the chosen instance after response is sent
-		instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) - 1);
-		System.out.println("Request count for instance now is: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
+		if (DEBUG) {
+			// Decrement request count for the chosen instance after response is sent
+			instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) - 1);
+			System.out.println("Request count for instance now is: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
+		}
 
 		RequestMetrics metrics = RequestMetrics.extractMetrics(connection);
 		MetricStorageSystem.storeMetric(requestType, metrics);

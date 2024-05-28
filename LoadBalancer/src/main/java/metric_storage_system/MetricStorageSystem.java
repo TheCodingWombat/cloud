@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.HashMap;
 
 import deployment_manager.AwsEc2Manager;
+import load_balancer.LoadBalancer;
 import request_types.AbstractRequestType;
 
 /**
@@ -25,8 +26,9 @@ public class MetricStorageSystem {
 		String requestTypeJson = requestType.toJson();
 		String metricJson = metric.toJson();
 
-		AwsEc2Manager.storeMetricInDynamoDB(timestamp, requestTypeJson, metricJson);
-
+		if (LoadBalancer.DEBUG) {
+			AwsEc2Manager.storeMetricInDynamoDB(timestamp, requestTypeJson, metricJson);
+		}
 	}
 
 	public static RequestEstimation calculateEstimation(AbstractRequestType requestType) {
