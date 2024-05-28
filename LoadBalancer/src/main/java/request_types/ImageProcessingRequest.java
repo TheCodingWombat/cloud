@@ -14,7 +14,7 @@ import utils.PictureFormat;
 
 public class ImageProcessingRequest extends AbstractRequestType {
 
-	public final PictureFormat pictureFormat;
+	private final PictureFormat pictureFormat;
 	private final int width;
 	private final int height;
 	private final int pixelCount;
@@ -87,12 +87,6 @@ public class ImageProcessingRequest extends AbstractRequestType {
 				"}";
 	}
 
-	// To array of features used in model
-	@Override
-	public double[] toXArray() {
-		return new double[] {pixelCount};
-	}
-	
 	@Override
 	public String serializeCsv() {
 		return pictureFormat + ";" + width + ";" + height + ";" + pixelCount + ";" + totalSizeInBytes + ";";

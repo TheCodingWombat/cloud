@@ -25,9 +25,5 @@ public abstract class AbstractRequestType implements CSVSerializable {
 			return null;
 		}
 	}
-
-	// Returns the parameters of the request as an array of doubles to be used in a machine learning model
-	public abstract double[] toXArray();
-
 	public abstract String toJson();
 }
