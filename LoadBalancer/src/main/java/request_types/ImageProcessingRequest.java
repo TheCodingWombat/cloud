@@ -76,4 +76,14 @@ public class ImageProcessingRequest extends AbstractRequestType {
 		}
 		return image;
 	}
+	@Override
+	public String toJson() {
+		return "{\n" +
+				"  \"pictureFormat\": \"" + pictureFormat + "\",\n" +
+				"  \"width\": " + width + ",\n" +
+				"  \"height\": " + height + ",\n" +
+				"  \"pixelCount\": " + pixelCount + ",\n" +
+				"  \"totalSizeInBytes\": " + totalSizeInBytes + "\n" +
+				"}";
+	}
 }

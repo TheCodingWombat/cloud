@@ -29,4 +29,10 @@ public class RequestMetrics {
 		return new RequestMetrics(cpuTime, memory);
 	}
 
+	public String toJson(){
+		return "{\n" +
+				"  \"cpuTime\": " + cpuTime + ",\n" +
+				"  \"memory\": " + memory + "\n" +
+				"}";
+	}
 }

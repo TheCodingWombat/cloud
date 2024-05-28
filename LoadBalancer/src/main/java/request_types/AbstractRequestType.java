@@ -23,4 +23,5 @@ public abstract class AbstractRequestType {
 			return null;
 		}
 	}
+	public abstract String toJson();
 }

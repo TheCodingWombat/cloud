@@ -96,14 +96,12 @@ public class LoadBalancer implements HttpHandler {
 			}
 		}
 
-		//double memoryUsage = AwsEc2Manager.getMemoryUtilization(instanceID);
-		//double cpuUsage = AwsEc2Manager.getCpuUtilization(instanceID);
-		//System.out.println("Current CPU usage: " + cpuUsage);
-		//System.out.println("Current memory usage: " + memoryUsage);
+		double cpuUsage = AwsEc2Manager.getCpuUtilization(instanceID);
+		System.out.println("Current CPU usage: " + cpuUsage);
 
-		List<Double> usageMetrics = getCurrentUsage(instanceIP);
-		System.out.println("Current CPU usage: " + usageMetrics.get(0));
-		System.out.println("Current memory usage: " + usageMetrics.get(1));
+		//List<Double> usageMetrics = getCurrentUsage(instanceIP);
+		//System.out.println("Current CPU usage: " + usageMetrics.get(0));
+		//System.out.println("Current memory usage: " + usageMetrics.get(1));
 
 		// Increment request count for the chosen instance
 		instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) + 1);
@@ -128,8 +126,8 @@ public class LoadBalancer implements HttpHandler {
 		int statusCode = HttpRequestUtils.sendResponseToClient(exchange, connection);
 
 		// Decrement request count for the chosen instance after response is sent
-//		instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) - 1);
-//		System.out.println("Request count for instance now is: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
+		instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) - 1);
+		System.out.println("Request count for instance now is: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
 
 		RequestMetrics metrics = RequestMetrics.extractMetrics(connection);
 		MetricStorageSystem.storeMetric(requestType, metrics);

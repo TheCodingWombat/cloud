@@ -5,13 +5,11 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cloudwatch.CloudWatchClient;
 import software.amazon.awssdk.services.cloudwatch.model.GetMetricStatisticsRequest;
 import software.amazon.awssdk.services.cloudwatch.model.GetMetricStatisticsResponse;
-import software.amazon.awssdk.services.cloudwatch.model.MetricDatum;
 import software.amazon.awssdk.services.cloudwatch.model.Statistic;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.DescribeInstancesRequest;
 import software.amazon.awssdk.services.ec2.model.DescribeInstancesResponse;
 import software.amazon.awssdk.services.ec2.model.Instance;
-import software.amazon.awssdk.services.ec2.model.InstanceStateName;
 import software.amazon.awssdk.services.ec2.model.Reservation;
 import software.amazon.awssdk.services.ec2.model.RunInstancesRequest;
 import software.amazon.awssdk.services.ec2.model.RunInstancesResponse;
@@ -19,15 +17,11 @@ import software.amazon.awssdk.services.ec2.model.Filter;
 import software.amazon.awssdk.services.ec2.model.Ec2Exception;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.PutItemResponse;
-import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class AwsEc2Manager {
 
@@ -197,43 +191,17 @@ public class AwsEc2Manager {
             return 0.0;
         }
     }
+    public static void storeMetricInDynamoDB(String timestamp, String requestType, String metric) {
+        Map<String, AttributeValue> item = new HashMap<>();
+        item.put("timestamp", AttributeValue.builder().s(timestamp).build());
+        item.put("requestType", AttributeValue.builder().s(requestType).build());
+        item.put("metric", AttributeValue.builder().s(metric).build());
 
-    public static double getMemoryUtilization(String instanceId) {
-        GetMetricStatisticsRequest request = GetMetricStatisticsRequest.builder()
-                .namespace("System/Linux")
-                .metricName("MemoryUtilization")
-                .dimensions(d -> d.name("InstanceId").value(instanceId))
-                .startTime(Instant.now().minusSeconds(3600))  // Last hour
-                .endTime(Instant.now())
-                .period(60)
-                .statistics(Statistic.AVERAGE)
+        PutItemRequest request = PutItemRequest.builder()
+                .tableName(DB_TABLE)
+                .item(item)
                 .build();
 
-        GetMetricStatisticsResponse response = cloudWatch.getMetricStatistics(request);
-
-        if (!response.datapoints().isEmpty()) {
-            return response.datapoints().get(0).average();
-        } else {
-            System.out.println("No data points found for memory utilization.");
-            return 0.0;
-        }
-    }
-
-    public static void main(String[] args) {
-        // Example usage
-        if (checkAvailableInstances()) {
-            List<Instance> instances = getAllRunningInstances();
-            for (Instance instance : instances) {
-                String instanceId = instance.instanceId();
-                double cpuUtilization = getCpuUtilization(instanceId);
-                double memoryUtilization = getMemoryUtilization(instanceId);
-
-                System.out.println("Instance ID: " + instanceId);
-                System.out.println("CPU Utilization: " + cpuUtilization + "%");
-                System.out.println("Memory Utilization: " + memoryUtilization + "%");
-            }
-        } else {
-            deployNewInstance();
-        }
+        dynamoDb.putItem(request);
     }
 }
