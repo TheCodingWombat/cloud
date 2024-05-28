@@ -5,8 +5,8 @@ package metric_storage_system;
  * The field could be used by the LoadBalancer to make a decision how the next request should be performed. 
  */
 public class RequestEstimation {
-    long cpuTime;
-    long memory;
+    public long cpuTime;
+    public long memory;
 
     public RequestEstimation(long cpuTime, long memory) {
         this.cpuTime = cpuTime;

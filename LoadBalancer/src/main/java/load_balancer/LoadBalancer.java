@@ -53,11 +53,13 @@ public class LoadBalancer implements HttpHandler {
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
 		try {
-		System.out.println("Handling some stuff");
 
 		String requestBody = HttpRequestUtils.getRequestBodyString(exchange);
 		AbstractRequestType requestType = AbstractRequestType.ofRequest(exchange, requestBody);
 		RequestEstimation estimation = MetricStorageSystem.calculateEstimation(requestType);
+
+		System.out.println("CPU time estimation: "+ estimation.cpuTime);
+		System.out.println("Memory estimation: "+ estimation.memory);
 
 		if (DEBUG) {
 			System.out.println("Running in debug mode");
