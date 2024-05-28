@@ -34,6 +34,9 @@ public class MethodExecutionTimer extends CodeDumper {
         // Return metrics through http:
         if (behavior instanceof CtMethod && behavior.getName().equals("handle")) {
 
+            // Reset metrics
+            behavior.insertBefore("" + MethodExecutionTimer.class.getName() + ".metrics.reset();\n");
+
             //startAllocatedMemory
             behavior.addLocalVariable("startAllocatedMemory", CtClass.longType);
             behavior.insertBefore("startAllocatedMemory = ((com.sun.management.ThreadMXBean) java.lang.management.ManagementFactory.getThreadMXBean()).getCurrentThreadAllocatedBytes();");

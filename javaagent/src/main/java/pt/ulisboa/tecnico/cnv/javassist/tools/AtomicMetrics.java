@@ -10,4 +10,9 @@ public class AtomicMetrics {
         this.totalCpuTime = new AtomicLong(0L);
         this.allocatedMemory = new AtomicLong(0L);
     }
+
+    public void reset() {
+        this.totalCpuTime.set(0L);
+        this.allocatedMemory.set(0L);
+    }
 }

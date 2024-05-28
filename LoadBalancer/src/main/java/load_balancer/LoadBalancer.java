@@ -121,34 +121,18 @@ public class LoadBalancer implements HttpHandler {
 		if (query != null) {
 			uri += "?" + query;
 		}
-		// print first 50 characters of query string
-
-
+	
 		URL url = new URL("http", instanceIP, 8000, uri);
 		System.out.println("Handling request: " + uri);
 		HttpURLConnection connection = HttpRequestUtils.forwardRequest(url, exchange, requestBody);
 		int statusCode = HttpRequestUtils.sendResponseToClient(exchange, connection);
 
 		// Decrement request count for the chosen instance after response is sent
-		instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) - 1);
-		System.out.println("Request count for instance now is: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
+//		instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) - 1);
+//		System.out.println("Request count for instance now is: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
 
-		RequestMetrics metrics = extractMetrics(connection);
+		RequestMetrics metrics = RequestMetrics.extractMetrics(connection);
 		MetricStorageSystem.storeMetric(requestType, metrics);
-		System.out.println("---------------------------------------------");
-
-	}
-
-	private RequestMetrics extractMetrics(HttpURLConnection connection) {
-		Map<String, List<String>> headers = connection.getHeaderFields();
-
-		long memory = Long.parseLong(headers.get("Methodmemoryallocatedbytes").get(0));
-		System.out.println("Request memory: " + memory);
-
-		long cpuTime = Long.parseLong(headers.get("Methodcpuexecutiontimens").get(0));
-		System.out.println("Requestt cpuTime: " + cpuTime);
-
-		return new RequestMetrics(cpuTime, memory);
 	}
 
 	private static void deployNewInstance() {
