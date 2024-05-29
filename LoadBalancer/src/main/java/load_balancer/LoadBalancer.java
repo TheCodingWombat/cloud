@@ -25,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 
+
 public class LoadBalancer implements HttpHandler {
 	// CPU usage threshold in percentage
 	private static final int MAX_INSTANCES = 5; // Maximum number of instances to deploy
@@ -139,7 +140,7 @@ public class LoadBalancer implements HttpHandler {
 	private void forwardLambdaRequest(HttpExchange exchange, String requestBody, RequestEstimation estimation, AbstractRequestType requestType) throws IOException {
 		// Use estimation later to do forward logic
 		System.out.println("Redirecting request to Lambda function");
-
+		String formattedResponse = "";
 		String lambdaFunctionName = "";
 
 		if (requestType instanceof BlurImageRequest) {
@@ -152,14 +153,21 @@ public class LoadBalancer implements HttpHandler {
 			lambdaFunctionName = "tracer-service";
 		}
 
-		String base64Image = extractBase64Data(requestBody);
-		String imageType = extractImageType(requestBody);
+		if (requestType instanceof BlurImageRequest || requestType instanceof EnhanceImageRequest) {
+			// Construct the payload
+			String base64Image = extractBase64Data(requestBody);
+			String imageType = extractImageType(requestBody);
 
-		// Construct the payload
-		String payload = "{ \"body\": \"" + base64Image + "\", \"fileFormat\": \"" + imageType + "\" }";
-		String lambdaResponse = AwsEc2Manager.invokeLambdaFunction(lambdaFunctionName, payload);
-		String formattedResponse = formatLambdaResponse(lambdaResponse, imageType);
 
+			String payload = "{ \"body\": \"" + base64Image + "\", \"fileFormat\": \"" + imageType + "\" }";
+			String lambdaResponse = AwsEc2Manager.invokeLambdaFunction(lambdaFunctionName, payload);
+			formattedResponse = formatLambdaResponse(lambdaResponse, imageType);
+
+		}
+		else if (requestType instanceof RayTracerRequest) {
+
+			formattedResponse = "Ray Tracer not available at the moment. Please try again later.";
+		}
 
 		// Send the response back to the client
 		byte[] responseBytes = formattedResponse.getBytes(StandardCharsets.UTF_8);
