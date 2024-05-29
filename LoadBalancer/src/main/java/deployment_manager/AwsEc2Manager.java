@@ -1,6 +1,7 @@
 package deployment_manager;
 
 import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
+import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cloudwatch.CloudWatchClient;
 import software.amazon.awssdk.services.cloudwatch.model.GetMetricStatisticsRequest;
@@ -18,6 +19,9 @@ import software.amazon.awssdk.services.ec2.model.Ec2Exception;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.lambda.LambdaClient;
+import software.amazon.awssdk.services.lambda.model.InvokeRequest;
+import software.amazon.awssdk.services.lambda.model.InvokeResponse;
 
 
 import java.time.Instant;
@@ -42,6 +46,11 @@ public class AwsEc2Manager {
             .build();
 
     private static final DynamoDbClient dynamoDb = DynamoDbClient.builder()
+            .region(Region.of(AWS_REGION))
+            .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+            .build();
+
+    private static final LambdaClient lambdaClient = LambdaClient.builder()
             .region(Region.of(AWS_REGION))
             .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
             .build();
@@ -203,5 +212,17 @@ public class AwsEc2Manager {
                 .build();
 
         dynamoDb.putItem(request);
+    }
+
+    public static String invokeLambdaFunction(String functionName, String payload) {
+        InvokeRequest invokeRequest = InvokeRequest.builder()
+                .functionName(functionName)
+                .payload(SdkBytes.fromUtf8String(payload))
+                .build();
+
+        InvokeResponse invokeResponse = lambdaClient.invoke(invokeRequest);
+
+        String response = invokeResponse.payload().asUtf8String();
+        return response;
     }
 }

@@ -2,6 +2,7 @@ package load_balancer;
 
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,9 @@ import metric_storage_system.MetricStorageSystem;
 import metric_storage_system.RequestEstimation;
 import metric_storage_system.RequestMetrics;
 import request_types.AbstractRequestType;
+import request_types.BlurImageRequest;
+import request_types.EnhanceImageRequest;
+import request_types.RayTracerRequest;
 import utils.HttpRequestUtils;
 import deployment_manager.AwsEc2Manager;
 import software.amazon.awssdk.services.ec2.model.Instance;
@@ -90,7 +94,8 @@ public class LoadBalancer implements HttpHandler {
 				}
 				if (!isFound) {
 					System.out.println("All instances are full, deploying new instance");
-					// deployNewInstance();
+					//deployNewInstance();
+					forwardLambdaRequest(exchange, requestBody, estimation, requestType);
 				}
 			}
 			double cpuUsage = AwsEc2Manager.getCpuUtilization(instanceID);
@@ -131,6 +136,39 @@ public class LoadBalancer implements HttpHandler {
 		RequestMetrics metrics = RequestMetrics.extractMetrics(connection);
 		MetricStorageSystem.storeMetric(requestType, metrics);
 	}
+	private void forwardLambdaRequest(HttpExchange exchange, String requestBody, RequestEstimation estimation, AbstractRequestType requestType) throws IOException {
+		// Use estimation later to do forward logic
+		System.out.println("Redirecting request to Lambda function");
+
+		String lambdaFunctionName = "";
+
+		if (requestType instanceof BlurImageRequest) {
+			lambdaFunctionName = "blur-service";
+		}
+		else if (requestType instanceof EnhanceImageRequest) {
+			lambdaFunctionName = "enhance-service";
+		}
+		else if (requestType instanceof RayTracerRequest) {
+			lambdaFunctionName = "tracer-service";
+		}
+
+		String base64Image = extractBase64Data(requestBody);
+		String imageType = extractImageType(requestBody);
+
+		// Construct the payload
+		String payload = "{ \"body\": \"" + base64Image + "\", \"fileFormat\": \"" + imageType + "\" }";
+		String lambdaResponse = AwsEc2Manager.invokeLambdaFunction(lambdaFunctionName, payload);
+		String formattedResponse = formatLambdaResponse(lambdaResponse, imageType);
+
+
+		// Send the response back to the client
+		byte[] responseBytes = formattedResponse.getBytes(StandardCharsets.UTF_8);
+		exchange.sendResponseHeaders(200, responseBytes.length);
+		OutputStream os = exchange.getResponseBody();
+		os.write(responseBytes);
+		os.close();
+	}
+
 
 	private static void deployNewInstance() {
 		Instance newInst = AwsEc2Manager.deployNewInstance();
@@ -220,4 +258,24 @@ public class LoadBalancer implements HttpHandler {
 		return cpuUsage >= MAX_CPU || memoryUsage >= MAX_MEMORY;
 	}
 
+	// Helper method to extract base64 encoded data from requestBody
+	private String extractBase64Data(String requestBody) {
+		int startIndex = requestBody.indexOf("base64,") + 7;
+		return requestBody.substring(startIndex);
+	}
+
+	// Helper method to extract image type from requestBody
+	private String extractImageType(String requestBody) {
+		int startIndex = requestBody.indexOf("data:image/") + 11;
+		int endIndex = requestBody.indexOf(";base64,");
+		return requestBody.substring(startIndex, endIndex);
+	}
+
+	private String formatLambdaResponse(String lambdaResponse, String imageType) {
+		// Remove quotes from the response
+		String base64Image = lambdaResponse.replace("\"", "");
+
+		// Prepend the appropriate header
+		return "data:image/" + imageType + ";base64," + base64Image;
+	}
 }

@@ -15,9 +15,9 @@ public abstract class AbstractRequestType implements CSVSerializable {
 	public static AbstractRequestType ofRequest(HttpExchange exchange, String requestBody) {
 		String uriPath = exchange.getRequestURI().getPath();
 		if (uriPath.equals("/blurimage")) {
-			return new ImageProcessingRequest(exchange, requestBody);
+			return new BlurImageRequest(exchange, requestBody);
 		} else if (uriPath.equals("/enhanceimage")) {
-			return new ImageProcessingRequest(exchange, requestBody);
+			return new EnhanceImageRequest(exchange, requestBody);
 		} else if (uriPath.equals("/raytracer")) {
 			return new RayTracerRequest(exchange, requestBody);
 		} else {
@@ -26,4 +26,5 @@ public abstract class AbstractRequestType implements CSVSerializable {
 		}
 	}
 	public abstract String toJson();
+
 }
