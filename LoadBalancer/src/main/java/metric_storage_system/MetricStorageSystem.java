@@ -54,15 +54,23 @@ public class MetricStorageSystem {
 		try {
 			MultipleOutputLinearModel model = chooseModel(requestType); // Chooses blur image png linear regression model for blur image png for example, and jpeg linear regression model for blur image jpeg
 			double[] outputs = model.predict(requestType.toXArray()); // Predicts the metrics for the request type
-			return new RequestEstimation((long) outputs[0], (long) outputs[1]);
+
+			RequestEstimation estimation = new RequestEstimation((long) outputs[0], (long) outputs[1]);
+
+			System.out.println("CPU time estimation: "+ estimation.cpuTime);
+			System.out.println("Memory estimation: "+ estimation.memory);
+
+			return estimation;
 		} catch (Exception e) {
-			System.out.println("Error in calculating estimation");
+			System.out.println("Cannot make CPU and memory estimation");
 			e.printStackTrace();
 		}
 
 		return new RequestEstimation(); 
 		
 	}
+
+	
 
 	public static MultipleOutputLinearModel chooseModel(AbstractRequestType requestType) {
 		if (requestType instanceof ImageProcessingRequest) { //TODO: Assume for now only blur images
@@ -71,6 +79,8 @@ public class MetricStorageSystem {
 			} else if (((ImageProcessingRequest) requestType).pictureFormat == utils.PictureFormat.JPEG) {
 				return blurImageJPEGModel;
 			}
+
+			System.out.println("Picture format not supported");
 		}
 
 		throw new IllegalArgumentException("Request type not supported");

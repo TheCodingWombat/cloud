@@ -44,7 +44,6 @@ public class ImageProcessingRequest extends AbstractRequestType {
 	private String extractDataTypeString(String baseEncodedPicture) {
 		int firstSlashIndex = baseEncodedPicture.indexOf('/');
 		int firstSemicolonIndex = baseEncodedPicture.indexOf(';');
-
 		if (firstSlashIndex != -1 && firstSemicolonIndex != -1) {
 			String modifiedString = baseEncodedPicture.substring(firstSlashIndex + 1, firstSemicolonIndex);
 			return modifiedString;
