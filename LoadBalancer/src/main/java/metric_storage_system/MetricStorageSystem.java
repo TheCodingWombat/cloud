@@ -2,6 +2,7 @@ package metric_storage_system;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import deployment_manager.AwsEc2Manager;
@@ -17,7 +18,7 @@ import utils.PictureFormat;
  */
 public class MetricStorageSystem {
 	// TODO: WHy is it an arraylist of a map? Why not just a hashmap? Current implementation will be a list of single  element maps
-	static HashMap<AbstractRequestType, RequestMetrics> metrics = new ConcurrentHashMap<AbstractRequestType,RequestMetrics>(); 
+	static Map<AbstractRequestType, RequestMetrics> metrics = new ConcurrentHashMap<AbstractRequestType,RequestMetrics>();
 	
 	static MultipleOutputLinearModel blurImagePNGModel = new MultipleOutputLinearModel(2);
 	static MultipleOutputLinearModel blurImageJPEGModel = new MultipleOutputLinearModel(2);

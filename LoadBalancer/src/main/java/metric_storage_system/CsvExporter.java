@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import request_types.AbstractRequestType;
@@ -15,7 +16,7 @@ public class CsvExporter {
 	static String folderPath = "metricsOutput";
 	static String currentTimeStamp = getCurrentTimeStamp();
 
-	public static void mapToCsv(HashMap<AbstractRequestType, RequestMetrics> map) {
+	public static void mapToCsv(Map<AbstractRequestType, RequestMetrics> map) {
 
 		try (FileWriter writer = new FileWriter(folderPath + "//" + currentTimeStamp + ".csv")) {
 			for (Entry<AbstractRequestType, RequestMetrics> entry : map.entrySet()) {

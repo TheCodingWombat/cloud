@@ -55,7 +55,7 @@ public class LoadBalancer implements HttpHandler {
 	 * PASTE THE VM ID IN THE VARIABLE instanceID.
 	 *
 	 */
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 	private static final String KEYPATH = "C:/Users/tedoc/newkey.pem";
 
 	@Override
@@ -109,6 +109,7 @@ public class LoadBalancer implements HttpHandler {
 						// deployNewInstance();
 					}
 					forwardLambdaRequest(exchange, requestBody, estimation, requestType);
+					return;
 					// TODO: We should not run forwardRequest below anymore if we already forwarded the lambda request.
 				} else {
 					System.out.println("Instance: " + chosen_instance.get().instanceId() + " fine and available for request");
@@ -256,6 +257,9 @@ public class LoadBalancer implements HttpHandler {
 	// TODO: Heuristic to order cpu/memory
 	private static long getTotalCpu(Instance instance) {
 		long totalCpu = 0;
+		if (!instanceCurrentRequestsComplexityEstimation.containsKey(instance.instanceId())) {
+			instanceCurrentRequestsComplexityEstimation.put(instance.instanceId(), new HashMap<>());
+		}
 		for (Map.Entry<AbstractRequestType, RequestEstimation> entry : instanceCurrentRequestsComplexityEstimation.get(instance.instanceId()).entrySet()) {
 			totalCpu += entry.getValue().cpuTime;
 		}
