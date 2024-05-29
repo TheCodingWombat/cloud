@@ -25,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 
@@ -38,10 +39,10 @@ public class LoadBalancer implements HttpHandler {
 	private static final int MAX_CPU = 80; // 80%
 	private static final int REQUEST_COUNT_MAX = 3; // Maximum number of requests per instance
 	private static final String USER = "ec2-user";
-	private static final Map<String, Integer> instanceRequestCount = new HashMap<>(); // Map to store request counts
+	private static final Map<String, Integer> instanceRequestCount = new ConcurrentHashMap<>(); // Map to store request counts
 
 	// For each instance, keep a list of the current requests for that machine and their complexity estimation
-	private static final Map<String, Map<AbstractRequestType, RequestEstimation>> instanceCurrentRequestsComplexityEstimation = new HashMap<>();
+	private static final Map<String, Map<AbstractRequestType, RequestEstimation>> instanceCurrentRequestsComplexityEstimation = new ConcurrentHashMap<>();
 
 	// do the same as below but do map with string and then list with 2 elements integer and integet
 	//private static final Map<String, List<Integer>> instanceRequestCount = new HashMap<>(); // Map to store VM ip : <request counts, estimated memory usage>
@@ -54,13 +55,15 @@ public class LoadBalancer implements HttpHandler {
 	 * PASTE THE VM ID IN THE VARIABLE instanceID.
 	 *
 	 */
-	public static final boolean DEBUG = false;
-	private static String instanceIP = "localhost";
-	private static String instanceID = "i-0927c392dd954b616";
+	public static final boolean DEBUG = true;
 	private static final String KEYPATH = "C:/Users/tedoc/newkey.pem";
 
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
+
+		// will be overwritten if not in debug mode
+		String instanceIP = "localhost";
+		String instanceID = "i-0927c392dd954b616";
 
 		try {
 
@@ -106,6 +109,7 @@ public class LoadBalancer implements HttpHandler {
 						// deployNewInstance();
 					}
 					forwardLambdaRequest(exchange, requestBody, estimation, requestType);
+					// TODO: We should not run forwardRequest below anymore if we already forwarded the lambda request.
 				} else {
 					System.out.println("Instance: " + chosen_instance.get().instanceId() + " fine and available for request");
 					instanceID = chosen_instance.get().instanceId();
@@ -115,12 +119,12 @@ public class LoadBalancer implements HttpHandler {
 			double cpuUsage = AwsEc2Manager.getCpuUtilization(instanceID);
 			System.out.println("Current CPU usage: " + cpuUsage);
 			// Increment request count for the chosen instance
-			instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) + 1);
+			instanceRequestCount.merge(instanceID, 1, Integer::sum);
 			System.out.println("Request count for instance: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
 
 			// Add the request and estimation to the instance
 
-			instanceCurrentRequestsComplexityEstimation.get(instanceID).put(requestType, estimation);
+			addRequestEstimation(instanceID, requestType, estimation);
 		}
 
 		//List<Double> usageMetrics = getCurrentUsage(instanceIP);
@@ -156,10 +160,10 @@ public class LoadBalancer implements HttpHandler {
 
         if (!DEBUG) {
 			// Decrement request count for the chosen instance after response is sent
-			instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) - 1);
+			instanceRequestCount.merge(instanceID, -1, Integer::sum);
 			System.out.println("Request count for instance now is: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
 
-			instanceCurrentRequestsComplexityEstimation.get(instanceID).remove(requestType);
+			removeRequestEstimation(instanceID, requestType);
 		}
 
 		RequestMetrics metrics = RequestMetrics.extractMetrics(connection);
@@ -205,6 +209,25 @@ public class LoadBalancer implements HttpHandler {
 		os.close();
 	}
 
+	public static void addRequestEstimation(String instanceId, AbstractRequestType request, RequestEstimation estimation) {
+        synchronized (instanceCurrentRequestsComplexityEstimation) {
+            instanceCurrentRequestsComplexityEstimation
+                .computeIfAbsent(instanceId, k -> new ConcurrentHashMap<>())
+                .put(request, estimation);
+        }
+    }
+	public static void removeRequestEstimation(String instanceId, AbstractRequestType request) {
+        synchronized (instanceCurrentRequestsComplexityEstimation) {
+            Map<AbstractRequestType, RequestEstimation> estimations = instanceCurrentRequestsComplexityEstimation.get(instanceId);
+            if (estimations != null) {
+                estimations.remove(request);
+                if (estimations.isEmpty()) {
+                    instanceCurrentRequestsComplexityEstimation.remove(instanceId);
+                }
+            }
+        }
+    }
+
 	private static void print_current_loads() {
 		System.out.println("Current instance complexity estimation:");
 		// print for each instance the total cpu time
@@ -244,9 +267,7 @@ public class LoadBalancer implements HttpHandler {
 		instances.add(newInst);
 		instanceRequestCount.put(newInst.instanceId(), 0);
 		instanceCurrentRequestsComplexityEstimation.putIfAbsent(newInst.instanceId(), new HashMap<>());
-		instanceID = newInst.instanceId();
-		instanceIP = newInst.publicIpAddress();
-		System.out.println("New instance deployed with id: " + instanceID + " and IP: " + instanceIP);
+		System.out.println("New instance deployed with id: " + newInst.instanceId() + " and IP: " + newInst.publicIpAddress());
 	}
 
 	private static void terminateInstance(String instanceID) {
