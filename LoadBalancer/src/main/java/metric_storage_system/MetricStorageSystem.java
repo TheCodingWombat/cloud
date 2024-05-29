@@ -26,7 +26,7 @@ public class MetricStorageSystem {
 		String requestTypeJson = requestType.toJson();
 		String metricJson = metric.toJson();
 
-		if (LoadBalancer.DEBUG) {
+		if (!LoadBalancer.DEBUG) {
 			AwsEc2Manager.storeMetricInDynamoDB(timestamp, requestTypeJson, metricJson);
 		}
 	}
