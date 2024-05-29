@@ -31,12 +31,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LoadBalancer implements HttpHandler {
 	// CPU usage threshold in percentage
+	private static final AutoScaler autoScaler = new AutoScaler();
 	private static final int MAX_INSTANCES = 5; // Maximum number of instances to deploy
 	private static final int MIN_INSTANCES = 1; // Minimum number of instances to keep running
-	private static final List<Instance> instances = new ArrayList<>(); // Array with instances
-	private static final int MEMORY_THRESHOLD = 100; // 80% memory usage
-	private static final int MAX_MEMORY = 970 - MEMORY_THRESHOLD; // 1GB
-	private static final int MAX_CPU = 80; // 80%
+	static final List<Instance> instances = new ArrayList<>(); // Array with instances
+
 	private static final int REQUEST_COUNT_MAX = 3; // Maximum number of requests per instance
 	private static final String USER = "ec2-user";
 	private static final Map<String, Integer> instanceRequestCount = new ConcurrentHashMap<>(); // Map to store request counts
@@ -128,8 +127,7 @@ public class LoadBalancer implements HttpHandler {
 					instanceIP = chosen_instance.get().publicIpAddress();
 				}
 			}
-			double cpuUsage = AwsEc2Manager.getCpuUtilization(instanceID);
-			System.out.println("Current CPU usage: " + cpuUsage);
+
 			// Increment request count for the chosen instance
 			instanceRequestCount.merge(instanceID, 1, Integer::sum);
 			System.out.println("Request count for instance: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
@@ -361,12 +359,6 @@ public class LoadBalancer implements HttpHandler {
 		return usage;
 	}
 
-	private boolean isInstanceFull(List<Double> currentUsage) {
-		double cpuUsage = currentUsage.get(0);
-		double memoryUsage = currentUsage.get(1);
-
-		return cpuUsage >= MAX_CPU || memoryUsage >= MAX_MEMORY;
-	}
 
 	// Helper method to extract base64 encoded data from requestBody
 	private String extractBase64Data(String requestBody) {
