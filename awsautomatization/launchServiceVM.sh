@@ -4,7 +4,7 @@ source ~/.aws/config.sh
 
 # Run new instance.
 aws ec2 run-instances \
-	--image-id ami-0ff7317dbe70e949e \
+	--image-id ami-0b85d21c87147d1d6\
 	--instance-type t2.micro \
 	--key-name $AWS_KEYPAIR_NAME \
 	--security-group-ids $AWS_SECURITY_GROUP \
