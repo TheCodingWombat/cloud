@@ -188,6 +188,12 @@ public class LoadBalancer implements HttpHandler {
 		System.out.println("New instance deployed with id: " + instanceID + " and IP: " + instanceIP);
 	}
 
+	private static void terminateInstance(String instanceID) {
+		AwsEc2Manager.terminateInstance(instanceID);
+		CURRENT_INSTANCES--;
+		System.out.println("Instance with id: " + instanceID + " terminated");
+	}
+
 	private String getUsageFromRemoteVM(String command) {
 		StringBuilder output = new StringBuilder();
 		int retryCount = 5; // Number of retries

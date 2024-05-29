@@ -8,14 +8,7 @@ import software.amazon.awssdk.services.cloudwatch.model.GetMetricStatisticsReque
 import software.amazon.awssdk.services.cloudwatch.model.GetMetricStatisticsResponse;
 import software.amazon.awssdk.services.cloudwatch.model.Statistic;
 import software.amazon.awssdk.services.ec2.Ec2Client;
-import software.amazon.awssdk.services.ec2.model.DescribeInstancesRequest;
-import software.amazon.awssdk.services.ec2.model.DescribeInstancesResponse;
-import software.amazon.awssdk.services.ec2.model.Instance;
-import software.amazon.awssdk.services.ec2.model.Reservation;
-import software.amazon.awssdk.services.ec2.model.RunInstancesRequest;
-import software.amazon.awssdk.services.ec2.model.RunInstancesResponse;
-import software.amazon.awssdk.services.ec2.model.Filter;
-import software.amazon.awssdk.services.ec2.model.Ec2Exception;
+import software.amazon.awssdk.services.ec2.model.*;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -105,6 +98,28 @@ public class AwsEc2Manager {
         waitForInstanceRunning(newInstanceId);
 
         return getInstanceDetails(newInstanceId);
+    }
+    public static boolean terminateInstance(String instanceId) {
+        System.out.println("Terminating instance: " + instanceId);
+        TerminateInstancesRequest terminateRequest = TerminateInstancesRequest.builder()
+                .instanceIds(instanceId)
+                .build();
+
+        try {
+            TerminateInstancesResponse terminateResponse = ec2.terminateInstances(terminateRequest);
+            terminateResponse.terminatingInstances().forEach(instanceChange -> {
+                System.out.println("Terminated instance ID: " + instanceChange.instanceId());
+                System.out.println("Current state: " + instanceChange.currentState().nameAsString());
+                System.out.println("Previous state: " + instanceChange.previousState().nameAsString());
+            });
+            return true;
+        } catch (Ec2Exception e) {
+            System.err.println("EC2 Exception: " + e.awsErrorDetails().errorMessage());
+            return false;
+        } catch (Exception e) {
+            System.err.println("Exception: " + e.getMessage());
+            return false;
+        }
     }
 
     private static void waitForInstanceRunning(String instanceId) {
