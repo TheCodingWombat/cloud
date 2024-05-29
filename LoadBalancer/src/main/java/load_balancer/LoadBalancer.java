@@ -19,13 +19,14 @@ import deployment_manager.AwsEc2Manager;
 import software.amazon.awssdk.services.ec2.model.Instance;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Comparator;
+import java.util.Optional;
 
 
 public class LoadBalancer implements HttpHandler {
 	// CPU usage threshold in percentage
 	private static final int MAX_INSTANCES = 5; // Maximum number of instances to deploy
 	private static final int MIN_INSTANCES = 1; // Minimum number of instances to keep running
-	private static int CURRENT_INSTANCES = 0; // Current number of instances
 	private static final List<Instance> instances = new ArrayList<>(); // Array with instances
 	private static final int MEMORY_THRESHOLD = 100; // 80% memory usage
 	private static final int MAX_MEMORY = 970 - MEMORY_THRESHOLD; // 1GB
@@ -33,6 +34,9 @@ public class LoadBalancer implements HttpHandler {
 	private static final int REQUEST_COUNT_MAX = 3; // Maximum number of requests per instance
 	private static final String USER = "ec2-user";
 	private static final Map<String, Integer> instanceRequestCount = new HashMap<>(); // Map to store request counts
+
+	// For each instance, keep a list of the current requests for that machine and their complexity estimation
+	private static final Map<String, Map<AbstractRequestType, RequestEstimation>> instanceCurrentRequestsComplexityEstimation = new HashMap<>();
 
 	// do the same as below but do map with string and then list with 2 elements integer and integet
 	//private static final Map<String, List<Integer>> instanceRequestCount = new HashMap<>(); // Map to store VM ip : <request counts, estimated memory usage>
@@ -58,24 +62,16 @@ public class LoadBalancer implements HttpHandler {
 		AbstractRequestType requestType = AbstractRequestType.ofRequest(exchange, requestBody);
 		RequestEstimation estimation = MetricStorageSystem.calculateEstimation(requestType);
 
-		if (!estimation.empty) {
-			System.out.println("CPU time estimation: "+ estimation.cpuTime);
-			System.out.println("Memory estimation: "+ estimation.memory);
-		} else {
-			System.out.println("Cannot make CPU and memory estimation");
-		}
-
 		if (DEBUG) {
 			System.out.println("Running in debug mode");
 		}
 		else {
-			boolean instanceAvailable = AwsEc2Manager.checkAvailableInstances();
+			// boolean instanceAvailable = AwsEc2Manager.checkAvailableInstances(); // TODO: use?
 
 			if (instances.isEmpty()) {
 				instances.addAll(AwsEc2Manager.getAllRunningInstances());
 				for (Instance inst : instances) {
 					instanceRequestCount.put(inst.instanceId(), 0);
-					CURRENT_INSTANCES++;
 				}
 				if (instances.isEmpty()) {
 					System.out.println("No instances available, deploying new instance");
@@ -83,22 +79,19 @@ public class LoadBalancer implements HttpHandler {
 				}
 			}
 			if (!instances.isEmpty()) {
-				boolean isFound = false;
-				System.out.println("Instance already available and we are going to distribute the call");
-				// Check if there is an instance with 3 current requests if yes deploy new instance
-				for (Instance inst : instances) {
 
-					if (CURRENT_INSTANCES < MAX_INSTANCES && instanceRequestCount.get(inst.instanceId()) < REQUEST_COUNT_MAX) {
-						System.out.println("Instance: " + inst.instanceId() + " fine and available for request");
-						instanceID = inst.instanceId();
-						instanceIP = inst.publicIpAddress();
-						isFound = true;
-						break;
-					}
-				}
-				if (!isFound) {
+				Optional<Instance> chosen_instance = getLeastBusyInstance();
+
+				if (chosen_instance.isEmpty()) {
 					System.out.println("All instances are full, deploying new instance");
-					// deployNewInstance();
+					// check if we don't already have the maximum number of instances
+					if (instances.size() < MAX_INSTANCES) {
+						// deployNewInstance();
+					}
+				} else {
+					System.out.println("Instance: " + chosen_instance.get().instanceId() + " fine and available for request");
+					instanceID = chosen_instance.get().instanceId();
+					instanceIP = chosen_instance.get().publicIpAddress();
 				}
 			}
 			double cpuUsage = AwsEc2Manager.getCpuUtilization(instanceID);
@@ -106,6 +99,10 @@ public class LoadBalancer implements HttpHandler {
 			// Increment request count for the chosen instance
 			instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) + 1);
 			System.out.println("Request count for instance: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
+
+			// Add the request and estimation to the instance
+			instanceCurrentRequestsComplexityEstimation.putIfAbsent(instanceID, new HashMap<>()); 
+			instanceCurrentRequestsComplexityEstimation.get(instanceID).put(requestType, estimation);
 		}
 
 		//List<Double> usageMetrics = getCurrentUsage(instanceIP);
@@ -129,7 +126,7 @@ public class LoadBalancer implements HttpHandler {
 		}
 
 		URL url = new URL("http", instanceIP, 8000, uri);
-		System.out.println("Handlingg request: " + uri);
+		System.out.println("Handling request: " + uri);
 		HttpURLConnection connection = HttpRequestUtils.forwardRequest(url, exchange, requestBody);
 		int statusCode = HttpRequestUtils.sendResponseToClient(exchange, connection);
 
@@ -137,10 +134,29 @@ public class LoadBalancer implements HttpHandler {
 			// Decrement request count for the chosen instance after response is sent
 			instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) - 1);
 			System.out.println("Request count for instance now is: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
+
+			instanceCurrentRequestsComplexityEstimation.get(instanceID).remove(requestType);
 		}
 
 		RequestMetrics metrics = RequestMetrics.extractMetrics(connection);
 		MetricStorageSystem.storeMetric(requestType, metrics);
+	}
+
+	// filter instances that are not full, then find the one with minimal cpu usage
+	private static Optional<Instance> getLeastBusyInstance() {
+		return instances.stream()
+			.filter(inst -> instanceRequestCount.get(inst.instanceId()) < REQUEST_COUNT_MAX)
+			.min(Comparator.comparingLong(LoadBalancer::getTotalCpu));
+	}
+
+	// Function that gives total cpu complexity given instance
+	// TODO: Heuristic to order cpu/memory
+	private static long getTotalCpu(Instance instance) {
+		long totalCpu = 0;
+		for (Map.Entry<AbstractRequestType, RequestEstimation> entry : instanceCurrentRequestsComplexityEstimation.get(instance.instanceId()).entrySet()) {
+			totalCpu += entry.getValue().cpuTime;
+		}
+		return totalCpu;
 	}
 
 	private static void deployNewInstance() {
@@ -149,7 +165,6 @@ public class LoadBalancer implements HttpHandler {
 		instanceRequestCount.put(newInst.instanceId(), 0);
 		instanceID = newInst.instanceId();
 		instanceIP = newInst.publicIpAddress();
-		CURRENT_INSTANCES++;
 		System.out.println("New instance deployed with id: " + instanceID + " and IP: " + instanceIP);
 	}
 
