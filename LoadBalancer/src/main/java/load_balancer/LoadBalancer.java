@@ -2,6 +2,7 @@ package load_balancer;
 
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,9 @@ import metric_storage_system.MetricStorageSystem;
 import metric_storage_system.RequestEstimation;
 import metric_storage_system.RequestMetrics;
 import request_types.AbstractRequestType;
+import request_types.BlurImageRequest;
+import request_types.EnhanceImageRequest;
+import request_types.RayTracerRequest;
 import utils.HttpRequestUtils;
 import deployment_manager.AwsEc2Manager;
 import software.amazon.awssdk.services.ec2.model.Instance;
@@ -21,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Comparator;
 import java.util.Optional;
+
 
 
 public class LoadBalancer implements HttpHandler {
@@ -88,6 +93,7 @@ public class LoadBalancer implements HttpHandler {
 					if (instances.size() < MAX_INSTANCES) {
 						// deployNewInstance();
 					}
+					forwardLambdaRequest(exchange, requestBody, estimation, requestType);
 				} else {
 					System.out.println("Instance: " + chosen_instance.get().instanceId() + " fine and available for request");
 					instanceID = chosen_instance.get().instanceId();
@@ -141,6 +147,46 @@ public class LoadBalancer implements HttpHandler {
 		RequestMetrics metrics = RequestMetrics.extractMetrics(connection);
 		MetricStorageSystem.storeMetric(requestType, metrics);
 	}
+	private void forwardLambdaRequest(HttpExchange exchange, String requestBody, RequestEstimation estimation, AbstractRequestType requestType) throws IOException {
+		// Use estimation later to do forward logic
+		System.out.println("Redirecting request to Lambda function");
+		String formattedResponse = "";
+		String lambdaFunctionName = "";
+
+		if (requestType instanceof BlurImageRequest) {
+			lambdaFunctionName = "blur-service";
+		}
+		else if (requestType instanceof EnhanceImageRequest) {
+			lambdaFunctionName = "enhance-service";
+		}
+		else if (requestType instanceof RayTracerRequest) {
+			lambdaFunctionName = "tracer-service";
+		}
+
+		if (requestType instanceof BlurImageRequest || requestType instanceof EnhanceImageRequest) {
+			// Construct the payload
+			String base64Image = extractBase64Data(requestBody);
+			String imageType = extractImageType(requestBody);
+
+
+			String payload = "{ \"body\": \"" + base64Image + "\", \"fileFormat\": \"" + imageType + "\" }";
+			String lambdaResponse = AwsEc2Manager.invokeLambdaFunction(lambdaFunctionName, payload);
+			formattedResponse = formatLambdaResponse(lambdaResponse, imageType);
+
+		}
+		else if (requestType instanceof RayTracerRequest) {
+
+			formattedResponse = "Ray Tracer not available at the moment. Please try again later.";
+		}
+
+		// Send the response back to the client
+		byte[] responseBytes = formattedResponse.getBytes(StandardCharsets.UTF_8);
+		exchange.sendResponseHeaders(200, responseBytes.length);
+		OutputStream os = exchange.getResponseBody();
+		os.write(responseBytes);
+		os.close();
+	}
+
 
 	// filter instances that are not full, then find the one with minimal cpu usage
 	private static Optional<Instance> getLeastBusyInstance() {
@@ -166,6 +212,12 @@ public class LoadBalancer implements HttpHandler {
 		instanceID = newInst.instanceId();
 		instanceIP = newInst.publicIpAddress();
 		System.out.println("New instance deployed with id: " + instanceID + " and IP: " + instanceIP);
+	}
+
+	private static void terminateInstance(String instanceID) {
+		AwsEc2Manager.terminateInstance(instanceID);
+		CURRENT_INSTANCES--;
+		System.out.println("Instance with id: " + instanceID + " terminated");
 	}
 
 	private String getUsageFromRemoteVM(String command) {
@@ -246,4 +298,24 @@ public class LoadBalancer implements HttpHandler {
 		return cpuUsage >= MAX_CPU || memoryUsage >= MAX_MEMORY;
 	}
 
+	// Helper method to extract base64 encoded data from requestBody
+	private String extractBase64Data(String requestBody) {
+		int startIndex = requestBody.indexOf("base64,") + 7;
+		return requestBody.substring(startIndex);
+	}
+
+	// Helper method to extract image type from requestBody
+	private String extractImageType(String requestBody) {
+		int startIndex = requestBody.indexOf("data:image/") + 11;
+		int endIndex = requestBody.indexOf(";base64,");
+		return requestBody.substring(startIndex, endIndex);
+	}
+
+	private String formatLambdaResponse(String lambdaResponse, String imageType) {
+		// Remove quotes from the response
+		String base64Image = lambdaResponse.replace("\"", "");
+
+		// Prepend the appropriate header
+		return "data:image/" + imageType + ";base64," + base64Image;
+	}
 }

@@ -73,7 +73,11 @@
             <artifactId>dynamodb</artifactId>
             <version>2.25.60</version>
         </dependency>
-
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>lambda</artifactId>
+            <version>2.25.60</version>
+        </dependency>
     </dependencies>
 
     <build>
