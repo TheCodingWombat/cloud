@@ -54,6 +54,12 @@
             <version>4.13.2</version>
         </dependency>
 
+        <!-- Commons Math 3 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+            <version>3.6.1</version>
+        </dependency>
 
         <!-- https://mvnrepository.com/artifact/software.amazon.awssdk/cloudwatch -->
         <dependency>

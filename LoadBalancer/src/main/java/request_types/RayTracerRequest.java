@@ -45,6 +45,10 @@ public class RayTracerRequest extends AbstractRequestType {
 	}
 
 	@Override
+	public double[] toXArray() {
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
+	
 	public String serializeCsv() {
 		return scols + ";" + srows + ";" + wcols + ";" + wrows + ";" + coff + ";" + roff + ";" + aa + ";";
 	}
