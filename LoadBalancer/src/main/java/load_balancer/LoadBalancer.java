@@ -54,16 +54,24 @@ public class LoadBalancer implements HttpHandler {
 	 * PASTE THE VM ID IN THE VARIABLE instanceID.
 	 *
 	 */
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 	private static String instanceIP = "localhost";
 	private static String instanceID = "i-0927c392dd954b616";
 	private static final String KEYPATH = "C:/Users/tedoc/newkey.pem";
 
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
+
 		try {
 
 		String requestBody = HttpRequestUtils.getRequestBodyString(exchange);
+		try {
+			AbstractRequestType requestType = AbstractRequestType.ofRequest(exchange, requestBody);
+		} catch (IllegalArgumentException e) {
+			// TODO: temp fix, since it works on richards laptop without this, but not on teos
+			System.out.println("Empty request body, ignore");
+			return;
+		}
 		AbstractRequestType requestType = AbstractRequestType.ofRequest(exchange, requestBody);
 		RequestEstimation estimation = MetricStorageSystem.calculateEstimation(requestType);
 
@@ -75,15 +83,19 @@ public class LoadBalancer implements HttpHandler {
 
 			if (instances.isEmpty()) {
 				instances.addAll(AwsEc2Manager.getAllRunningInstances());
+
 				for (Instance inst : instances) {
 					instanceRequestCount.put(inst.instanceId(), 0);
+					instanceCurrentRequestsComplexityEstimation.putIfAbsent(inst.instanceId(), new HashMap<>());
 				}
+
 				if (instances.isEmpty()) {
 					System.out.println("No instances available, deploying new instance");
 					deployNewInstance();
 				}
 			}
 			if (!instances.isEmpty()) {
+				print_current_loads();
 
 				Optional<Instance> chosen_instance = getLeastBusyInstance();
 
@@ -107,7 +119,7 @@ public class LoadBalancer implements HttpHandler {
 			System.out.println("Request count for instance: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
 
 			// Add the request and estimation to the instance
-			instanceCurrentRequestsComplexityEstimation.putIfAbsent(instanceID, new HashMap<>()); 
+
 			instanceCurrentRequestsComplexityEstimation.get(instanceID).put(requestType, estimation);
 		}
 
@@ -136,7 +148,13 @@ public class LoadBalancer implements HttpHandler {
 		HttpURLConnection connection = HttpRequestUtils.forwardRequest(url, exchange, requestBody);
 		int statusCode = HttpRequestUtils.sendResponseToClient(exchange, connection);
 
-		if (!DEBUG) {
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (!DEBUG) {
 			// Decrement request count for the chosen instance after response is sent
 			instanceRequestCount.put(instanceID, instanceRequestCount.get(instanceID) - 1);
 			System.out.println("Request count for instance now is: " + instanceID + " is: " + instanceRequestCount.get(instanceID));
@@ -187,6 +205,22 @@ public class LoadBalancer implements HttpHandler {
 		os.close();
 	}
 
+	private static void print_current_loads() {
+		System.out.println("Current instance complexity estimation:");
+		// print for each instance the total cpu time
+		for (Instance inst : instances) {
+			System.out.println("Instance: " + inst.instanceId() + " has total cpu time: " + getTotalCpu(inst));
+		}
+
+		// print for each instance the current requests and their associated cpu time
+		for (Map.Entry<String, Map<AbstractRequestType, RequestEstimation>> entry : instanceCurrentRequestsComplexityEstimation.entrySet()) {
+			System.out.println("Instance: " + entry.getKey() + " has the following requests:");
+			for (Map.Entry<AbstractRequestType, RequestEstimation> reqEntry : entry.getValue().entrySet()) {
+				System.out.println("Request: " + reqEntry.getKey().getClass().getSimpleName() + " has cpu time: " + reqEntry.getValue().cpuTime);
+			}
+		}
+	}
+
 
 	// filter instances that are not full, then find the one with minimal cpu usage
 	private static Optional<Instance> getLeastBusyInstance() {
@@ -209,6 +243,7 @@ public class LoadBalancer implements HttpHandler {
 		Instance newInst = AwsEc2Manager.deployNewInstance();
 		instances.add(newInst);
 		instanceRequestCount.put(newInst.instanceId(), 0);
+		instanceCurrentRequestsComplexityEstimation.putIfAbsent(newInst.instanceId(), new HashMap<>());
 		instanceID = newInst.instanceId();
 		instanceIP = newInst.publicIpAddress();
 		System.out.println("New instance deployed with id: " + instanceID + " and IP: " + instanceIP);

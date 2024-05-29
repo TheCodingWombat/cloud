@@ -79,6 +79,8 @@ public class MetricStorageSystem {
 			} else if (((ImageProcessingRequest) requestType).pictureFormat == utils.PictureFormat.JPEG) {
 				return blurImageJPEGModel;
 			}
+
+			System.out.println("Picture format not supported");
 		}
 
 		throw new IllegalArgumentException("Request type not supported");
