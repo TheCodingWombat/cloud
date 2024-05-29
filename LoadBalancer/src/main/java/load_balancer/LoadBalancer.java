@@ -216,7 +216,6 @@ public class LoadBalancer implements HttpHandler {
 
 	private static void terminateInstance(String instanceID) {
 		AwsEc2Manager.terminateInstance(instanceID);
-		CURRENT_INSTANCES--;
 		System.out.println("Instance with id: " + instanceID + " terminated");
 	}
 
