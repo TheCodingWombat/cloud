@@ -26,7 +26,7 @@ import java.io.InputStreamReader;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class LoadBalancer implements HttpHandler {
@@ -43,7 +43,7 @@ public class LoadBalancer implements HttpHandler {
 
 	// For each instance, keep a list of the current requests for that machine and their complexity estimation
 	private static final Map<String, Map<AbstractRequestType, RequestEstimation>> instanceCurrentRequestsComplexityEstimation = new ConcurrentHashMap<>();
-
+	private final AtomicBoolean isCurrentlyDeploying = new AtomicBoolean(false);
 	// do the same as below but do map with string and then list with 2 elements integer and integet
 	//private static final Map<String, List<Integer>> instanceRequestCount = new HashMap<>(); // Map to store VM ip : <request counts, estimated memory usage>
 
@@ -55,6 +55,7 @@ public class LoadBalancer implements HttpHandler {
 	 * PASTE THE VM ID IN THE VARIABLE instanceID.
 	 *
 	 */
+
 	public static final boolean DEBUG = false;
 	private static final String KEYPATH = "C:/Users/tedoc/newkey.pem";
 
@@ -103,10 +104,20 @@ public class LoadBalancer implements HttpHandler {
 				Optional<Instance> chosen_instance = getLeastBusyInstance();
 
 				if (chosen_instance.isEmpty()) {
-					System.out.println("All instances are full, deploying new instance");
 					// check if we don't already have the maximum number of instances
 					if (instances.size() < MAX_INSTANCES) {
-						// deployNewInstance();
+						if (isCurrentlyDeploying.compareAndSet(false, true)) {
+							System.out.println("All instances are full, deploying new instance");
+							new Thread(() -> {
+								try {
+									deployNewInstance();
+								} finally {
+									isCurrentlyDeploying.set(false);
+								}
+							}).start();
+						} else {
+							System.out.println("Another thread is already deploying an instance");
+						}
 					}
 					forwardLambdaRequest(exchange, requestBody, estimation, requestType);
 					return;
