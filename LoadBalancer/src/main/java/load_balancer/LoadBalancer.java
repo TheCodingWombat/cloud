@@ -58,8 +58,12 @@ public class LoadBalancer implements HttpHandler {
 		AbstractRequestType requestType = AbstractRequestType.ofRequest(exchange, requestBody);
 		RequestEstimation estimation = MetricStorageSystem.calculateEstimation(requestType);
 
-		System.out.println("CPU time estimation: "+ estimation.cpuTime);
-		System.out.println("Memory estimation: "+ estimation.memory);
+		if (!estimation.empty) {
+			System.out.println("CPU time estimation: "+ estimation.cpuTime);
+			System.out.println("Memory estimation: "+ estimation.memory);
+		} else {
+			System.out.println("Cannot make CPU and memory estimation");
+		}
 
 		if (DEBUG) {
 			System.out.println("Running in debug mode");

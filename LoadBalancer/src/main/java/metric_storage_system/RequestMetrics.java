@@ -32,6 +32,7 @@ public class RequestMetrics implements CSVSerializable {
 		return new RequestMetrics(cpuTime, memory);
 	}
 
+    // Returns the metrics as an array of doubles for use in a machine learning model
     public double[] toYArray() {
         return new double[]{cpuTime, memory};
     }

@@ -60,7 +60,7 @@ public class MetricStorageSystem {
 			e.printStackTrace();
 		}
 
-		return new RequestEstimation((long) 0, (long) 0);
+		return new RequestEstimation(); 
 		
 	}
 

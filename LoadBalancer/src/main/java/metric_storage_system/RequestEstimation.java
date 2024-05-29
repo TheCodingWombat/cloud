@@ -7,10 +7,16 @@ package metric_storage_system;
 public class RequestEstimation {
     public long cpuTime;
     public long memory;
+    public boolean empty = false;
 
     public RequestEstimation(long cpuTime, long memory) {
         this.cpuTime = cpuTime;
         this.memory = memory;
+    }
+
+    // Empty request estimation. TODO: OOP
+    public RequestEstimation() {
+        this.empty = true;
     }
     
 }
