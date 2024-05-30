@@ -1,42 +1,54 @@
 package load_balancer;
 
 import deployment_manager.AwsEc2Manager;
-import metric_storage_system.RequestEstimation;
 import software.amazon.awssdk.services.ec2.model.Instance;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class AutoScaler {
 
-    private static final int autoscale_interval = 1000;
+    private static final int autoscale_interval = 10000;
     private static final int MEMORY_THRESHOLD = 100; // 80% memory usage
     private static final int MAX_MEMORY = 970 - MEMORY_THRESHOLD; // 1GB
     private static final int MAX_CPU = 80; // 80%
     private static final int MIN_CPU = 20; // 20%
+    public static final List<Instance> terminating_instances = new ArrayList<>();
+    public static final int MAX_INSTANCES = 5; // Maximum number of instances to deploy
+    private static final int MIN_INSTANCES = 1; // Minimum number of instances to keep running
 
     public AutoScaler() {
         // run some logic in a new thread to scale the system
         new Thread(() -> {
             System.out.println("AutoScaler started up");
             while (true) {
-                System.out.println("Autoscaler iteration");
                 try {
-                    // get the instance utilization
-                    Map<String, List<Double>> instance_utilization = get_instance_utilization();
-                    Optional<Instance> instanceToKill;
-                    if (must_scale_up(instance_utilization)) {
-                        scaleUp();
-                    } else if ((instanceToKill = must_scale_down(instance_utilization)).isPresent()) {
-                        scaleDown(instanceToKill.get());
-                    }
-
                     Thread.sleep(autoscale_interval);
-
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                }
+
+                System.out.println("Autoscaler iteration");
+                // check if terminating instances are done
+                for (Instance instance : terminating_instances) {
+                    // if the instance is done, remove it from the list
+                    synchronized (LoadBalancer.instanceRequests) {
+                        if (LoadBalancer.instanceRequests.get(instance.instanceId()).isEmpty()) {
+                            LoadBalancer.instanceRequests.remove(instance.instanceId());
+                            AwsEc2Manager.terminateInstance(instance.instanceId());
+                        }
+                    }
+                }
+
+                // all instances have been terminated, clear the list
+                terminating_instances.clear();
+
+                // get the instance utilization and scale up or down
+                Map<String, List<Double>> instance_utilization = get_instance_utilization();
+                Optional<Instance> instanceToKill;
+                if (must_scale_up(instance_utilization)) {
+                    scaleUp();
+                } else if ((instanceToKill = must_scale_down(instance_utilization)).isPresent()) {
+                    scaleDown(instanceToKill.get());
                 }
             }
         }).start();
@@ -45,12 +57,14 @@ public class AutoScaler {
     // Check the instance utilization
     private Map<String, List<Double>> get_instance_utilization() {
         Map<String, List<Double>> instance_utilization = new HashMap<>();
-        LoadBalancer.instances.forEach(instance -> {
-            System.out.println("Checking instance utilization");
-            double cpuUsage = AwsEc2Manager.getCpuUtilization(instance.instanceId());
-            System.out.println("Instance " + instance.instanceId() + " has " + cpuUsage + " CPU usage");
-            instance_utilization.put(instance.instanceId(), List.of(cpuUsage));
-        });
+        synchronized (LoadBalancer.instances) {
+            LoadBalancer.instances.forEach(instance -> {
+                System.out.println("Checking instance utilization");
+                double cpuUsage = AwsEc2Manager.getCpuUtilization(instance.instanceId());
+                System.out.println("Instance " + instance.instanceId() + " has " + cpuUsage + " CPU usage");
+                instance_utilization.put(instance.instanceId(), List.of(cpuUsage));
+            });
+        }
 
         return instance_utilization;
     }
@@ -62,11 +76,25 @@ public class AutoScaler {
 
     // Scale down
     private void scaleDown(Instance instance){
-        System.out.println("Scaling down");
+        System.out.println("Scaling down " + instance.instanceId());
+        LoadBalancer.instances.remove(instance);
+        terminating_instances.add(instance);
     }
 
     // Check if we must scale up
     private boolean must_scale_up(Map<String, List<Double>> instance_utilization) {
+        // if we have the maximum number of instances running, don't scale up
+        if (LoadBalancer.instances.size() >= MAX_INSTANCES) {
+            return false;
+        }
+
+        // if we have no instances, the load balancer will automatically start one
+        // TODO; do that here instead
+        if (LoadBalancer.instances.isEmpty()) {
+            System.out.println("No instances running, loadbalancer will do this on first request");
+            return false;
+        }
+
         // scale up if all vms are above max cpu usage in percentage
         for (List<Double> utilizations : instance_utilization.values()) {
             if (utilizations.get(0) < MAX_CPU) {
@@ -80,6 +108,11 @@ public class AutoScaler {
     // Check if we must scale down
     private Optional<Instance> must_scale_down(Map<String, List<Double>> instance_utilization) {
         System.out.println("Checking if we must scale down");
+        // Don't scale down if we have the minimum number of instances running
+        if (LoadBalancer.instances.size() <= MIN_INSTANCES) {
+            return Optional.empty();
+        }
+
         // scale down if one vm is below MIN_CPU
         for (Map.Entry<String, List<Double>> entry : instance_utilization.entrySet()) {
             if (entry.getValue().get(0) < MIN_CPU) {
