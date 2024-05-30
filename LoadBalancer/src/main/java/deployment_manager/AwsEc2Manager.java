@@ -195,7 +195,7 @@ public class AwsEc2Manager {
         return runningInstances;
     }
 
-    public static double getCpuUtilization(String instanceId) {
+    public static Optional<Double> getCpuUtilization(String instanceId) {
         GetMetricStatisticsRequest request = GetMetricStatisticsRequest.builder()
                 .namespace("AWS/EC2")
                 .metricName("CPUUtilization")
@@ -209,10 +209,10 @@ public class AwsEc2Manager {
         GetMetricStatisticsResponse response = cloudWatch.getMetricStatistics(request);
 
         if (!response.datapoints().isEmpty()) {
-            return response.datapoints().get(0).average();
+            return Optional.of(response.datapoints().get(0).average());
         } else {
             System.out.println("No data points found for CPU utilization.");
-            return 0.0;
+            return Optional.empty();
         }
     }
     public static void storeMetricInDynamoDB(String timestamp, String requestType, String metric) {

@@ -39,7 +39,7 @@ public class LoadBalancer implements HttpHandler {
 
 	// For each instance, keep a list of the current requests for that machine and their complexity estimation
 	public static final Map<String, Map<AbstractRequestType, RequestEstimation>> instanceRequests = new ConcurrentHashMap<>();
-	private final AtomicBoolean isCurrentlyDeploying = new AtomicBoolean(false);
+	public static final AtomicBoolean isCurrentlyDeploying = new AtomicBoolean(false);
 	// do the same as below but do map with string and then list with 2 elements integer and integet
 	//private static final Map<String, List<Integer>> instanceRequestCount = new HashMap<>(); // Map to store VM ip : <request counts, estimated memory usage>
 
@@ -90,7 +90,7 @@ public class LoadBalancer implements HttpHandler {
 
 				if (instances.isEmpty()) {
 					System.out.println("No instances available, deploying new instance");
-					deployNewInstance();
+					AutoScaler.deployNewInstance();
 				}
 			}
 			if (!instances.isEmpty()) {
@@ -108,7 +108,7 @@ public class LoadBalancer implements HttpHandler {
 							System.out.println("All instances are full, deploying new instance");
 							new Thread(() -> {
 								try {
-									deployNewInstance();
+									AutoScaler.deployNewInstance();
 								} finally {
 									isCurrentlyDeploying.set(false);
 								}
@@ -225,14 +225,6 @@ public class LoadBalancer implements HttpHandler {
 
 
 	private static void print_current_loads() {
-		System.out.println("Current instance complexity estimation:");
-		// print for each instance the total cpu time
-		synchronized (instances) {
-			for (Instance inst : instances) {
-				System.out.println("Instance: " + inst.instanceId() + " has total cpu time: " + getTotalCpu(inst));
-			}
-		}
-
 		// print for each instance the current requests and their associated cpu time
 		for (Map.Entry<String, Map<AbstractRequestType, RequestEstimation>> entry : instanceRequests.entrySet()) {
 			System.out.println("Instance: " + entry.getKey() + " has the following requests:");
@@ -242,37 +234,25 @@ public class LoadBalancer implements HttpHandler {
 		}
 	}
 
-
 	// filter instances that are not full, then find the one with minimal cpu usage
 	private static Optional<Instance> getLeastBusyInstance() {
 		return instances.stream()
 			.filter(inst -> instanceRequests.get(inst.instanceId()).size() < REQUEST_COUNT_MAX)
-			.min(Comparator.comparingLong(LoadBalancer::getTotalCpu));
+			.min(Comparator.comparingLong(LoadBalancer::getWeightedComplexity));
 	}
 
-	// Function that gives total cpu complexity given instance
-	// TODO: Heuristic to order cpu/memory
-	private static long getTotalCpu(Instance instance) {
+	// Function that gives total cpu and memory complexity given instance using weighted heuristic
+	private static long getWeightedComplexity(Instance instance) {
 		long totalCpu = 0;
+		long totalMemory = 0;
 		if (!instanceRequests.containsKey(instance.instanceId())) {
 			instanceRequests.put(instance.instanceId(), new HashMap<>());
 		}
 		for (Map.Entry<AbstractRequestType, RequestEstimation> entry : instanceRequests.get(instance.instanceId()).entrySet()) {
 			totalCpu += entry.getValue().cpuTime;
+			totalMemory += entry.getValue().memory;
 		}
-		return totalCpu;
-	}
-
-	private static void deployNewInstance() {
-		Instance newInst = AwsEc2Manager.deployNewInstance();
-		instances.add(newInst);
-		instanceRequests.putIfAbsent(newInst.instanceId(), new HashMap<>());
-		System.out.println("New instance deployed with id: " + newInst.instanceId() + " and IP: " + newInst.publicIpAddress());
-	}
-
-	private static void terminateInstance(String instanceID) {
-		AwsEc2Manager.terminateInstance(instanceID);
-		System.out.println("Instance with id: " + instanceID + " terminated");
+		return totalCpu + 2 * totalMemory;
 	}
 
 	private String getUsageFromRemoteVM(String command) {

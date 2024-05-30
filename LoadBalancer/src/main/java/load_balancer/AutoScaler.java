@@ -43,11 +43,15 @@ public class AutoScaler {
                 terminating_instances.clear();
 
                 // get the instance utilization and scale up or down
-                Map<String, List<Double>> instance_utilization = get_instance_utilization();
+                Optional<Map<String, List<Double>>> instance_utilization = get_instance_utilization();
+                if (instance_utilization.isEmpty()) {
+                    System.out.println("Failed to get instance utilization, skipping autoscale iteration");
+                    continue;
+                }
                 Optional<Instance> instanceToKill;
-                if (must_scale_up(instance_utilization)) {
+                if (must_scale_up(instance_utilization.get())) {
                     scaleUp();
-                } else if ((instanceToKill = must_scale_down(instance_utilization)).isPresent()) {
+                } else if ((instanceToKill = must_scale_down(instance_utilization.get())).isPresent()) {
                     scaleDown(instanceToKill.get());
                 }
             }
@@ -55,23 +59,33 @@ public class AutoScaler {
     }
 
     // Check the instance utilization
-    private Map<String, List<Double>> get_instance_utilization() {
+    private Optional<Map<String, List<Double>>> get_instance_utilization() {
         Map<String, List<Double>> instance_utilization = new HashMap<>();
         synchronized (LoadBalancer.instances) {
-            LoadBalancer.instances.forEach(instance -> {
+            for (Instance instance : LoadBalancer.instances) {
                 // System.out.println("Checking instance utilization");
-                double cpuUsage = AwsEc2Manager.getCpuUtilization(instance.instanceId());
-                System.out.println("INSTANCE UTILIZATION: Instance " + instance.instanceId() + " has " + cpuUsage + " CPU usage");
-                instance_utilization.put(instance.instanceId(), List.of(cpuUsage));
-            });
+                Optional<Double> cpuUsage = AwsEc2Manager.getCpuUtilization(instance.instanceId());
+                if (cpuUsage.isPresent()) {
+                    System.out.println("INSTANCE UTILIZATION: Instance " + instance.instanceId() + " has " + cpuUsage.get() + " CPU usage");
+                    instance_utilization.put(instance.instanceId(), List.of(cpuUsage.get()));
+                } else {
+                    return Optional.empty();
+                }
+            }
         }
 
-        return instance_utilization;
+        return Optional.of(instance_utilization);
     }
 
     // Scale up
     private void scaleUp() {
         System.out.println("Scaling up");
+        if (LoadBalancer.isCurrentlyDeploying.compareAndSet(false, true)) {
+            deployNewInstance();
+            LoadBalancer.isCurrentlyDeploying.set(false);
+        } else {
+            System.out.println("Another thread is already deploying an instance, so not scaling up more");
+        }
     }
 
     // Scale down
@@ -120,6 +134,13 @@ public class AutoScaler {
         }
 
         return Optional.empty();
+    }
+
+    public static void deployNewInstance() {
+        Instance newInst = AwsEc2Manager.deployNewInstance();
+        LoadBalancer.instances.add(newInst);
+        LoadBalancer.instanceRequests.putIfAbsent(newInst.instanceId(), new HashMap<>());
+        System.out.println("New instance deployed with id: " + newInst.instanceId() + " and IP: " + newInst.publicIpAddress());
     }
 
 

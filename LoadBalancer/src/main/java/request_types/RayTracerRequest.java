@@ -46,7 +46,7 @@ public class RayTracerRequest extends AbstractRequestType {
 
 	@Override
 	public double[] toXArray() {
-		return new double[] {scols}; // TODO; now just without reason onlz using scols so the total pipeline works
+		return new double[] {scols, srows, wcols, wrows, coff, roff}; // TODO; now just without reason onlz using scols so the total pipeline works
 	}
 	
 	public String serializeCsv() {
