@@ -3,14 +3,12 @@ package load_balancer;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
+import java.util.*;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import metric_storage_system.MetricStorageSystem;
 import metric_storage_system.RequestEstimation;
 import metric_storage_system.RequestMetrics;
@@ -23,8 +21,6 @@ import deployment_manager.AwsEc2Manager;
 import software.amazon.awssdk.services.ec2.model.Instance;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.Comparator;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -52,7 +48,7 @@ public class LoadBalancer implements HttpHandler {
 	 *
 	 */
 
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 	private static final String KEYPATH = "C:/Users/tedoc/newkey.pem";
 
 	@Override
@@ -151,7 +147,8 @@ public class LoadBalancer implements HttpHandler {
 					// will be overwritten if not in debug mode
 			String instanceIP = "localhost";
 			String instanceID = "i-0927c392dd954b616";
-			return new Local(instanceID, instanceIP);
+			//return new Local(instanceID, instanceIP);
+			return new Lambda();
 		}
 		else {
 			synchronized (instances) {
@@ -251,8 +248,48 @@ public class LoadBalancer implements HttpHandler {
 
 		}
 		else if (requestType instanceof RayTracerRequest) {
+			if (requestBody == null || requestBody.isEmpty()) {
+				throw new IOException("Request body is empty for RayTracerRequest");
+			}
 
-			formattedResponse = "Ray Tracer not available at the moment. Please try again later.";
+			System.out.println(requestBody);
+
+			// Extract query parameters
+			Map<String, String> queryParams = extractQueryParams(exchange.getRequestURI().getQuery());
+
+			// Extract the scene and texmap from the request body
+			ObjectMapper mapper = new ObjectMapper();
+			Map<String, Object> body = mapper.readValue(requestBody, new TypeReference<Map<String, Object>>() {});
+
+			byte[] input = ((String) body.get("scene")).getBytes(StandardCharsets.UTF_8);
+			byte[] texmap = null;
+			if (body.containsKey("texmap")) {
+				ArrayList<Integer> texmapBytes = (ArrayList<Integer>) body.get("texmap");
+				texmap = new byte[texmapBytes.size()];
+				for (int i = 0; i < texmapBytes.size(); i++) {
+					texmap[i] = texmapBytes.get(i).byteValue();
+				}
+			} else {
+				texmap = new byte[0];  // handle case where texmap is missing or empty
+			}
+			// Construct the JSON payload
+			String jsonPayload = "{"
+					+ "\"aa\": \"" + queryParams.getOrDefault("aa", "false") + "\", "
+					+ "\"multi\": \"false\", "
+					+ "\"scols\": \"" + queryParams.getOrDefault("scols", "400") + "\", "
+					+ "\"srows\": \"" + queryParams.getOrDefault("srows", "300") + "\", "
+					+ "\"wcols\": \"" + queryParams.getOrDefault("wcols", "400") + "\", "
+					+ "\"wrows\": \"" + queryParams.getOrDefault("wrows", "300") + "\", "
+					+ "\"coff\": \"" + queryParams.getOrDefault("coff", "0") + "\", "
+					+ "\"roff\": \"" + queryParams.getOrDefault("roff", "0") + "\", "
+					+ "\"input\": \"" + Base64.getEncoder().encodeToString(input) + "\", "
+					+ "\"texmap\": \"" + Base64.getEncoder().encodeToString(texmap) + "\""
+					+ "}";
+
+			// Invoke Lambda function directly
+			String lambdaResponse = AwsEc2Manager.invokeLambdaFunction(lambdaFunctionName, jsonPayload);
+			formattedResponse = formatLambdaResponse(lambdaResponse, "json");
+
 		}
 
 		// Send the response back to the client
@@ -279,7 +316,21 @@ public class LoadBalancer implements HttpHandler {
         }
     }
 
-
+	public Map<String, String> queryToMap(String query) {
+		if (query == null) {
+			return null;
+		}
+		Map<String, String> result = new HashMap<>();
+		for (String param : query.split("&")) {
+			String[] entry = param.split("=");
+			if (entry.length > 1) {
+				result.put(entry[0], entry[1]);
+			} else {
+				result.put(entry[0], "");
+			}
+		}
+		return result;
+	}
 
 	private static void print_current_loads() {
 		synchronized (instanceRequests) {
@@ -385,7 +436,18 @@ public class LoadBalancer implements HttpHandler {
 		return usage;
 	}
 
-
+	private Map<String, String> extractQueryParams(String query) {
+		Map<String, String> queryParams = new HashMap<>();
+		for (String param : query.split("&")) {
+			String[] entry = param.split("=");
+			if (entry.length > 1) {
+				queryParams.put(entry[0], entry[1]);
+			} else {
+				queryParams.put(entry[0], "");
+			}
+		}
+		return queryParams;
+	}
 	// Helper method to extract base64 encoded data from requestBody
 	private String extractBase64Data(String requestBody) {
 		int startIndex = requestBody.indexOf("base64,") + 7;
