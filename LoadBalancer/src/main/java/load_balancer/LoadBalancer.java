@@ -104,6 +104,18 @@ public class LoadBalancer implements HttpHandler {
 					break;
 				}
 
+				// Check that the instance is still running through Amazon SDK
+				if (instance instanceof EC2 && !AwsEc2Manager.isInstanceRunning(instanceID)) {
+					synchronized (instances) {
+						System.out.println("VM crashed, removing from instances");
+						final String finalInstanceID = instanceID;
+						instances.removeIf(inst -> inst.instanceId().equals(finalInstanceID));
+						instanceRequests.remove(instanceID);
+						// Kill on amazon to be sure
+						AwsEc2Manager.terminateInstance(instanceID);
+					}
+				}
+
 				// Fail, try again
 				System.out.println("Request failed, trying again");
 			}
@@ -170,7 +182,6 @@ public class LoadBalancer implements HttpHandler {
 
 	private HttpURLConnection forwardRequest(HttpExchange exchange, String requestBody, RequestEstimation estimation,
 			AbstractRequestType requestType, String instanceIP, String instanceID) throws IOException {
-		// Use estimation later to do forward logic
 		// URL of local workerWebServer
 		String uri = exchange.getRequestURI().getPath();
 		String query = exchange.getRequestURI().getQuery();
