@@ -48,6 +48,34 @@ public class AwsEc2Manager {
             .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
             .build();
 
+    public static boolean isInstanceRunning(String instanceId) {
+        System.out.println("Checking instance status.");
+        DescribeInstancesRequest request = DescribeInstancesRequest.builder()
+            .instanceIds(instanceId)
+            .build();
+    
+        try {
+            DescribeInstancesResponse response = ec2.describeInstances(request);
+    
+            for (Reservation reservation : response.reservations()) {
+                for (Instance instance : reservation.instances()) {
+                    if (instanceId.equals(instance.instanceId()) && "running".equals(instance.state().nameAsString())) {
+                        System.out.println("Instance " + instanceId + " is currently running.");
+                        return true;
+                    }
+                }
+            }
+            System.out.println("Instance " + instanceId + " is not running.");
+            return false;
+        } catch (Ec2Exception e) {
+            System.err.println("EC2 Exception: " + e.awsErrorDetails().errorMessage());
+            return false;
+        } catch (Exception e) {
+            System.err.println("Exception: " + e.getMessage());
+            return false;
+        }
+    }
+
     public static boolean checkAvailableInstances() {
         System.out.println("Checking available instances.");
         DescribeInstancesRequest request = DescribeInstancesRequest.builder().build();

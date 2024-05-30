@@ -58,43 +58,124 @@ public class LoadBalancer implements HttpHandler {
 	@Override
 	public void handle(HttpExchange exchange) throws IOException {
 
-		// will be overwritten if not in debug mode
-		String instanceIP = "localhost";
-		String instanceID = "i-0927c392dd954b616";
-
 		try {
-
-		String requestBody = HttpRequestUtils.getRequestBodyString(exchange);
-		try {
+			String requestBody = HttpRequestUtils.getRequestBodyString(exchange);
+			try {
+				AbstractRequestType requestType = AbstractRequestType.ofRequest(exchange, requestBody);
+			} catch (IllegalArgumentException e) {
+				// TODO: temp fix, since it works on richards laptop without this, but not on teos
+				// System.out.println("Empty request body, ignore");
+				return;
+			}
 			AbstractRequestType requestType = AbstractRequestType.ofRequest(exchange, requestBody);
-		} catch (IllegalArgumentException e) {
-			// TODO: temp fix, since it works on richards laptop without this, but not on teos
-			// System.out.println("Empty request body, ignore");
-			return;
-		}
-		AbstractRequestType requestType = AbstractRequestType.ofRequest(exchange, requestBody);
-		RequestEstimation estimation = MetricStorageSystem.calculateEstimation(requestType);
+			RequestEstimation estimation = MetricStorageSystem.calculateEstimation(requestType);
 
-		if (DEBUG) {
-			System.out.println("Running in debug mode");
-		}
-		else {
-			// boolean instanceAvailable = AwsEc2Manager.checkAvailableInstances(); // TODO: use?
+			while (true) {
+				InstanceType instance = chooseInstance();
+				String instanceID = "";
+				String instanceIP = "";
 
-			if (instances.isEmpty()) {
-				instances.addAll(AwsEc2Manager.getAllRunningInstances());
+				if (instance instanceof Lambda) {
+					// assume lambda cannot fail
+					forwardLambdaRequestAndSendToUser(exchange, requestBody, estimation, requestType);
+					return; // forwardLambdaRequest sends back response to client
+				} else if (instance instanceof Local) {
+					instanceIP = ((Local) instance).getInstanceIp();
+					instanceID = ((Local) instance).getInstanceId();
 
-				for (Instance inst : instances) {
-					instanceRequests.putIfAbsent(inst.instanceId(), new HashMap<>());
+					// TODO foward and fail safe
+				} else if (instance instanceof EC2) {
+					EC2 ec2Instance = (EC2) instance;
+					instanceIP = ec2Instance.getInstance().publicIpAddress();
+					instanceID = ec2Instance.getInstance().instanceId();
 				}
 
+				if (instance instanceof EC2) addRequestEstimation(instanceID, requestType, estimation);// Add the request and estimation to the instance
+				HttpURLConnection connection = forwardRequest(exchange, requestBody, estimation, requestType, instanceIP, instanceID);
+
+				try {
+					Thread.sleep(20000);
+				} catch (Exception e) {
+
+				}
+
+				try {
+					int responseCode = connection.getResponseCode(); // vm finished or crashed
+					if (instance instanceof EC2) removeRequestEstimation(instanceID, requestType);
+					System.out.println(responseCode);
+					// if success: finish
+					if (responseCode == 200) {
+						HttpRequestUtils.sendResponseToClient(exchange, connection);
+
+						RequestMetrics metrics = RequestMetrics.extractMetrics(connection);
+						MetricStorageSystem.storeMetric(requestType, metrics);
+						break;
+					}
+				} catch (IOException e) {
+					if (instance instanceof EC2) removeRequestEstimation(instanceID, requestType);
+					System.out.println("Request failed, error on gettign response code");
+				}
+
+				synchronized (instances) {
+					// Check that the instance is still running through Amazon SDK
+					if (instance instanceof EC2) {
+						final String finalInstanceID = instanceID;
+						// check if instance corresponding to instanceID is still in the instances list
+						if (!instances.stream().anyMatch(inst -> inst.instanceId().equals(finalInstanceID))) {
+							System.out.println("Instance was already killed by different thread");
+							continue;
+						}
+
+						if (!AwsEc2Manager.isInstanceRunning(instanceID)) {
+							System.out.println("VM crashed, removing from instances");
+							instances.removeIf(inst -> inst.instanceId().equals(finalInstanceID));
+							instanceRequests.remove(instanceID);
+							// Kill on amazon to be sure
+							AwsEc2Manager.terminateInstance(instanceID);
+						
+						}
+					}	
+				}
+
+				// Fail, try again
+				System.out.println("Request failed, trying again");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private InstanceType chooseInstance() {
+		if (DEBUG) {
+			System.out.println("Running in debug mode");
+					// will be overwritten if not in debug mode
+			String instanceIP = "localhost";
+			String instanceID = "i-0927c392dd954b616";
+			return new Local(instanceID, instanceIP);
+		}
+		else {
+			synchronized (instances) {
 				if (instances.isEmpty()) {
-					System.out.println("No instances available, deploying new instance");
-					AutoScaler.deployNewInstance();
+					instances.addAll(AwsEc2Manager.getAllRunningInstances());
+
+					for (Instance inst : instances) {
+						instanceRequests.putIfAbsent(inst.instanceId(), new HashMap<>());
+					}
+
+					if (instances.isEmpty()) {
+
+						if (isCurrentlyDeploying.compareAndSet(false, true)) {
+							System.out.println("No instances available, deploying new instance");
+							AutoScaler.deployNewInstance();
+							isCurrentlyDeploying.set(false);
+						} else {
+							System.out.println("No instance available, but another thread is already deploying it");
+						}
+					}
 				}
 			}
 			if (!instances.isEmpty()) {
-				print_current_loads();
+				//print_current_loads();
 
 				Optional<Instance> chosen_instance;
 				synchronized (instances) {
@@ -117,30 +198,19 @@ public class LoadBalancer implements HttpHandler {
 							System.out.println("Another thread is already deploying an instance");
 						}
 					}
-					forwardLambdaRequest(exchange, requestBody, estimation, requestType);
-					return;
+					return new Lambda();
 				} else {
 					System.out.println("Instance: " + chosen_instance.get().instanceId() + " fine and available for request");
-					instanceID = chosen_instance.get().instanceId();
-					instanceIP = chosen_instance.get().publicIpAddress();
+					return new EC2(chosen_instance.get());
 				}
 			} else {
 				throw new RuntimeException("No instances available, while there should always be at least one instance available");
 			}
-
-			// Add the request and estimation to the instance
-			addRequestEstimation(instanceID, requestType, estimation);
-		}
-
-		forwardRequest(exchange, requestBody, estimation, requestType, instanceIP, instanceID);
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 
-	private void forwardRequest(HttpExchange exchange, String requestBody, RequestEstimation estimation,
+	private HttpURLConnection forwardRequest(HttpExchange exchange, String requestBody, RequestEstimation estimation,
 			AbstractRequestType requestType, String instanceIP, String instanceID) throws IOException {
-		// Use estimation later to do forward logic
 		// URL of local workerWebServer
 		String uri = exchange.getRequestURI().getPath();
 		String query = exchange.getRequestURI().getQuery();
@@ -150,23 +220,10 @@ public class LoadBalancer implements HttpHandler {
 
 		URL url = new URL("http", instanceIP, 8000, uri);
 		System.out.println("Handling request: " + uri);
-		HttpURLConnection connection = HttpRequestUtils.forwardRequest(url, exchange, requestBody);
-		int statusCode = HttpRequestUtils.sendResponseToClient(exchange, connection);
+		return HttpRequestUtils.forwardRequest(url, exchange, requestBody);
 
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
-        if (!DEBUG) {
-			removeRequestEstimation(instanceID, requestType);
-		}
-
-		RequestMetrics metrics = RequestMetrics.extractMetrics(connection);
-		MetricStorageSystem.storeMetric(requestType, metrics);
 	}
-	private void forwardLambdaRequest(HttpExchange exchange, String requestBody, RequestEstimation estimation, AbstractRequestType requestType) throws IOException {
+	private void forwardLambdaRequestAndSendToUser(HttpExchange exchange, String requestBody, RequestEstimation estimation, AbstractRequestType requestType) throws IOException {
 		// Use estimation later to do forward logic
 		System.out.println("Redirecting request to Lambda function");
 		String formattedResponse = "";
@@ -225,11 +282,13 @@ public class LoadBalancer implements HttpHandler {
 
 
 	private static void print_current_loads() {
-		// print for each instance the current requests and their associated cpu time
-		for (Map.Entry<String, Map<AbstractRequestType, RequestEstimation>> entry : instanceRequests.entrySet()) {
-			System.out.println("Instance: " + entry.getKey() + " has the following requests:");
-			for (Map.Entry<AbstractRequestType, RequestEstimation> reqEntry : entry.getValue().entrySet()) {
-				System.out.println("Request: " + reqEntry.getKey().getClass().getSimpleName() + " has cpu time: " + reqEntry.getValue().cpuTime);
+		synchronized (instanceRequests) {
+			// print for each instance the current requests and their associated cpu time
+			for (Map.Entry<String, Map<AbstractRequestType, RequestEstimation>> entry : instanceRequests.entrySet()) {
+				System.out.println("Instance: " + entry.getKey() + " has the following requests:");
+				for (Map.Entry<AbstractRequestType, RequestEstimation> reqEntry : entry.getValue().entrySet()) {
+					System.out.println("Request: " + reqEntry.getKey().getClass().getSimpleName() + " has cpu time: " + reqEntry.getValue().cpuTime);
+				}
 			}
 		}
 	}
