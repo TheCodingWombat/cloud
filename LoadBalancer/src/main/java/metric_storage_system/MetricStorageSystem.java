@@ -7,8 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import deployment_manager.AwsEc2Manager;
 import load_balancer.LoadBalancer;
-import request_types.AbstractRequestType;
-import request_types.ImageProcessingRequest;
+import request_types.*;
 
 import utils.PictureFormat;
 
@@ -22,22 +21,32 @@ public class MetricStorageSystem {
 	
 	static MultipleOutputLinearModel blurImagePNGModel = new MultipleOutputLinearModel(2);
 	static MultipleOutputLinearModel blurImageJPEGModel = new MultipleOutputLinearModel(2);
+	static MultipleOutputLinearModel enhanceImagePNGModel = new MultipleOutputLinearModel(2);
+	static MultipleOutputLinearModel enhanceImageJPEGModel = new MultipleOutputLinearModel(2);
+	static MultipleOutputLinearModel raytracerModel = new MultipleOutputLinearModel(2);
 
 	// TODO: Shouldn't we just have a class for this for each metric type?
 	public static void storeMetric(AbstractRequestType requestType, RequestMetrics requestMetrics) {
 		metrics.put(requestType, requestMetrics);
 		CsvExporter.mapToCsv(metrics);
 
-		System.out.println("Storing metrics");
-
 		// TODO: Batch metrics and do not refit on every request.
-		if(requestType instanceof ImageProcessingRequest) {
-			if (((ImageProcessingRequest) requestType).pictureFormat == utils.PictureFormat.PNG) {
+		if(requestType instanceof BlurImageRequest) {
+			if (((BlurImageRequest) requestType).pictureFormat == utils.PictureFormat.PNG) {
 				blurImagePNGModel.refit(requestType.toXArray(), requestMetrics.toYArray());
-			} else if (((ImageProcessingRequest) requestType).pictureFormat == utils.PictureFormat.JPEG) {
+			} else if (((BlurImageRequest) requestType).pictureFormat == utils.PictureFormat.JPEG) {
 				blurImageJPEGModel.refit(requestType.toXArray(), requestMetrics.toYArray());
 			}
+		} else if(requestType instanceof EnhanceImageRequest) {
+			if (((EnhanceImageRequest) requestType).pictureFormat == utils.PictureFormat.PNG) {
+				enhanceImagePNGModel.refit(requestType.toXArray(), requestMetrics.toYArray());
+			} else if (((EnhanceImageRequest) requestType).pictureFormat == utils.PictureFormat.JPEG) {
+				enhanceImageJPEGModel.refit(requestType.toXArray(), requestMetrics.toYArray());
+			}
+		} else if(requestType instanceof RayTracerRequest) {
+			raytracerModel.refit(requestType.toXArray(), requestMetrics.toYArray());
 		}
+
 		//Implement db store
 		// Get the current timestamp
 		String timestamp = Instant.now().toString();
@@ -59,8 +68,7 @@ public class MetricStorageSystem {
 
 			RequestEstimation estimation = new RequestEstimation((long) outputs[0], (long) outputs[1]);
 
-			System.out.println("CPU time estimation: "+ estimation.cpuTime);
-			System.out.println("Memory estimation: "+ estimation.memory);
+			System.out.println("CPU time estimation: "+ estimation.cpuTime + ". Memory estimation: "+ estimation.memory);
 
 			return estimation;
 		} catch (Exception e) {
@@ -75,7 +83,7 @@ public class MetricStorageSystem {
 	
 
 	public static MultipleOutputLinearModel chooseModel(AbstractRequestType requestType) {
-		if (requestType instanceof ImageProcessingRequest) { //TODO: Assume for now only blur images
+		if (requestType instanceof BlurImageRequest) {
 			if (((ImageProcessingRequest) requestType).pictureFormat == utils.PictureFormat.PNG) {
 				return blurImagePNGModel;
 			} else if (((ImageProcessingRequest) requestType).pictureFormat == utils.PictureFormat.JPEG) {
@@ -83,6 +91,16 @@ public class MetricStorageSystem {
 			}
 
 			System.out.println("Picture format not supported");
+		} else if (requestType instanceof EnhanceImageRequest) {
+			if (((ImageProcessingRequest) requestType).pictureFormat == utils.PictureFormat.PNG) {
+				return enhanceImagePNGModel;
+			} else if (((ImageProcessingRequest) requestType).pictureFormat == utils.PictureFormat.JPEG) {
+				return enhanceImageJPEGModel;
+			}
+
+			System.out.println("Picture format not supported");
+		} else if (requestType instanceof RayTracerRequest) {
+			return raytracerModel;
 		}
 
 		throw new IllegalArgumentException("Request type not supported");

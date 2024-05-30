@@ -7,7 +7,7 @@ import java.util.*;
 
 public class AutoScaler {
 
-    private static final int autoscale_interval = 10000;
+    private static final int autoscale_interval = 30000;
     private static final int MEMORY_THRESHOLD = 100; // 80% memory usage
     private static final int MAX_MEMORY = 970 - MEMORY_THRESHOLD; // 1GB
     private static final int MAX_CPU = 80; // 80%
@@ -19,7 +19,7 @@ public class AutoScaler {
     public AutoScaler() {
         // run some logic in a new thread to scale the system
         new Thread(() -> {
-            System.out.println("AutoScaler started up");
+            // System.out.println("AutoScaler started up");
             while (true) {
                 try {
                     Thread.sleep(autoscale_interval);
@@ -27,7 +27,7 @@ public class AutoScaler {
                     e.printStackTrace();
                 }
 
-                System.out.println("Autoscaler iteration");
+                // System.out.println("Autoscaler iteration");
                 // check if terminating instances are done
                 for (Instance instance : terminating_instances) {
                     // if the instance is done, remove it from the list
@@ -59,9 +59,9 @@ public class AutoScaler {
         Map<String, List<Double>> instance_utilization = new HashMap<>();
         synchronized (LoadBalancer.instances) {
             LoadBalancer.instances.forEach(instance -> {
-                System.out.println("Checking instance utilization");
+                // System.out.println("Checking instance utilization");
                 double cpuUsage = AwsEc2Manager.getCpuUtilization(instance.instanceId());
-                System.out.println("Instance " + instance.instanceId() + " has " + cpuUsage + " CPU usage");
+                System.out.println("INSTANCE UTILIZATION: Instance " + instance.instanceId() + " has " + cpuUsage + " CPU usage");
                 instance_utilization.put(instance.instanceId(), List.of(cpuUsage));
             });
         }
@@ -107,7 +107,6 @@ public class AutoScaler {
 
     // Check if we must scale down
     private Optional<Instance> must_scale_down(Map<String, List<Double>> instance_utilization) {
-        System.out.println("Checking if we must scale down");
         // Don't scale down if we have the minimum number of instances running
         if (LoadBalancer.instances.size() <= MIN_INSTANCES) {
             return Optional.empty();

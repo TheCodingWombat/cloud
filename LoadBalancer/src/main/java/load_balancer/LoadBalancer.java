@@ -69,7 +69,7 @@ public class LoadBalancer implements HttpHandler {
 			AbstractRequestType requestType = AbstractRequestType.ofRequest(exchange, requestBody);
 		} catch (IllegalArgumentException e) {
 			// TODO: temp fix, since it works on richards laptop without this, but not on teos
-			System.out.println("Empty request body, ignore");
+			// System.out.println("Empty request body, ignore");
 			return;
 		}
 		AbstractRequestType requestType = AbstractRequestType.ofRequest(exchange, requestBody);
@@ -119,7 +119,6 @@ public class LoadBalancer implements HttpHandler {
 					}
 					forwardLambdaRequest(exchange, requestBody, estimation, requestType);
 					return;
-					// TODO: We should not run forwardRequest below anymore if we already forwarded the lambda request.
 				} else {
 					System.out.println("Instance: " + chosen_instance.get().instanceId() + " fine and available for request");
 					instanceID = chosen_instance.get().instanceId();

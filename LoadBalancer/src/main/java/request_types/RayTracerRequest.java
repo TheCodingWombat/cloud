@@ -46,7 +46,7 @@ public class RayTracerRequest extends AbstractRequestType {
 
 	@Override
 	public double[] toXArray() {
-		throw new UnsupportedOperationException("Not implemented yet");
+		return new double[] {scols}; // TODO; now just without reason onlz using scols so the total pipeline works
 	}
 	
 	public String serializeCsv() {
