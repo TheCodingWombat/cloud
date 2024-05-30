@@ -90,7 +90,7 @@ public class LoadBalancer implements HttpHandler {
 				HttpURLConnection connection = forwardRequest(exchange, requestBody, estimation, requestType, instanceIP, instanceID);
 
 				try {
-					Thread.sleep(20000);
+					Thread.sleep(1000);
 				} catch (Exception e) {
 
 				}
