@@ -48,7 +48,7 @@ public class LoadBalancer implements HttpHandler {
 	 *
 	 */
 
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 	private static final String KEYPATH = "C:/Users/tedoc/newkey.pem";
 
 	@Override
