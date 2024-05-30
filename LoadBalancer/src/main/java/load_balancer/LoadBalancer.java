@@ -147,8 +147,7 @@ public class LoadBalancer implements HttpHandler {
 					// will be overwritten if not in debug mode
 			String instanceIP = "localhost";
 			String instanceID = "i-0927c392dd954b616";
-			//return new Local(instanceID, instanceIP);
-			return new Lambda();
+			return new Local(instanceID, instanceIP);
 		}
 		else {
 			synchronized (instances) {

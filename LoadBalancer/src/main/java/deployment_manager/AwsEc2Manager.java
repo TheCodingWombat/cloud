@@ -23,7 +23,7 @@ import java.util.*;
 public class AwsEc2Manager {
 
     private static final String AWS_REGION = "eu-west-3";
-    private static final String AMI_ID = "ami-0b85d21c87147d1d6";
+    private static final String AMI_ID = "ami-0b075650ea4392389";
     private static final String KEY_NAME = "newkey";
     private static final String SEC_GROUP_ID = "sg-070bd3e1192ba2323";
     private static final String DB_TABLE = "MetricsTable";
