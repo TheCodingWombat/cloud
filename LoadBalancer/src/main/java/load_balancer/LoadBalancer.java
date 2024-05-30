@@ -104,16 +104,25 @@ public class LoadBalancer implements HttpHandler {
 					break;
 				}
 
-				// Check that the instance is still running through Amazon SDK
-				if (instance instanceof EC2 && !AwsEc2Manager.isInstanceRunning(instanceID)) {
-					synchronized (instances) {
-						System.out.println("VM crashed, removing from instances");
+				synchronized (instances) {
+					// Check that the instance is still running through Amazon SDK
+					if (instance instanceof EC2) {
 						final String finalInstanceID = instanceID;
-						instances.removeIf(inst -> inst.instanceId().equals(finalInstanceID));
-						instanceRequests.remove(instanceID);
-						// Kill on amazon to be sure
-						AwsEc2Manager.terminateInstance(instanceID);
-					}
+						// check if instance corresponding to instanceID is still in the instances list
+						if (!instances.stream().anyMatch(inst -> inst.instanceId().equals(finalInstanceID))) {
+							System.out.println("Instance was already killed by different thread");
+							continue;
+						}
+
+						if (!AwsEc2Manager.isInstanceRunning(instanceID)) {
+							System.out.println("VM crashed, removing from instances");
+							instances.removeIf(inst -> inst.instanceId().equals(finalInstanceID));
+							instanceRequests.remove(instanceID);
+							// Kill on amazon to be sure
+							AwsEc2Manager.terminateInstance(instanceID);
+						
+						}
+					}	
 				}
 
 				// Fail, try again
