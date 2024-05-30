@@ -52,7 +52,7 @@ public class LoadBalancer implements HttpHandler {
 	 *
 	 */
 
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 	private static final String KEYPATH = "C:/Users/tedoc/newkey.pem";
 
 	@Override
@@ -92,16 +92,28 @@ public class LoadBalancer implements HttpHandler {
 
 				if (instance instanceof EC2) addRequestEstimation(instanceID, requestType, estimation);// Add the request and estimation to the instance
 				HttpURLConnection connection = forwardRequest(exchange, requestBody, estimation, requestType, instanceIP, instanceID);
-				int responseCode = connection.getResponseCode(); // vm finished or crashed
-				if (instance instanceof EC2) removeRequestEstimation(instanceID, requestType);
 
-				// if success: finish
-				if (connection.getResponseCode() == 200) {
-					HttpRequestUtils.sendResponseToClient(exchange, connection);
+				try {
+					Thread.sleep(20000);
+				} catch (Exception e) {
 
-					RequestMetrics metrics = RequestMetrics.extractMetrics(connection);
-					MetricStorageSystem.storeMetric(requestType, metrics);
-					break;
+				}
+
+				try {
+					int responseCode = connection.getResponseCode(); // vm finished or crashed
+					if (instance instanceof EC2) removeRequestEstimation(instanceID, requestType);
+					System.out.println(responseCode);
+					// if success: finish
+					if (responseCode == 200) {
+						HttpRequestUtils.sendResponseToClient(exchange, connection);
+
+						RequestMetrics metrics = RequestMetrics.extractMetrics(connection);
+						MetricStorageSystem.storeMetric(requestType, metrics);
+						break;
+					}
+				} catch (IOException e) {
+					if (instance instanceof EC2) removeRequestEstimation(instanceID, requestType);
+					System.out.println("Request failed, error on gettign response code");
 				}
 
 				synchronized (instances) {
@@ -142,20 +154,28 @@ public class LoadBalancer implements HttpHandler {
 			return new Local(instanceID, instanceIP);
 		}
 		else {
-			if (instances.isEmpty()) {
-				instances.addAll(AwsEc2Manager.getAllRunningInstances());
-
-				for (Instance inst : instances) {
-					instanceRequests.putIfAbsent(inst.instanceId(), new HashMap<>());
-				}
-
+			synchronized (instances) {
 				if (instances.isEmpty()) {
-					System.out.println("No instances available, deploying new instance");
-					AutoScaler.deployNewInstance();
+					instances.addAll(AwsEc2Manager.getAllRunningInstances());
+
+					for (Instance inst : instances) {
+						instanceRequests.putIfAbsent(inst.instanceId(), new HashMap<>());
+					}
+
+					if (instances.isEmpty()) {
+
+						if (isCurrentlyDeploying.compareAndSet(false, true)) {
+							System.out.println("No instances available, deploying new instance");
+							AutoScaler.deployNewInstance();
+							isCurrentlyDeploying.set(false);
+						} else {
+							System.out.println("No instance available, but another thread is already deploying it");
+						}
+					}
 				}
 			}
 			if (!instances.isEmpty()) {
-				print_current_loads();
+				//print_current_loads();
 
 				Optional<Instance> chosen_instance;
 				synchronized (instances) {
@@ -262,11 +282,13 @@ public class LoadBalancer implements HttpHandler {
 
 
 	private static void print_current_loads() {
-		// print for each instance the current requests and their associated cpu time
-		for (Map.Entry<String, Map<AbstractRequestType, RequestEstimation>> entry : instanceRequests.entrySet()) {
-			System.out.println("Instance: " + entry.getKey() + " has the following requests:");
-			for (Map.Entry<AbstractRequestType, RequestEstimation> reqEntry : entry.getValue().entrySet()) {
-				System.out.println("Request: " + reqEntry.getKey().getClass().getSimpleName() + " has cpu time: " + reqEntry.getValue().cpuTime);
+		synchronized (instanceRequests) {
+			// print for each instance the current requests and their associated cpu time
+			for (Map.Entry<String, Map<AbstractRequestType, RequestEstimation>> entry : instanceRequests.entrySet()) {
+				System.out.println("Instance: " + entry.getKey() + " has the following requests:");
+				for (Map.Entry<AbstractRequestType, RequestEstimation> reqEntry : entry.getValue().entrySet()) {
+					System.out.println("Request: " + reqEntry.getKey().getClass().getSimpleName() + " has cpu time: " + reqEntry.getValue().cpuTime);
+				}
 			}
 		}
 	}
