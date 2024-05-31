@@ -100,7 +100,7 @@ public class LoadBalancer implements HttpHandler {
 					if (instance instanceof EC2) removeRequestEstimation(instanceID, requestType);
 					System.out.println(responseCode);
 					// if success: finish
-					if (responseCode == 200) {
+					if (responseCode == 200 || responseCode == 204) {
 						HttpRequestUtils.sendResponseToClient(exchange, connection);
 
 						RequestMetrics metrics = RequestMetrics.extractMetrics(connection);
