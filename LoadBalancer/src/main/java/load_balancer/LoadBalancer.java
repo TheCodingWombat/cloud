@@ -30,7 +30,7 @@ public class LoadBalancer implements HttpHandler {
 	private static final AutoScaler autoScaler = new AutoScaler();
 	static final List<Instance> instances = new ArrayList<>(); // Array with instances
 
-	private static final int REQUEST_COUNT_MAX = 60; // Maximum number of requests per instance
+	private static final int REQUEST_COUNT_MAX = 20; // Maximum number of requests per instance
 	private static final String USER = "ec2-user";
 
 	// For each instance, keep a list of the current requests for that machine and their complexity estimation
@@ -346,7 +346,7 @@ public class LoadBalancer implements HttpHandler {
 	// filter instances that are not full, then find the one with minimal cpu usage
 	private static Optional<Instance> getLeastBusyInstance() {
 		return instances.stream()
-			//.filter(inst -> instanceRequests.get(inst.instanceId()).size() < REQUEST_COUNT_MAX)
+			.filter(inst -> instanceRequests.get(inst.instanceId()).size() < REQUEST_COUNT_MAX)
 			.min(Comparator.comparingLong(LoadBalancer::getWeightedComplexity));
 	}
 
