@@ -65,5 +65,5 @@ url = "http://16.16.179.113:8001/enhanceimage"
 url1 = "http://16.16.179.113:8001/blurimage"
 
 directory_path = "D:\\programming\\Multilearning\\decoded"
-num_requests = 600
+num_requests = 10
 send_requests(url, url1, directory_path, num_requests)
