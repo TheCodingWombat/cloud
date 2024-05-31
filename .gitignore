@@ -24,3 +24,5 @@ awsautomatization/outputs/
 # Output logs
 .out
 LoadBalancer/metricsOutput/
+
+venv

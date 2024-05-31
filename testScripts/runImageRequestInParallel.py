@@ -55,6 +55,6 @@ def send_requests(url, url1, directory_path, num_requests, max_workers=10):
 url = "http://16.16.179.113:8001/enhanceimage"
 url1 = "http://16.16.179.113:8001/blurimage"
 
-directory_path = "C:\\Users\\herrt\\git\\cloud\\testScripts\\base64_encoded_pictures\\"
-num_requests = 100
+directory_path = "D:\programming\Multilearning\decoded"
+num_requests = 50
 send_requests(url, url1 , directory_path, num_requests)
