@@ -190,7 +190,7 @@ public class AwsEc2Manager {
 
             if (instance.publicIpAddress() == null || instance.publicDnsName() == null) {
                 try {
-                    Thread.sleep(10000); // Wait for 10 seconds before checking again
+                    Thread.sleep(1000); // Wait for 10 seconds before checking again
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
