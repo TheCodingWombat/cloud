@@ -228,7 +228,7 @@ public class AwsEc2Manager {
                 .namespace("AWS/EC2")
                 .metricName("CPUUtilization")
                 .dimensions(d -> d.name("InstanceId").value(instanceId))
-                .startTime(Instant.now().minusSeconds(3600))  // Last hour
+                .startTime(Instant.now().minusSeconds(300))  // Last hour
                 .endTime(Instant.now())
                 .period(60)
                 .statistics(Statistic.AVERAGE)
