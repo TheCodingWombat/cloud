@@ -10,7 +10,7 @@ public class AutoScaler {
     private static final int autoscale_interval = 4000;
     private static final int MEMORY_THRESHOLD = 100; // 80% memory usage
     private static final int MAX_MEMORY = 970 - MEMORY_THRESHOLD; // 1GB
-    private static final int MAX_CPU = 60; // 80%
+    private static final int MAX_CPU = 75; // 80%
     private static final int MIN_CPU = 20; // 20%
     public static final List<Instance> terminating_instances = new ArrayList<>();
     public static final int MAX_INSTANCES = 5; // Maximum number of instances to deploy
