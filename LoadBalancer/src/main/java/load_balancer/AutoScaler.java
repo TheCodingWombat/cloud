@@ -7,7 +7,7 @@ import java.util.*;
 
 public class AutoScaler {
 
-    private static final int autoscale_interval = 100000;
+    private static final int autoscale_interval = 4000;
     private static final int MEMORY_THRESHOLD = 100; // 80% memory usage
     private static final int MAX_MEMORY = 970 - MEMORY_THRESHOLD; // 1GB
     private static final int MAX_CPU = 80; // 80%

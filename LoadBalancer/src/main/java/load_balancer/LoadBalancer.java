@@ -346,7 +346,7 @@ public class LoadBalancer implements HttpHandler {
 	// filter instances that are not full, then find the one with minimal cpu usage
 	private static Optional<Instance> getLeastBusyInstance() {
 		return instances.stream()
-			.filter(inst -> instanceRequests.get(inst.instanceId()).size() < REQUEST_COUNT_MAX)
+			//.filter(inst -> instanceRequests.get(inst.instanceId()).size() < REQUEST_COUNT_MAX)
 			.min(Comparator.comparingLong(LoadBalancer::getWeightedComplexity));
 	}
 
